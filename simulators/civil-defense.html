@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>民防無線電參數模擬器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","Segoe UI",monospace;background:#0a0e1a;color:#c8d6f0;min-height:100vh;overflow-x:hidden}
+
+/* Header */
+header{background:linear-gradient(135deg,#0f1929,#1a2840);border-bottom:1px solid #1e3a5f;padding:10px 18px;display:flex;align-items:center;gap:15px}
+header h1{font-size:1.1em;color:#4fc3f7;font-weight:700;letter-spacing:1px}
+header p{font-size:.75em;color:#7a9bc0;margin-top:1px}
+.hbadge{background:#1e3a5f;border:1px solid #2d5a8e;padding:3px 10px;border-radius:12px;font-size:.72em;color:#4fc3f7}
+.live-dot{width:8px;height:8px;background:#00e676;border-radius:50%;animation:blink 1.2s infinite;margin-left:auto}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Main Layout */
+.main{display:grid;grid-template-columns:230px 1fr 250px;gap:0;height:calc(100vh - 46px)}
+
+/* Left Panel */
+.left-panel{background:#0d1525;border-right:1px solid #1e3a5f;padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+
+/* Center Panel */
+.center-panel{display:flex;flex-direction:column;background:#080d18}
+
+/* Right Panel */
+.right-panel{background:#0d1525;border-left:1px solid #1e3a5f;padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+
+/* Section headers */
+.section-hdr{font-size:.72em;font-weight:700;color:#4fc3f7;text-transform:uppercase;letter-spacing:1.5px;padding:4px 0 2px;border-bottom:1px solid #1e3a5f;margin-bottom:4px}
+
+/* Controls */
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;margin:3px 0}
+.ctrl-label{font-size:.75em;color:#8aabcc}
+.ctrl-value{font-size:.78em;color:#e0f0ff;font-weight:600;min-width:50px;text-align:right}
+
+input[type=range]{width:100%;height:4px;background:#1e3a5f;outline:none;border-radius:2px;-webkit-appearance:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:#4fc3f7;border-radius:50%;cursor:pointer}
+
+.toggle-row{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}
+.toggle-btn{flex:1;padding:4px 6px;background:#0f1929;border:1px solid #1e3a5f;color:#7a9bc0;border-radius:4px;cursor:pointer;font-size:.72em;text-align:center;transition:all .2s}
+.toggle-btn.active{background:#1a3a5f;border-color:#4fc3f7;color:#4fc3f7}
+.toggle-btn.warn{border-color:#f44336;color:#f44336;background:#1f0a0a}
+
+/* Team cards */
+.team-card{background:#0f1929;border:1px solid #1e3a5f;border-radius:6px;padding:7px 9px;cursor:pointer;transition:all .2s;margin:3px 0}
+.team-card.active{border-color:#00e676}
+.team-card.talking{animation:talk-pulse .6s infinite alternate}
+@keyframes talk-pulse{from{border-color:#00e676}to{border-color:#00a651;box-shadow:0 0 8px #00e67644}}
+.team-header{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.team-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.team-name{font-size:.8em;font-weight:700;color:#ddeeff}
+.team-ctcss-label{font-size:.68em;color:#7a9bc0;margin-left:auto}
+.team-ctcss-val{font-size:.7em;color:#ffd54f;font-weight:600}
+.team-controls{display:flex;align-items:center;gap:5px}
+.team-controls select{background:#0a1020;border:1px solid #1e3a5f;color:#c8d6f0;font-size:.68em;padding:2px 4px;border-radius:3px;flex:1}
+.talk-btn{padding:3px 8px;background:#1a3a1a;border:1px solid #00a651;color:#00e676;border-radius:3px;cursor:pointer;font-size:.7em;font-weight:700;white-space:nowrap}
+.talk-btn:hover{background:#00a65133}
+.talk-btn.active{background:#00e67633;animation:talk-pulse .5s infinite alternate}
+
+/* Status indicators */
+.status-bar{display:flex;align-items:center;gap:5px;margin:3px 0}
+.status-icon{font-size:.85em}
+.status-text{font-size:.74em;color:#8aabcc}
+.status-val{margin-left:auto;font-size:.74em;font-weight:600}
+.good{color:#00e676}.warn-color{color:#ffd54f}.bad{color:#f44336}
+
+/* Signal strength bars */
+.sig-bars{display:flex;gap:2px;align-items:flex-end}
+.sig-bar{width:5px;background:#1e3a5f;border-radius:1px;transition:all .3s}
+
+/* Canvas areas */
+.canvas-section{padding:6px 10px 4px;border-bottom:1px solid #111d2e}
+.canvas-title{font-size:.68em;color:#5a7a9a;margin-bottom:3px;letter-spacing:1px;text-transform:uppercase}
+canvas{display:block;width:100%;border-radius:3px}
+
+/* Diagnostic log */
+.log-box{background:#070c15;border:1px solid #1e3a5f;border-radius:5px;padding:8px;font-size:.72em;height:110px;overflow-y:auto;font-family:monospace}
+.log-entry{color:#7a9bc0;margin:2px 0;line-height:1.4}
+.log-entry.info{color:#4fc3f7}
+.log-entry.good{color:#00e676}
+.log-entry.warn{color:#ffd54f}
+.log-entry.bad{color:#f44336}
+
+/* Bottom info bar */
+.info-chips{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0}
+.chip{padding:2px 8px;border-radius:10px;font-size:.68em;border:1px solid}
+.chip-blue{border-color:#1e5f8e;color:#4fc3f7;background:#0a2030}
+.chip-green{border-color:#1a5f2a;color:#00e676;background:#0a1f0e}
+.chip-orange{border-color:#5f3a1a;color:#ffa726;background:#1f140a}
+.chip-red{border-color:#5f1a1a;color:#f44336;background:#1f0a0a}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#080d18}
+::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:2px}
+
+/* Receiver CTCSS */
+.rx-box{background:#0f1929;border:1px solid #2d4a6f;border-radius:5px;padding:7px}
+.rx-title{font-size:.7em;color:#ffd54f;margin-bottom:5px;font-weight:600}
+.rx-freq{font-size:1.2em;color:#4fc3f7;font-weight:700;text-align:center;margin:3px 0}
+
+/* Team hear status */
+.hear-list{display:flex;flex-direction:column;gap:3px}
+.hear-item{display:flex;align-items:center;gap:7px;padding:4px 7px;border-radius:4px;font-size:.75em}
+.hear-item.hearing{background:#0a1f0e;border:1px solid #1a5f2a}
+.hear-item.silent{background:#1a0a0a;border:1px solid #3f1a1a;opacity:.6}
+.hear-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr}
+  .left-panel,.right-panel{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <span style="font-size:1.4em">📻</span>
+  <div>
+    <h1>民防無線電參數模擬器</h1>
+    <p>SDR視覺化 · 即時信號模擬 · 所有RF參數整合</p>
+  </div>
+  <span class="hbadge">GQRX-SIM</span>
+  <span class="hbadge" id="mode-badge">NFM 12.5kHz</span>
+  <div class="live-dot" title="模擬運行中"></div>
+</header>
+
+<div class="main">
+  <!-- Left Panel: Controls -->
+  <div class="left-panel" id="left-panel">
+
+    <!-- Frequency -->
+    <div>
+      <div class="section-hdr">📡 射頻參數</div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">中心頻率</span>
+        <span class="ctrl-value" id="freq-display">145.500 MHz</span>
+      </div>
+      <input type="range" id="freq-slider" min="1445" max="1465" value="1455" step="1">
+      <div class="ctrl-row" style="margin-top:6px">
+        <span class="ctrl-label">頻寬模式</span>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-btn active" id="bw-narrow" onclick="setBW(12.5,this)">12.5kHz 窄頻</div>
+        <div class="toggle-btn" id="bw-wide" onclick="setBW(25,this)">25kHz 寬頻</div>
+      </div>
+    </div>
+
+    <!-- RF Gain -->
+    <div>
+      <div class="section-hdr">🎚️ 接收增益</div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">RF增益</span>
+        <span class="ctrl-value" id="gain-display">30 dB</span>
+      </div>
+      <input type="range" id="gain-slider" min="0" max="50" value="30" step="1">
+      <div class="ctrl-row" style="margin-top:2px">
+        <span class="ctrl-label">底噪水平</span>
+        <span class="ctrl-value" id="noise-display">-103 dBm</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">SNR預估</span>
+        <span class="ctrl-value" id="snr-display" class="good">-- dB</span>
+      </div>
+    </div>
+
+    <!-- Power -->
+    <div>
+      <div class="section-hdr">🔋 發射功率</div>
+      <div class="toggle-row">
+        <div class="toggle-btn" onclick="setPower(1,this)">1W</div>
+        <div class="toggle-btn active" onclick="setPower(5,this)">5W</div>
+        <div class="toggle-btn" onclick="setPower(10,this)">10W</div>
+      </div>
+    </div>
+
+    <!-- Antenna -->
+    <div>
+      <div class="section-hdr">📶 天線狀態</div>
+      <div class="toggle-row">
+        <div class="toggle-btn active" onclick="setAntenna('normal',this)">正常λ/4</div>
+        <div class="toggle-btn" onclick="setAntenna('yagi',this)">八木天線</div>
+        <div class="toggle-btn warn" onclick="setAntenna('broken',this)">⚠ 損壞</div>
+      </div>
+      <div class="ctrl-row" style="margin-top:4px">
+        <span class="ctrl-label">天線增益</span>
+        <span class="ctrl-value" id="ant-gain-display">0 dBi</span>
+      </div>
+    </div>
+
+    <!-- Interference -->
+    <div>
+      <div class="section-hdr">⚡ 干擾源</div>
+      <div class="toggle-row">
+        <div class="toggle-btn" id="interference-btn" onclick="toggleInterference(this)">❌ 關閉</div>
+        <div class="toggle-btn warn" onclick="toggleInterference(document.getElementById('interference-btn'),true)">⚡ 開啟干擾</div>
+      </div>
+      <div class="ctrl-row" style="margin-top:4px">
+        <span class="ctrl-label">干擾頻率</span>
+        <span class="ctrl-value" id="int-freq-display">145.510 MHz</span>
+      </div>
+      <input type="range" id="int-freq-slider" min="1445" max="1465" value="1456" step="1">
+    </div>
+
+    <!-- Repeater -->
+    <div>
+      <div class="section-hdr">🔁 中繼台</div>
+      <div class="toggle-row">
+        <div class="toggle-btn" id="repeater-btn" onclick="toggleRepeater(this)">中繼：關閉</div>
+      </div>
+      <div class="ctrl-row" style="margin-top:4px">
+        <span class="ctrl-label" style="font-size:.68em">收 145.500 → 發 146.100</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Center Panel: Displays -->
+  <div class="center-panel">
+    <!-- RF Spectrum -->
+    <div class="canvas-section" style="flex:0 0 auto">
+      <div class="canvas-title">FFT頻譜分析 — RF Spectrum</div>
+      <canvas id="fft-canvas" height="160"></canvas>
+    </div>
+
+    <!-- Waterfall -->
+    <div class="canvas-section" style="flex:0 0 auto">
+      <div class="canvas-title">瀑布圖 — Waterfall（時間軸）</div>
+      <canvas id="waterfall-canvas" height="130"></canvas>
+    </div>
+
+    <!-- Audio Spectrum -->
+    <div class="canvas-section" style="flex:0 0 auto">
+      <div class="canvas-title">音頻解調 — CTCSS亞音 + 語音頻譜</div>
+      <canvas id="audio-canvas" height="100"></canvas>
+    </div>
+
+    <!-- Bottom Status Row -->
+    <div style="padding:8px 10px;display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid #111d2e;flex:1;align-content:flex-start">
+      <div class="info-chips" style="width:100%">
+        <span class="chip chip-blue" id="chip-freq">145.500 MHz</span>
+        <span class="chip chip-blue" id="chip-bw">NFM 12.5kHz</span>
+        <span class="chip chip-green" id="chip-gain">增益 30dB</span>
+        <span class="chip chip-green" id="chip-power">5W / 37dBm</span>
+        <span class="chip chip-orange" id="chip-ant">天線：正常</span>
+        <span class="chip chip-blue" id="chip-rep">中繼：關閉</span>
+        <span class="chip chip-red" id="chip-int" style="display:none">⚡ 干擾開啟</span>
+      </div>
+
+      <!-- 說明文字 -->
+      <div style="font-size:.73em;color:#5a7a9a;line-height:1.6;width:100%">
+        <strong style="color:#4fc3f7">操作說明：</strong>
+        點擊右側隊伍的「發話」按鈕 → 模擬對講機發話 → 觀察FFT峰值和瀑布圖變化。
+        調整RF增益 → 觀察SNR和底噪變化。切換頻寬 → 觀察峰值寬度。
+        開啟干擾源 → 觀察干擾峰值。設定接收CTCSS → 只聽到特定隊伍。
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Status & Teams -->
+  <div class="right-panel">
+
+    <!-- Receiver CTCSS -->
+    <div>
+      <div class="section-hdr">🔑 接收機設定</div>
+      <div class="rx-box">
+        <div class="rx-title">我的CTCSS設定（靜噪鑰匙）</div>
+        <select id="rx-ctcss" onchange="setRxCtcss(this.value)" style="width:100%;background:#0a1020;border:1px solid #2d4a6f;color:#c8d6f0;padding:5px;border-radius:4px;font-size:.8em;margin-top:3px">
+          <option value="0">🔓 無CTCSS（收所有隊伍）</option>
+          <option value="67.0">67.0 Hz — 隊伍1</option>
+          <option value="88.5">88.5 Hz — 隊伍2</option>
+          <option value="110.9">110.9 Hz — 隊伍3</option>
+          <option value="131.8">131.8 Hz — 隊伍4</option>
+          <option value="151.4">151.4 Hz — 隊伍5</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Teams -->
+    <div>
+      <div class="section-hdr">👥 隊伍通話狀態</div>
+      <div id="teams-container"></div>
+    </div>
+
+    <!-- Who can hear who -->
+    <div>
+      <div class="section-hdr">👂 誰能聽到誰</div>
+      <div id="hear-list" class="hear-list"></div>
+    </div>
+
+    <!-- Diagnostic Log -->
+    <div>
+      <div class="section-hdr">🔬 診斷記錄</div>
+      <div class="log-box" id="log-box">
+        <div class="log-entry info">▶ 模擬器啟動</div>
+        <div class="log-entry">▷ 中心頻率：145.500 MHz</div>
+        <div class="log-entry">▷ 頻寬：NFM 12.5kHz</div>
+        <div class="log-entry">▷ RF增益：30dB</div>
+        <div class="log-entry">▷ 等待發話...</div>
+      </div>
+    </div>
+
+    <!-- Quick Guide -->
+    <div>
+      <div class="section-hdr">💡 快速指南</div>
+      <div style="font-size:.7em;color:#5a7a9a;line-height:1.7">
+        <div>📊 <span style="color:#c8d6f0">FFT峰高</span> = 信號強度</div>
+        <div>📊 <span style="color:#c8d6f0">峰值寬度</span> = 頻寬設定</div>
+        <div>🎚️ <span style="color:#c8d6f0">增益↑太多</span> = 底噪也升高</div>
+        <div>🔑 <span style="color:#c8d6f0">CTCSS不符</span> = 喇叭不開</div>
+        <div>⚡ <span style="color:#c8d6f0">干擾強於信號</span> = 被壓制</div>
+        <div>🔁 <span style="color:#c8d6f0">中繼台</span> = 克服地形</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// =====================
+// State
+// =====================
+const state = {
+  centerFreq: 145.500,
+  bandwidth: 12.5,
+  rfGain: 30,
+  power: 5,
+  antenna: 'normal',
+  interferenceEnabled: false,
+  interferenceFreq: 145.510,
+  repeaterEnabled: false,
+  rxCtcss: 0,
+  teams: [
+    { id:1, name:'文山隊', ctcss:67.0,  color:'#4fc3f7', talking:false, freqOffset:0 },
+    { id:2, name:'信義隊', ctcss:88.5,  color:'#81c784', talking:false, freqOffset:0 },
+    { id:3, name:'大安隊', ctcss:110.9, color:'#ffb74d', talking:false, freqOffset:0 },
+    { id:4, name:'中山隊', ctcss:131.8, color:'#f48fb1', talking:false, freqOffset:0 },
+    { id:5, name:'松山隊', ctcss:151.4, color:'#ce93d8', talking:false, freqOffset:0 },
+  ],
+  time: 0,
+};
+
+const CTCSS_LIST = [67.0,71.9,74.4,77.0,79.7,82.5,85.4,88.5,91.5,94.8,97.4,100.0,
+  103.5,107.2,110.9,114.8,118.8,123.0,127.3,131.8,136.5,141.3,146.2,151.4,
+  156.7,162.2,167.9,173.8,179.9,186.2,192.8,203.5,210.7,218.1,225.7,233.6,241.8,250.3];
+
+// =====================
+// Computed
+// =====================
+function getAntennaGain(type) {
+  return { normal: 0, yagi: 12, broken: -20 }[type] || 0;
+}
+
+function getNoiseFloor(gain) {
+  return -133 + gain; // -174 + 41(12.5kHz bandwidth) + gain
+}
+
+function getSignalPeak(power, gain, antennaGain) {
+  const txPower = 10 * Math.log10(power) + 30;
+  return txPower + gain + antennaGain - 55; // -55 = path loss simplification
+}
+
+function getSNR(signal, noise) {
+  return signal - noise;
+}
+
+function canHear(teamCtcss, rxCtcss) {
+  if (rxCtcss === 0) return true;
+  return Math.abs(teamCtcss - rxCtcss) < 2;
+}
+
+// =====================
+// Canvas Setup
+// =====================
+let fftCanvas, fftCtx, waterfallCanvas, waterfallCtx, audioCanvas, audioCtx;
+let waterfallData = [];
+
+function initCanvases() {
+  fftCanvas = document.getElementById('fft-canvas');
+  fftCtx = fftCanvas.getContext('2d');
+  waterfallCanvas = document.getElementById('waterfall-canvas');
+  waterfallCtx = waterfallCanvas.getContext('2d');
+  audioCanvas = document.getElementById('audio-canvas');
+  audioCtx = audioCanvas.getContext('2d');
+
+  // Set pixel dimensions
+  function resize() {
+    const cw = fftCanvas.parentElement.clientWidth - 20;
+    fftCanvas.width = cw; fftCanvas.height = 160;
+    waterfallCanvas.width = cw; waterfallCanvas.height = 130;
+    audioCanvas.width = cw; audioCanvas.height = 100;
+    waterfallData = [];
+  }
+  resize();
+  window.addEventListener('resize', resize);
+}
+
+// =====================
+// FFT Canvas Draw
+// =====================
+function drawFFT() {
+  const W = fftCanvas.width, H = fftCanvas.height;
+  const ctx = fftCtx;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background gradient
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#050a14');
+  bg.addColorStop(1, '#080f1e');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Frequency range to display
+  const freqMin = state.centerFreq - 1.0;
+  const freqMax = state.centerFreq + 1.0;
+  const freqRange = freqMax - freqMin;
+
+  // dBm range
+  const dbMin = -130, dbMax = -30;
+
+  function freqToX(f) { return (f - freqMin) / freqRange * W; }
+  function dbToY(db) { return H - (db - dbMin) / (dbMax - dbMin) * H; }
+
+  // Grid
+  ctx.strokeStyle = '#0d2035';
+  ctx.lineWidth = 1;
+  for (let f = Math.ceil(freqMin * 10) / 10; f <= freqMax; f += 0.1) {
+    const x = freqToX(Math.round(f * 10) / 10);
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let db = -130; db <= -30; db += 10) {
+    const y = dbToY(db);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Grid labels
+  ctx.fillStyle = '#2a4a6a';
+  ctx.font = '10px monospace';
+  for (let f = Math.ceil(freqMin * 10) / 10; f <= freqMax; f += 0.2) {
+    const x = freqToX(Math.round(f * 10) / 10);
+    ctx.fillText((Math.round(f * 10) / 10).toFixed(1), x + 2, H - 4);
+  }
+  for (let db = -120; db <= -40; db += 20) {
+    const y = dbToY(db);
+    ctx.fillText(db + 'dBm', 3, y - 2);
+  }
+
+  const noiseFloor = getNoiseFloor(state.rfGain);
+  const antennaGain = getAntennaGain(state.antenna);
+  const signalPeak = getSignalPeak(state.power, state.rfGain, antennaGain);
+
+  // Noise floor (animated)
+  const noisePoints = [];
+  for (let x = 0; x < W; x++) {
+    const n = noiseFloor + (Math.random() * 4 - 2) + Math.sin(x * 0.1 + state.time * 0.05) * 1.5;
+    noisePoints.push({ x, y: dbToY(n) });
+  }
+  ctx.beginPath();
+  ctx.moveTo(0, noisePoints[0].y);
+  for (const p of noisePoints) ctx.lineTo(p.x, p.y);
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fillStyle = 'rgba(30, 58, 95, 0.25)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(0, noisePoints[0].y);
+  for (const p of noisePoints) ctx.lineTo(p.x, p.y);
+  ctx.strokeStyle = '#0d2d4a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Noise floor reference line
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = '#1e4a7a';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, dbToY(noiseFloor));
+  ctx.lineTo(W, dbToY(noiseFloor));
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#2a5a9a';
+  ctx.font = '9px monospace';
+  ctx.fillText('底噪 ' + Math.round(noiseFloor) + 'dBm', 5, dbToY(noiseFloor) - 3);
+
+  // Draw signal peaks for each talking team
+  const bwMHz = state.bandwidth / 1000;
+
+  state.teams.forEach(team => {
+    if (!team.talking) return;
+    const sigDb = signalPeak + (Math.random() * 3 - 1.5);
+    const cx = freqToX(state.centerFreq + team.freqOffset);
+    const pw = freqToX(state.centerFreq + bwMHz / 2) - freqToX(state.centerFreq);
+
+    // Gaussian peak
+    const pts = [];
+    for (let dx = -pw * 3; dx <= pw * 3; dx++) {
+      const x = cx + dx;
+      if (x < 0 || x > W) continue;
+      const gaus = Math.exp(-(dx * dx) / (2 * pw * pw * 0.4));
+      const db = noiseFloor + (sigDb - noiseFloor) * gaus;
+      pts.push({ x, y: dbToY(db) });
+    }
+
+    if (pts.length < 2) return;
+
+    // Gradient fill
+    const grad = ctx.createLinearGradient(cx, dbToY(sigDb), cx, H);
+    const rgb = hexToRgb(team.color);
+    grad.addColorStop(0, `rgba(${rgb},0.6)`);
+    grad.addColorStop(1, `rgba(${rgb},0.05)`);
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (const p of pts) ctx.lineTo(p.x, p.y);
+    ctx.lineTo(pts[pts.length - 1].x, H);
+    ctx.lineTo(pts[0].x, H);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (const p of pts) ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = team.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = team.color;
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText(team.name, cx - 16, dbToY(sigDb) - 5);
+
+    // SNR indicator
+    const snr = getSNR(sigDb, noiseFloor);
+    const snrColor = snr > 20 ? '#00e676' : snr > 10 ? '#ffd54f' : '#f44336';
+    document.getElementById('snr-display').textContent = Math.round(snr) + ' dB';
+    document.getElementById('snr-display').style.color = snrColor;
+  });
+
+  // Interference peak
+  if (state.interferenceEnabled) {
+    const intFreq = state.interferenceFreq;
+    const intDb = -50 + state.rfGain * 0.3 + (Math.random() * 3 - 1.5);
+    const cx = freqToX(intFreq);
+    const pw = freqToX(state.centerFreq + 0.015) - freqToX(state.centerFreq);
+
+    const pts = [];
+    for (let dx = -pw * 3; dx <= pw * 3; dx++) {
+      const x = cx + dx;
+      if (x < 0 || x > W) continue;
+      const gaus = Math.exp(-(dx * dx) / (2 * pw * pw * 0.5));
+      const db = noiseFloor + (intDb - noiseFloor) * gaus;
+      pts.push({ x, y: dbToY(db) });
+    }
+
+    if (pts.length >= 2) {
+      const grad = ctx.createLinearGradient(cx, dbToY(intDb), cx, H);
+      grad.addColorStop(0, 'rgba(244,67,54,0.7)');
+      grad.addColorStop(1, 'rgba(244,67,54,0.05)');
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (const p of pts) ctx.lineTo(p.x, p.y);
+      ctx.lineTo(pts[pts.length-1].x, H);
+      ctx.lineTo(pts[0].x, H);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (const p of pts) ctx.lineTo(p.x, p.y);
+      ctx.strokeStyle = '#f44336';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([3, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#f44336';
+      ctx.font = 'bold 10px monospace';
+      ctx.fillText('⚡干擾', cx - 15, dbToY(intDb) - 5);
+    }
+  }
+
+  // Center frequency marker
+  ctx.strokeStyle = '#4fc3f7';
+  ctx.setLineDash([2, 4]);
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  const cx0 = freqToX(state.centerFreq);
+  ctx.moveTo(cx0, 0); ctx.lineTo(cx0, H); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#4fc3f7';
+  ctx.font = 'bold 10px monospace';
+  ctx.fillText(state.centerFreq.toFixed(3) + ' MHz', cx0 + 3, 13);
+
+  // Repeater output marker
+  if (state.repeaterEnabled) {
+    const rxCx = freqToX(146.100);
+    if (rxCx > 0 && rxCx < W) {
+      ctx.strokeStyle = '#00e676';
+      ctx.setLineDash([2, 4]);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(rxCx, 0); ctx.lineTo(rxCx, H); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#00e676';
+      ctx.font = '9px monospace';
+      ctx.fillText('中繼↑146.100', rxCx + 3, 13);
+    }
+  }
+}
+
+// =====================
+// Waterfall
+// =====================
+function drawWaterfall() {
+  const W = waterfallCanvas.width, H = waterfallCanvas.height;
+  const ctx = waterfallCtx;
+
+  const freqMin = state.centerFreq - 1.0;
+  const freqMax = state.centerFreq + 1.0;
+  const freqRange = freqMax - freqMin;
+
+  const noiseFloor = getNoiseFloor(state.rfGain);
+  const antennaGain = getAntennaGain(state.antenna);
+  const signalPeak = getSignalPeak(state.power, state.rfGain, antennaGain);
+
+  // Build a new row of data
+  const rowData = new Float32Array(W);
+  for (let x = 0; x < W; x++) {
+    const f = freqMin + (x / W) * freqRange;
+    let db = noiseFloor + (Math.random() * 3 - 1.5);
+
+    const bwMHz = state.bandwidth / 1000;
+    state.teams.forEach(team => {
+      if (!team.talking) return;
+      const teamFreq = state.centerFreq + team.freqOffset;
+      const dist = Math.abs(f - teamFreq);
+      if (dist < bwMHz * 3) {
+        const gaus = Math.exp(-(dist * dist) / (2 * (bwMHz * 0.4) * (bwMHz * 0.4)));
+        const sig = noiseFloor + (signalPeak + (Math.random()*3-1.5) - noiseFloor) * gaus;
+        db = Math.max(db, sig);
+      }
+    });
+
+    if (state.interferenceEnabled) {
+      const dist = Math.abs(f - state.interferenceFreq);
+      if (dist < 0.03) {
+        const gaus = Math.exp(-(dist * dist) / (2 * 0.01 * 0.01));
+        const sig = noiseFloor + (-50 + state.rfGain * 0.3 - noiseFloor) * gaus;
+        db = Math.max(db, sig);
+      }
+    }
+
+    rowData[x] = db;
+  }
+
+  waterfallData.unshift(rowData);
+  if (waterfallData.length > H) waterfallData.pop();
+
+  ctx.clearRect(0, 0, W, H);
+
+  for (let y = 0; y < waterfallData.length; y++) {
+    const row = waterfallData[y];
+    for (let x = 0; x < W; x++) {
+      const db = row[x];
+      const norm = Math.max(0, Math.min(1, (db - (-130)) / ((-30) - (-130))));
+      ctx.fillStyle = dbToColor(norm);
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  // Frequency labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '9px monospace';
+  for (let f = Math.ceil(freqMin * 10) / 10; f <= freqMax; f += 0.2) {
+    const x = (Math.round(f * 10) / 10 - freqMin) / freqRange * W;
+    ctx.fillText((Math.round(f * 10) / 10).toFixed(1), x + 2, H - 4);
+  }
+}
+
+function dbToColor(norm) {
+  // Black → Blue → Cyan → Green → Yellow → Red
+  if (norm < 0.2) {
+    const t = norm / 0.2;
+    return `rgb(0,0,${Math.round(t * 180)})`;
+  } else if (norm < 0.4) {
+    const t = (norm - 0.2) / 0.2;
+    return `rgb(0,${Math.round(t * 200)},${Math.round(180 + t * 75)})`;
+  } else if (norm < 0.6) {
+    const t = (norm - 0.4) / 0.2;
+    return `rgb(0,${Math.round(200 + t * 55)},${Math.round(255 - t * 255)})`;
+  } else if (norm < 0.8) {
+    const t = (norm - 0.6) / 0.2;
+    return `rgb(${Math.round(t * 255)},255,0)`;
+  } else {
+    const t = (norm - 0.8) / 0.2;
+    return `rgb(255,${Math.round(255 - t * 255)},0)`;
+  }
+}
+
+// =====================
+// Audio Spectrum
+// =====================
+function drawAudio() {
+  const W = audioCanvas.width, H = audioCanvas.height;
+  const ctx = audioCtx;
+  ctx.clearRect(0, 0, W, H);
+
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#050a14'); bg.addColorStop(1, '#080f1e');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  const audioMin = 0, audioMax = 3500;
+  function freqToX(f) { return (f - audioMin) / (audioMax - audioMin) * W; }
+
+  // Grid
+  ctx.strokeStyle = '#0d2035'; ctx.lineWidth = 1;
+  [300, 500, 1000, 1500, 2000, 2500, 3000].forEach(f => {
+    const x = freqToX(f);
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    ctx.fillStyle = '#2a4a6a'; ctx.font = '9px monospace';
+    ctx.fillText(f >= 1000 ? (f/1000).toFixed(1)+'k' : f, x + 2, H - 3);
+  });
+
+  // Noise
+  const noiseBase = H * 0.85;
+  for (let x = 0; x < W; x++) {
+    const n = noiseBase + (Math.random() * 4 - 2);
+    ctx.fillStyle = '#0d2035'; ctx.fillRect(x, n, 1, H - n);
+  }
+
+  // Any team talking?
+  const talkingTeams = state.teams.filter(t => t.talking);
+
+  if (talkingTeams.length > 0) {
+    talkingTeams.forEach(team => {
+      if (!canHear(team.ctcss, state.rxCtcss)) return;
+
+      // CTCSS peak (low freq)
+      const ctcssX = freqToX(team.ctcss);
+      const ctcssH = H * 0.55;
+      const grad = ctx.createLinearGradient(ctcssX, H * 0.3, ctcssX, H);
+      const rgb = hexToRgb(team.color);
+      grad.addColorStop(0, `rgba(${rgb},0.9)`);
+      grad.addColorStop(1, `rgba(${rgb},0.1)`);
+
+      ctx.beginPath();
+      const ctcssWidth = 8;
+      for (let dx = -ctcssWidth; dx <= ctcssWidth; dx++) {
+        const gaus = Math.exp(-(dx*dx)/(2*6*6));
+        const y = H - (ctcssH - H * 0.1) * gaus - H * 0.1;
+        if (dx === -ctcssWidth) ctx.moveTo(ctcssX + dx, y);
+        else ctx.lineTo(ctcssX + dx, y);
+      }
+      ctx.lineTo(ctcssX + ctcssWidth, H); ctx.lineTo(ctcssX - ctcssWidth, H); ctx.closePath();
+      ctx.fillStyle = grad; ctx.fill();
+      ctx.strokeStyle = team.color; ctx.lineWidth = 2;
+
+      // Label
+      ctx.fillStyle = team.color; ctx.font = 'bold 9px monospace';
+      ctx.fillText('CTCSS\n'+team.ctcss, ctcssX - 14, H * 0.25);
+      ctx.fillText(team.ctcss+'Hz', ctcssX - 10, H * 0.35);
+
+      // Voice spectrum (300-3000 Hz)
+      ctx.beginPath();
+      const voiceStart = freqToX(300);
+      const voiceEnd = freqToX(2800);
+      ctx.moveTo(voiceStart, H * 0.75);
+      for (let x = voiceStart; x <= voiceEnd; x += 2) {
+        const f = audioMin + (x / W) * (audioMax - audioMin);
+        const envelope = Math.sin(Math.PI * (f - 300) / 2500) * 0.6 + 0.2;
+        const noise = Math.random() * 0.2;
+        const amp = (envelope + noise) * (H * 0.5) * (1 + Math.sin(state.time * 0.3 + x * 0.02) * 0.2);
+        ctx.lineTo(x, H - amp * 0.5 - H * 0.1);
+      }
+      ctx.lineTo(voiceEnd, H * 0.75);
+      ctx.strokeStyle = team.color + '88'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = team.color + '15'; ctx.fill();
+    });
+
+    // Label regions
+    ctx.fillStyle = '#ffd54f'; ctx.font = '9px monospace';
+    ctx.fillText('← CTCSS 亞音頻 →', freqToX(40), 12);
+    ctx.fillStyle = '#4fc3f7';
+    ctx.fillText('←────── 語音頻率 300-3000Hz ──────→', freqToX(400), 12);
+  } else {
+    ctx.fillStyle = '#2a4a6a'; ctx.font = '11px monospace';
+    ctx.fillText('（無隊伍發話 — 無語音信號）', W/2 - 95, H/2 + 4);
+  }
+
+  // Silenced indicator
+  if (talkingTeams.length > 0) {
+    const silenced = talkingTeams.filter(t => !canHear(t.ctcss, state.rxCtcss));
+    if (silenced.length > 0 && state.rxCtcss > 0) {
+      ctx.fillStyle = '#f44336'; ctx.font = 'bold 10px monospace';
+      ctx.fillText('🔇 CTCSS不符 — 靜噪關閉', W - 175, 12);
+    }
+  }
+}
+
+// =====================
+// UI Updates
+// =====================
+function buildTeams() {
+  const container = document.getElementById('teams-container');
+  container.innerHTML = '';
+  state.teams.forEach(team => {
+    const div = document.createElement('div');
+    div.className = 'team-card' + (team.talking ? ' talking' : '');
+    div.id = 'team-card-' + team.id;
+
+    const ctcssOptions = CTCSS_LIST.map(f =>
+      `<option value="${f}" ${f === team.ctcss ? 'selected' : ''}>${f} Hz</option>`
+    ).join('');
+
+    div.innerHTML = `
+      <div class="team-header">
+        <div class="team-dot" style="background:${team.color}"></div>
+        <span class="team-name">${team.name}</span>
+        <span class="team-ctcss-label">CTCSS</span>
+        <span class="team-ctcss-val" id="ctcss-val-${team.id}">${team.ctcss}Hz</span>
+      </div>
+      <div class="team-controls">
+        <select onchange="setTeamCtcss(${team.id}, parseFloat(this.value))"
+                style="background:#0a1020;border:1px solid #1e3a5f;color:#c8d6f0;font-size:.67em;padding:2px 3px;border-radius:3px;flex:1">
+          ${ctcssOptions}
+        </select>
+        <button class="talk-btn ${team.talking ? 'active' : ''}"
+                id="talk-btn-${team.id}"
+                onclick="toggleTalk(${team.id})">
+          ${team.talking ? '🔴 發話中' : '📢 發話'}
+        </button>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function updateHearList() {
+  const list = document.getElementById('hear-list');
+  list.innerHTML = '';
+  const talkingTeams = state.teams.filter(t => t.talking);
+  if (talkingTeams.length === 0) {
+    list.innerHTML = '<div style="font-size:.73em;color:#2a4a6a;padding:5px">（無隊伍發話）</div>';
+    return;
+  }
+  talkingTeams.forEach(team => {
+    const hear = canHear(team.ctcss, state.rxCtcss);
+    const div = document.createElement('div');
+    div.className = 'hear-item ' + (hear ? 'hearing' : 'silent');
+    div.innerHTML = `
+      <div class="hear-dot" style="background:${hear ? team.color : '#f44336'}"></div>
+      <span style="flex:1;font-size:.75em">${team.name}（${team.ctcss}Hz）</span>
+      <span style="font-size:.73em;font-weight:700;color:${hear ? '#00e676' : '#f44336'}">${hear ? '✓ 聽得到' : '✗ 靜音'}</span>`;
+    list.appendChild(div);
+  });
+  if (state.rxCtcss === 0) {
+    const note = document.createElement('div');
+    note.style = 'font-size:.68em;color:#5a7a9a;padding:4px 0';
+    note.textContent = '（無CTCSS設定 → 所有隊伍皆可聽）';
+    list.appendChild(note);
+  }
+}
+
+// =====================
+// Log
+// =====================
+function addLog(msg, type = '') {
+  const box = document.getElementById('log-box');
+  const div = document.createElement('div');
+  div.className = 'log-entry ' + type;
+  const t = new Date();
+  const ts = t.getHours().toString().padStart(2,'0') + ':' +
+             t.getMinutes().toString().padStart(2,'0') + ':' +
+             t.getSeconds().toString().padStart(2,'0');
+  div.textContent = `[${ts}] ${msg}`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  while (box.children.length > 30) box.removeChild(box.firstChild);
+}
+
+// =====================
+// Controls
+// =====================
+function setFreq(val) {
+  state.centerFreq = val / 10;
+  document.getElementById('freq-display').textContent = state.centerFreq.toFixed(3) + ' MHz';
+  document.getElementById('chip-freq').textContent = state.centerFreq.toFixed(3) + ' MHz';
+}
+
+function setBW(bw, btn) {
+  state.bandwidth = bw;
+  document.querySelectorAll('#bw-narrow,#bw-wide').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const label = bw === 12.5 ? 'NFM 12.5kHz' : 'WFM 25kHz';
+  document.getElementById('mode-badge').textContent = label;
+  document.getElementById('chip-bw').textContent = label;
+  addLog(`頻寬切換：${bw}kHz（${bw === 12.5 ? '窄頻，能量集中' : '寬頻，能量分散'}）`, bw === 12.5 ? 'good' : 'warn');
+}
+
+function setGain(val) {
+  state.rfGain = parseInt(val);
+  const noise = getNoiseFloor(state.rfGain);
+  document.getElementById('gain-display').textContent = state.rfGain + ' dB';
+  document.getElementById('noise-display').textContent = Math.round(noise) + ' dBm';
+  document.getElementById('chip-gain').textContent = '增益 ' + state.rfGain + 'dB';
+
+  if (state.rfGain > 45) {
+    addLog('⚠ 增益過高（' + state.rfGain + 'dB）→ 底噪升高，接收效果可能變差', 'warn');
+  }
+}
+
+function setPower(w, btn) {
+  state.power = w;
+  document.querySelectorAll('[onclick^="setPower"]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const dbm = Math.round(10 * Math.log10(w) + 30);
+  document.getElementById('chip-power').textContent = w + 'W / ' + dbm + 'dBm';
+  addLog(`發射功率：${w}W（${dbm}dBm）`, 'info');
+}
+
+function setAntenna(type, btn) {
+  state.antenna = type;
+  document.querySelectorAll('[onclick^="setAntenna"]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const gain = getAntennaGain(type);
+  const labels = { normal:'正常λ/4', yagi:'八木天線', broken:'⚠ 損壞' };
+  document.getElementById('ant-gain-display').textContent = (gain >= 0 ? '+' : '') + gain + ' dBi';
+  document.getElementById('chip-ant').textContent = '天線：' + labels[type];
+  if (type === 'broken') {
+    addLog('⚠ 天線損壞！信號強度下降20dB（= 信號剩1/100）', 'bad');
+    waterfallData = [];
+  } else if (type === 'yagi') {
+    addLog('✓ 八木天線：增益+12dBi，但需對準方向', 'good');
+  } else {
+    addLog('✓ 正常λ/4天線：全向，適合移動使用', 'info');
+  }
+}
+
+function toggleInterference(btn, forceOn) {
+  state.interferenceEnabled = forceOn !== undefined ? forceOn : !state.interferenceEnabled;
+  document.getElementById('interference-btn').className =
+    'toggle-btn' + (state.interferenceEnabled ? ' warn' : '');
+  document.getElementById('interference-btn').textContent =
+    state.interferenceEnabled ? '⚡ 干擾中' : '❌ 關閉';
+  const chip = document.getElementById('chip-int');
+  chip.style.display = state.interferenceEnabled ? '' : 'none';
+  addLog(state.interferenceEnabled
+    ? `⚡ 干擾源開啟（${state.interferenceFreq.toFixed(3)} MHz）→ 可能壓制我方信號`
+    : '✓ 干擾源關閉，頻道恢復乾淨', state.interferenceEnabled ? 'bad' : 'good');
+}
+
+function setIntFreq(val) {
+  state.interferenceFreq = val / 10;
+  document.getElementById('int-freq-display').textContent = state.interferenceFreq.toFixed(3) + ' MHz';
+}
+
+function toggleRepeater(btn) {
+  state.repeaterEnabled = !state.repeaterEnabled;
+  btn.textContent = '中繼：' + (state.repeaterEnabled ? '✓ 開啟' : '關閉');
+  btn.className = 'toggle-btn' + (state.repeaterEnabled ? ' active' : '');
+  document.getElementById('chip-rep').textContent = '中繼：' + (state.repeaterEnabled ? '✓開啟' : '關閉');
+  addLog(state.repeaterEnabled
+    ? '✓ 中繼台啟動（145.500→146.100MHz）→ 地形遮擋可跨越'
+    : '中繼台關閉', state.repeaterEnabled ? 'good' : 'info');
+}
+
+function setRxCtcss(val) {
+  state.rxCtcss = parseFloat(val);
+  const label = state.rxCtcss === 0 ? '無CTCSS（收所有）' : state.rxCtcss + ' Hz';
+  addLog(`接收CTCSS設定：${label}`, 'info');
+  updateHearList();
+}
+
+function setTeamCtcss(id, ctcss) {
+  const team = state.teams.find(t => t.id === id);
+  if (team) {
+    team.ctcss = ctcss;
+    document.getElementById('ctcss-val-' + id).textContent = ctcss + 'Hz';
+    addLog(`${team.name} CTCSS設為 ${ctcss}Hz`, 'info');
+    updateHearList();
+  }
+}
+
+function toggleTalk(id) {
+  const team = state.teams.find(t => t.id === id);
+  if (!team) return;
+  team.talking = !team.talking;
+
+  const btn = document.getElementById('talk-btn-' + id);
+  const card = document.getElementById('team-card-' + id);
+  if (team.talking) {
+    btn.textContent = '🔴 發話中';
+    btn.classList.add('active');
+    card.classList.add('talking');
+    addLog(`${team.name} 開始發話（CTCSS ${team.ctcss}Hz）`, 'good');
+  } else {
+    btn.textContent = '📢 發話';
+    btn.classList.remove('active');
+    card.classList.remove('talking');
+    addLog(`${team.name} 停止發話`, 'info');
+  }
+  updateHearList();
+  document.getElementById('snr-display').textContent = '-- dB';
+}
+
+// =====================
+// Event Listeners
+// =====================
+document.getElementById('freq-slider').addEventListener('input', function() {
+  setFreq(parseInt(this.value));
+});
+document.getElementById('gain-slider').addEventListener('input', function() {
+  setGain(this.value);
+});
+document.getElementById('int-freq-slider').addEventListener('input', function() {
+  setIntFreq(parseInt(this.value));
+});
+
+// =====================
+// Animation Loop
+// =====================
+let lastWaterfall = 0;
+function animate(ts) {
+  state.time += 0.016;
+  drawFFT();
+  drawAudio();
+  if (ts - lastWaterfall > 250) {
+    drawWaterfall();
+    lastWaterfall = ts;
+  }
+  requestAnimationFrame(animate);
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+// =====================
+// Init
+// =====================
+window.onload = () => {
+  initCanvases();
+  buildTeams();
+  updateHearList();
+  setGain(30);
+  requestAnimationFrame(animate);
+  addLog('✓ 模擬器就緒，請點擊「發話」按鈕開始', 'good');
+};
+</script>
+</body>
+</html>

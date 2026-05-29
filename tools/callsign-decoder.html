@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>呼號解碼器 — 二等業餘無線電</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c10;
+  --surface: #0f1520;
+  --surface2: #141e2c;
+  --border: #1a2840;
+  --accent: #00ccff;
+  --accent2: #00ff88;
+  --amber: #ffaa00;
+  --red: #ff4455;
+  --purple: #aa88ff;
+  --text: #b0c8e0;
+  --text-dim: #3a5870;
+  --mono: 'Share Tech Mono', monospace;
+  --sans: 'Noto Sans TC', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+.container { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
+
+header { text-align: center; padding: 28px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.badge { font-family: var(--mono); font-size: 10px; letter-spacing: 4px; color: var(--accent); border: 1px solid var(--accent); display: inline-block; padding: 3px 12px; margin-bottom: 10px; }
+header h1 { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+header p { color: var(--text-dim); font-size: 13px; }
+
+/* Input */
+.input-area {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  max-width: 500px;
+}
+.cs-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-right: none;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 28px;
+  padding: 14px 18px;
+  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  transition: border-color 0.2s;
+}
+.cs-input:focus { border-color: var(--accent); }
+.cs-input::placeholder { color: var(--text-dim); letter-spacing: 2px; font-size: 18px; }
+.decode-btn {
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  color: #000;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 14px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.decode-btn:hover { background: var(--accent2); border-color: var(--accent2); }
+
+/* Callsign breakdown */
+.cs-breakdown {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.cs-char {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  min-width: 52px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.cs-char .ch { font-family: var(--mono); font-size: 24px; color: #fff; }
+.cs-char .ch-label { font-family: var(--mono); font-size: 9px; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; text-transform: uppercase; }
+.cs-char.active-1 { border-color: var(--accent); background: rgba(0,204,255,0.08); }
+.cs-char.active-1 .ch { color: var(--accent); }
+.cs-char.active-2 { border-color: var(--purple); background: rgba(170,136,255,0.08); }
+.cs-char.active-2 .ch { color: var(--purple); }
+.cs-char.active-3 { border-color: var(--amber); background: rgba(255,170,0,0.08); }
+.cs-char.active-3 .ch { color: var(--amber); }
+.cs-char.active-4 { border-color: var(--accent2); background: rgba(0,255,136,0.08); }
+.cs-char.active-4 .ch { color: var(--accent2); }
+
+/* Main layout */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+}
+@media (max-width: 720px) { .main-layout { grid-template-columns: 1fr; } }
+
+/* Result panel */
+.result-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0;
+  overflow: hidden;
+}
+.result-row {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.result-row:last-child { border-bottom: none; }
+.result-key {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding: 12px 14px;
+  min-width: 110px;
+  background: var(--surface2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+}
+.result-val {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.result-val.big { font-size: 22px; color: #fff; }
+.result-val.green { color: var(--accent2); }
+.result-val.amber { color: var(--amber); }
+.result-val.blue { color: var(--accent); }
+.result-val.purple { color: var(--purple); }
+.result-val.red { color: var(--red); }
+
+.grade-tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid;
+  display: inline-block;
+}
+.grade-1 { border-color: var(--amber); color: var(--amber); background: rgba(255,170,0,0.1); }
+.grade-2 { border-color: var(--accent); color: var(--accent); background: rgba(0,204,255,0.1); }
+.grade-3 { border-color: var(--accent2); color: var(--accent2); background: rgba(0,255,136,0.1); }
+.grade-special { border-color: var(--purple); color: var(--purple); background: rgba(170,136,255,0.1); }
+.grade-relay { border-color: var(--red); color: var(--red); background: rgba(255,68,85,0.1); }
+.grade-temp { border-color: var(--text-dim); color: var(--text-dim); }
+
+.error-msg {
+  background: rgba(255,68,85,0.08);
+  border: 1px solid rgba(255,68,85,0.3);
+  border-left: 3px solid var(--red);
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+
+/* Map */
+.map-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.map-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+#taiwan-map {
+  width: 100%;
+  padding: 10px;
+}
+.region-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  fill: var(--text-dim);
+}
+.region-label.active { fill: #fff; font-size: 10px; }
+
+/* Reference section */
+.ref-section { margin-top: 24px; }
+.section-title {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: var(--accent2);
+  text-transform: uppercase; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+.ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 480px) { .ref-grid { grid-template-columns: 1fr; } }
+
+.ref-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.ref-card-title {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--text-dim);
+  text-transform: uppercase; padding: 8px 12px; background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.ref-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
+.ref-table td { padding: 6px 12px; border-bottom: 1px solid rgba(26,40,64,0.5); }
+.ref-table tr:last-child td { border-bottom: none; }
+.ref-table tr:hover td { background: rgba(0,204,255,0.04); cursor: pointer; }
+.ref-table .num { color: var(--amber); width: 30px; }
+.ref-table .region { color: var(--text); }
+.ref-table .suffix-1 { color: var(--amber); }
+.ref-table .suffix-2 { color: var(--accent); }
+.ref-table .suffix-3 { color: var(--accent2); }
+.ref-table .suffix-sp { color: var(--purple); }
+
+/* Examples */
+.examples { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ex-btn {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 2px;
+  padding: 7px 14px; border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+}
+.ex-btn:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">二等業餘無線電 輔助學習</div>
+    <h1>台灣業餘電臺呼號解碼器</h1>
+    <p>對應「無線電規章與相關法規」題庫 · 輸入呼號即時解析地區、等級、電臺類型</p>
+  </header>
+
+  <div class="input-area">
+    <input class="cs-input" id="cs-input" placeholder="BV2AB" maxlength="8" oninput="decodeCallsign()">
+    <button class="decode-btn" onclick="decodeCallsign()">DECODE</button>
+  </div>
+
+  <div id="cs-breakdown" class="cs-breakdown"></div>
+  <div id="error-area"></div>
+
+  <div class="main-layout">
+    <div>
+      <div class="result-panel" id="result-panel" style="display:none">
+        <div class="result-row">
+          <div class="result-key">呼號</div>
+          <div class="result-val big" id="r-callsign"></div>
+        </div>
+        <div class="result-row">
+          <div class="result-key">電臺等級</div>
+          <div class="result-val" id="r-grade"></div>
+        </div>
+        <div class="result-row">
+          <div class="result-key">所在地區</div>
+          <div class="result-val amber" id="r-region"></div>
+        </div>
+        <div class="result-row">
+          <div class="result-key">第二字元</div>
+          <div class="result-val purple" id="r-second"></div>
+        </div>
+        <div class="result-row">
+          <div class="result-key">後綴字母</div>
+          <div class="result-val blue" id="r-suffix"></div>
+        </div>
+        <div class="result-row">
+          <div class="result-key">說明</div>
+          <div class="result-val" id="r-note" style="font-size:12px;color:var(--text-dim);line-height:1.6"></div>
+        </div>
+      </div>
+
+      <div class="examples" id="example-area">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;align-self:center">範例：</span>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-panel">
+      <div class="map-title">地區代碼地圖</div>
+      <svg id="taiwan-map" viewBox="0 0 260 420" xmlns="http://www.w3.org/2000/svg">
+        <!-- Simplified Taiwan regions as styled blocks -->
+        <!-- Region 1: 基隆/宜蘭 (NE) -->
+        <g id="region-1" class="map-region" onclick="highlightRegion(1)">
+          <rect x="165" y="30" width="75" height="60" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="202" y="55" text-anchor="middle" class="region-label" id="rl-1">① 基隆</text>
+          <text x="202" y="70" text-anchor="middle" class="region-label" id="rl-1b">宜蘭</text>
+        </g>
+        <!-- Region 2: 台北/新北 (N) -->
+        <g id="region-2" class="map-region" onclick="highlightRegion(2)">
+          <rect x="90" y="30" width="80" height="70" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="130" y="60" text-anchor="middle" class="region-label" id="rl-2">② 台北</text>
+          <text x="130" y="75" text-anchor="middle" class="region-label" id="rl-2b">新北</text>
+        </g>
+        <!-- Region 3: 桃園/新竹 (NW) -->
+        <g id="region-3" class="map-region" onclick="highlightRegion(3)">
+          <rect x="20" y="55" width="80" height="70" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="60" y="85" text-anchor="middle" class="region-label" id="rl-3">③ 桃園</text>
+          <text x="60" y="100" text-anchor="middle" class="region-label" id="rl-3b">新竹</text>
+        </g>
+        <!-- Region 4: 苗栗/台中 (W-center-N) -->
+        <g id="region-4" class="map-region" onclick="highlightRegion(4)">
+          <rect x="20" y="135" width="90" height="75" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="65" y="165" text-anchor="middle" class="region-label" id="rl-4">④ 苗栗</text>
+          <text x="65" y="180" text-anchor="middle" class="region-label" id="rl-4b">台中</text>
+        </g>
+        <!-- Region 5: 彰化/南投/雲林 (center) -->
+        <g id="region-5" class="map-region" onclick="highlightRegion(5)">
+          <rect x="20" y="220" width="130" height="70" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="85" y="248" text-anchor="middle" class="region-label" id="rl-5">⑤ 彰化 · 南投</text>
+          <text x="85" y="264" text-anchor="middle" class="region-label" id="rl-5b">雲林</text>
+        </g>
+        <!-- East upper: 花蓮 part of 8 -->
+        <g id="region-8e" onclick="highlightRegion(8)">
+          <rect x="155" y="100" width="85" height="150" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="197" y="170" text-anchor="middle" class="region-label" id="rl-8e">花蓮</text>
+        </g>
+        <!-- Region 6: 嘉義/台南 -->
+        <g id="region-6" class="map-region" onclick="highlightRegion(6)">
+          <rect x="20" y="300" width="110" height="70" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="75" y="330" text-anchor="middle" class="region-label" id="rl-6">⑥ 嘉義</text>
+          <text x="75" y="346" text-anchor="middle" class="region-label" id="rl-6b">台南</text>
+        </g>
+        <!-- Region 7: 高雄 -->
+        <g id="region-7" class="map-region" onclick="highlightRegion(7)">
+          <rect x="60" y="377" width="80" height="35" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="100" y="400" text-anchor="middle" class="region-label" id="rl-7">⑦ 高雄</text>
+        </g>
+        <!-- Region 8: 屏東/台東/花蓮 -->
+        <g id="region-8" class="map-region" onclick="highlightRegion(8)">
+          <rect x="140" y="300" width="100" height="112" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="190" y="348" text-anchor="middle" class="region-label" id="rl-8">⑧ 屏東</text>
+          <text x="190" y="364" text-anchor="middle" class="region-label" id="rl-8b">台東</text>
+        </g>
+        <!-- Region 9: 離島 -->
+        <g id="region-9" class="map-region" onclick="highlightRegion(9)">
+          <rect x="10" y="377" width="45" height="35" rx="4" fill="#0f1520" stroke="#1a2840" stroke-width="1.5"/>
+          <text x="32" y="400" text-anchor="middle" class="region-label" id="rl-9">⑨</text>
+        </g>
+        <!-- Region 0: 臨時 -->
+        <g id="region-0">
+          <rect x="195" y="12" width="55" height="24" rx="3" fill="rgba(255,68,85,0.08)" stroke="rgba(255,68,85,0.3)" stroke-width="1"/>
+          <text x="222" y="28" text-anchor="middle" font-family="Share Tech Mono" font-size="10" fill="rgba(255,68,85,0.6)">⓪ 臨時</text>
+        </g>
+        <!-- Region legend dots -->
+        <circle cx="15" cy="410" r="4" fill="var(--amber)" opacity="0.5"/>
+        <text x="22" y="414" font-family="Share Tech Mono" font-size="8" fill="var(--text-dim)">點擊地區查看</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Reference section -->
+  <div class="ref-section">
+    <div class="section-title">呼號規則速查</div>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <div class="ref-card-title">數字 = 地區代碼</div>
+        <table class="ref-table" id="region-table">
+          <tr onclick="fillExample('BV0A')"><td class="num">0</td><td class="region">臨時電臺</td></tr>
+          <tr onclick="fillExample('BV1AB')"><td class="num">1</td><td class="region">基隆、宜蘭</td></tr>
+          <tr onclick="fillExample('BV2AB')"><td class="num">2</td><td class="region">台北、新北</td></tr>
+          <tr onclick="fillExample('BV3AB')"><td class="num">3</td><td class="region">桃園、新竹</td></tr>
+          <tr onclick="fillExample('BV4AB')"><td class="num">4</td><td class="region">苗栗、台中</td></tr>
+          <tr onclick="fillExample('BV5AB')"><td class="num">5</td><td class="region">彰化、南投、雲林</td></tr>
+          <tr onclick="fillExample('BV6AB')"><td class="num">6</td><td class="region">嘉義、台南</td></tr>
+          <tr onclick="fillExample('BV7AB')"><td class="num">7</td><td class="region">高雄</td></tr>
+          <tr onclick="fillExample('BV8AB')"><td class="num">8</td><td class="region">屏東、台東、花蓮</td></tr>
+          <tr onclick="fillExample('BV9AB')"><td class="num">9</td><td class="region">台灣本島以外（離島）</td></tr>
+        </table>
+      </div>
+      <div class="ref-card">
+        <div class="ref-card-title">後綴字母數 = 等級類型</div>
+        <table class="ref-table">
+          <tr><td class="suffix-sp">1 字母</td><td>特殊業餘電臺</td></tr>
+          <tr><td class="suffix-sp" style="color:var(--red)">X+1 字母</td><td>中繼電臺（BX2A）</td></tr>
+          <tr><td class="suffix-1">2 字母</td><td class="suffix-1">一等業餘電臺</td></tr>
+          <tr><td class="suffix-2">X+3 字母</td><td class="suffix-2">二等業餘電臺（BX開頭）</td></tr>
+          <tr><td class="suffix-3">3 字母</td><td class="suffix-3">三等業餘電臺（非BX）</td></tr>
+          <tr><td style="color:var(--text-dim)">臨時（0）</td><td style="color:var(--text-dim)">不受後綴規則限制</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-section" style="margin-top:16px">
+    <div class="section-title">範例呼號練習</div>
+    <div class="examples">
+      <button class="ex-btn" onclick="fillExample('BV2AB')">BV2AB</button>
+      <button class="ex-btn" onclick="fillExample('BX2ABC')">BX2ABC</button>
+      <button class="ex-btn" onclick="fillExample('BV7A')">BV7A</button>
+      <button class="ex-btn" onclick="fillExample('BX3A')">BX3A</button>
+      <button class="ex-btn" onclick="fillExample('BV5ABC')">BV5ABC</button>
+      <button class="ex-btn" onclick="fillExample('BV0TEST')">BV0TEST</button>
+      <button class="ex-btn" onclick="fillExample('BV9AB')">BV9AB</button>
+      <button class="ex-btn" onclick="fillExample('BV1ABC')">BV1ABC</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const REGIONS = {
+  '0': { name: '臨時電臺', areas: '—' },
+  '1': { name: '基隆、宜蘭', areas: '北部' },
+  '2': { name: '台北、新北', areas: '北部' },
+  '3': { name: '桃園、新竹', areas: '北部' },
+  '4': { name: '苗栗、台中', areas: '中部' },
+  '5': { name: '彰化、南投、雲林', areas: '中部' },
+  '6': { name: '嘉義、台南', areas: '南部' },
+  '7': { name: '高雄', areas: '南部' },
+  '8': { name: '屏東、台東、花蓮', areas: '南部/東部' },
+  '9': { name: '台灣本島以外地區', areas: '離島' },
+};
+
+function decodeCallsign() {
+  let cs = document.getElementById('cs-input').value.trim().toUpperCase();
+  const errArea = document.getElementById('error-area');
+  const panel = document.getElementById('result-panel');
+  errArea.innerHTML = '';
+  panel.style.display = 'none';
+
+  // Build breakdown display
+  buildBreakdown(cs);
+
+  if (!cs) return;
+
+  // Validate basic structure
+  if (cs[0] !== 'B') {
+    errArea.innerHTML = `<div class="error-msg">台灣業餘電臺呼號第一字元必須是 B（此為 ${cs[0]}）</div>`;
+    return;
+  }
+  if (cs.length < 4) {
+    errArea.innerHTML = `<div class="error-msg">呼號長度不足。台灣業餘電臺呼號至少 4 個字元（如 BV0A）</div>`;
+    return;
+  }
+
+  const ch2 = cs[1]; // second char
+  const numChar = cs[2]; // digit (region)
+  const suffix = cs.slice(3); // suffix letters
+
+  if (!/[0-9]/.test(numChar)) {
+    errArea.innerHTML = `<div class="error-msg">第三字元應為數字（地區代碼 0-9），此為「${numChar}」</div>`;
+    return;
+  }
+
+  const region = REGIONS[numChar];
+  let gradeHTML = '', gradeNote = '', gradeShort = '';
+  const isXPrefix = ch2 === 'X';
+  const suffixLen = suffix.length;
+
+  // Determine type
+  if (numChar === '0') {
+    gradeHTML = `<span class="grade-tag grade-temp">臨時電臺</span>`;
+    gradeNote = '臨時電臺不受後綴字母規則限制，後綴長度不代表等級';
+    gradeShort = '臨時';
+  } else if (isXPrefix) {
+    if (suffixLen === 1) {
+      gradeHTML = `<span class="grade-tag grade-relay">中繼電臺 (Repeater)</span>`;
+      gradeNote = `BX + 數字 + 1字母 = 中繼電臺。中繼台通常在山頂或高處，供其他電台延伸通信範圍`;
+      gradeShort = '中繼';
+    } else if (suffixLen === 3) {
+      gradeHTML = `<span class="grade-tag grade-2">二等業餘電臺</span>`;
+      gradeNote = 'BX + 數字 + 3字母 = 二等業餘電臺。BX 前綴代表由 X 字元選配';
+      gradeShort = '二等';
+    } else {
+      gradeHTML = `<span class="grade-tag" style="border-color:var(--text-dim);color:var(--text-dim)">格式不明</span>`;
+      gradeNote = 'BX 前綴：後綴 1 字母=中繼電臺，3 字母=二等業餘電臺';
+      gradeShort = '?';
+    }
+  } else {
+    if (suffixLen === 1) {
+      gradeHTML = `<span class="grade-tag grade-special">特殊業餘電臺</span>`;
+      gradeNote = '後綴只有 1 個字母 = 特殊業餘電臺（由主管機關特許）';
+      gradeShort = '特殊';
+    } else if (suffixLen === 2) {
+      gradeHTML = `<span class="grade-tag grade-1">一等業餘電臺</span>`;
+      gradeNote = '後綴 2 個字母 = 一等業餘電臺。一等電臺擁有最高功率及所有頻段使用權';
+      gradeShort = '一等';
+    } else if (suffixLen >= 3) {
+      gradeHTML = `<span class="grade-tag grade-3">三等業餘電臺</span>`;
+      gradeNote = '後綴 3 個字母（非BX）= 三等業餘電臺。三等功率較小，頻段較少';
+      gradeShort = '三等';
+    }
+  }
+
+  // Display
+  document.getElementById('r-callsign').textContent = cs;
+  document.getElementById('r-grade').innerHTML = gradeHTML;
+  document.getElementById('r-region').textContent = `${numChar} 號 — ${region.name}`;
+  document.getElementById('r-second').textContent = `${ch2}（${isXPrefix ? '優先選配字母：X' : '優先選配：M/N/O/P/Q/U/V/W/X'}）`;
+  document.getElementById('r-suffix').textContent = `${suffix}（${suffixLen} 個字母 → ${gradeShort}）`;
+  document.getElementById('r-note').innerHTML = gradeNote;
+
+  panel.style.display = 'block';
+  highlightRegion(parseInt(numChar));
+}
+
+function buildBreakdown(cs) {
+  const el = document.getElementById('cs-breakdown');
+  el.innerHTML = '';
+  if (!cs) return;
+
+  const positions = [
+    { label: 'COUNTRY', cls: 'active-1' },
+    { label: 'SERIES', cls: 'active-2' },
+    { label: 'REGION', cls: 'active-3' },
+  ];
+
+  cs.split('').forEach((ch, i) => {
+    const div = document.createElement('div');
+    let cls = '';
+    let label = '';
+    if (i === 0) { cls = 'active-1'; label = 'COUNTRY'; }
+    else if (i === 1) { cls = 'active-2'; label = 'SERIES'; }
+    else if (i === 2) { cls = 'active-3'; label = 'REGION'; }
+    else { cls = 'active-4'; label = `SUFFIX${i-2}`; }
+
+    div.className = `cs-char ${cls}`;
+    div.innerHTML = `<div class="ch">${ch}</div><div class="ch-label">${label}</div>`;
+    el.appendChild(div);
+  });
+}
+
+let activeRegion = null;
+function highlightRegion(n) {
+  // Reset all regions
+  document.querySelectorAll('.map-region rect, #region-8e rect').forEach(r => {
+    r.setAttribute('fill', '#0f1520');
+    r.setAttribute('stroke', '#1a2840');
+    r.setAttribute('stroke-width', '1.5');
+  });
+  document.querySelectorAll('.region-label').forEach(t => {
+    t.classList.remove('active');
+  });
+
+  activeRegion = n;
+  if (n === null || n === 0) return;
+
+  // Highlight selected
+  const ids = n === 8 ? ['region-8', 'region-8e'] : [`region-${n}`];
+  ids.forEach(id => {
+    const g = document.getElementById(id);
+    if (!g) return;
+    const rect = g.querySelector('rect');
+    if (rect) {
+      rect.setAttribute('fill', 'rgba(0,204,255,0.15)');
+      rect.setAttribute('stroke', '#00ccff');
+      rect.setAttribute('stroke-width', '2');
+    }
+  });
+
+  // Highlight text
+  [`rl-${n}`, `rl-${n}b`, `rl-8e`].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+  });
+}
+
+function fillExample(cs) {
+  document.getElementById('cs-input').value = cs;
+  decodeCallsign();
+}
+
+// Click on region table
+document.querySelectorAll('#region-table tr').forEach((tr, i) => {
+  tr.addEventListener('click', () => highlightRegion(i));
+});
+</script>
+</body>
+</html>

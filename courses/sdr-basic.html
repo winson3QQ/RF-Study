@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDR情境化課程：無線電參數實戰學習</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu a {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #667eea;
+            border-right: 1px solid #ddd;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+            font-weight: 500;
+            min-width: 120px;
+        }
+        
+        .nav-menu a:last-child {
+            border-right: none;
+        }
+        
+        .nav-menu a:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .scenario {
+            display: none;
+        }
+        
+        .scenario.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .scenario h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        .scenario-meta {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .meta-label {
+            font-weight: bold;
+            color: #667eea;
+            min-width: 50px;
+        }
+        
+        .section-title {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        
+        .content-box {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .diagram {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #667eea;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        
+        .key-point {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        
+        .key-point::before {
+            content: "✓ ";
+            font-weight: bold;
+            color: #28a745;
+            font-size: 1.2em;
+        }
+        
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        
+        .warning::before {
+            content: "⚠ ";
+            font-weight: bold;
+            color: #dc3545;
+            font-size: 1.2em;
+        }
+        
+        .activity {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        
+        .activity::before {
+            content: "🎯 實驗活動：";
+            font-weight: bold;
+            color: #0066cc;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #f0f4ff;
+        }
+        
+        .learnings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .learning-card {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .learning-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .learning-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            background: #f8f9fa;
+            border-top: 2px solid #ddd;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .toc {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .toc ol {
+            margin-left: 20px;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .intro-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .comparison-table {
+            margin: 20px 0;
+        }
+        
+        .back-to-top {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .back-to-top:hover {
+            background: #764ba2;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+            }
+            
+            .nav-menu a {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            
+            .scenario-meta {
+                flex-direction: column;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SDR情境化課程</h1>
+            <p>無線電參數實戰學習：從真實災害開始</p>
+        </header>
+        
+        <div class="nav-menu">
+            <a onclick="showScenario('intro')">📖 課程介紹</a>
+            <a onclick="showScenario('scenario1')">🏘️ 情境1：同頻多隊</a>
+            <a onclick="showScenario('scenario2')">🏔️ 情境2：山區弱信號</a>
+            <a onclick="showScenario('scenario3')">📡 情境3：直聯效率</a>
+            <a onclick="showScenario('scenario4')">🏢 情境4：大型指揮</a>
+            <a onclick="showScenario('scenario5')">🔧 情境5：天線損壞</a>
+            <a onclick="showScenario('scenario6')">⚡ 情境6：干擾信號</a>
+            <a onclick="showScenario('scenario7')">🌉 情境7：跨區通訊</a>
+        </div>
+        
+        <div class="content">
+            <!-- 課程介紹 -->
+            <div id="intro" class="scenario active">
+                <h2>課程介紹：情境化學習法</h2>
+                
+                <div class="intro-section">
+                    <h3>為什麼要用「情境」學習無線電參數？</h3>
+                    <p style="margin-top: 10px;">傳統教學告訴你「CTCSS是67-250Hz的亞音頻」，但你還是不懂為什麼要學。</p>
+                    <p>情境化學習先呈現真實困難：「地震後5支隊伍搶1個頻率，怎麼區分？」</p>
+                    <p>這時候你才明白：「啊，CTCSS能解決這個問題！」</p>
+                    <p>從「為什麼需要」到「如何使用」，理解才會深入。</p>
+                </div>
+                
+                <div class="section-title">📚 課程結構</div>
+                
+                <div class="toc">
+                    <h3>七大真實情境</h3>
+                    <ol>
+                        <li><strong>情境1：地震後，手機基站倒塌，5支隊伍只有1個頻率</strong>
+                            <br/>→ 學習：頻率 + CTCSS（多隊共用一頻）
+                        </li>
+                        <li><strong>情境2：山區救援，信號微弱，隊員聽不清</strong>
+                            <br/>→ 學習：RF增益 + 靈敏度（信號弱的解決）
+                        </li>
+                        <li><strong>情境3：中繼台故障，隊伍改用直聯，信號更弱</strong>
+                            <br/>→ 學習：頻寬（12.5kHz vs 25kHz）
+                        </li>
+                        <li><strong>情境4：同一棟建築有40個人，只有1台對講機</strong>
+                            <br/>→ 學習：多頻道 + CTCSS層級（大型指揮）
+                        </li>
+                        <li><strong>情境5：天線被砸壞，信號完全消失</strong>
+                            <br/>→ 學習：天線設定 + 故障診斷
+                        </li>
+                        <li><strong>情境6：干擾信號，指揮官聽到別人講話</strong>
+                            <br/>→ 學習：掃頻 + 干擾診斷
+                        </li>
+                        <li><strong>情境7：多支隊伍跨區通訊，直聯無法到達</strong>
+                            <br/>→ 學習：中繼台 + 頻率對設定
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="section-title">🛠️ SDR在課程中的角色</div>
+                
+                <div class="content-box">
+                    <p><strong>SDR（軟體定義無線電）</strong>是這門課的「診斷工具」和「可視化助手」：</p>
+                    <ul style="margin-top: 15px; margin-left: 20px;">
+                        <li><strong>GQRX軟體</strong>：看到頻譜、FFT、瀑布圖 → 「看得到」參數的效果</li>
+                        <li><strong>GNU Radio</strong>：構建流程圖 → 「動手操作」理論概念</li>
+                        <li><strong>RTL-SDR接收器</strong>：廉價的硬體 → 人人都能做實驗</li>
+                    </ul>
+                </div>
+                
+                <div class="section-title">✨ 這門課會改變什麼？</div>
+                
+                <table>
+                    <tr>
+                        <th>傳統教學</th>
+                        <th>情境化 + SDR教學</th>
+                    </tr>
+                    <tr>
+                        <td>「CTCSS是67-250Hz的亞音頻...」</td>
+                        <td>「5支隊伍搶一個頻率，怎麼辦？→ CTCSS可以解決」</td>
+                    </tr>
+                    <tr>
+                        <td>學員反應：「為什麼？」</td>
+                        <td>學員需求：「給我方法！」</td>
+                    </tr>
+                    <tr>
+                        <td>結果：死背公式，容易遺忘</td>
+                        <td>結果：深度理解，能實際應用</td>
+                    </tr>
+                    <tr>
+                        <td>面對新問題無法應變</td>
+                        <td>面對新問題能舉一反三</td>
+                    </tr>
+                </table>
+                
+                <div class="section-title">👥 課程適合誰？</div>
+                
+                <div class="content-box">
+                    <ul style="margin-left: 20px;">
+                        <li>民防編組長和通訊員</li>
+                        <li>急難救助志工</li>
+                        <li>消防警察的通訊協調人員</li>
+                        <li>對無線電通訊感興趣的愛好者</li>
+                        <li>想學SDR工具的學生</li>
+                    </ul>
+                </div>
+                
+                <div class="section-title">⏱️ 課程時間</div>
+                <div class="content-box">
+                    <p><strong>完整課程</strong>：40小時（分5週，每週8小時）</p>
+                    <ul style="margin-top: 15px; margin-left: 20px;">
+                        <li>第1-2週：情境1-3（基本參數）</li>
+                        <li>第3週：情境4（層級管理）</li>
+                        <li>第4週：情境5-6（診斷技能）</li>
+                        <li>第5週：情境7（網絡通訊）+ 綜合演練</li>
+                    </ul>
+                </div>
+                
+                <div class="key-point">
+                    課程的核心理念：從「學習參數」→ 「學習解決問題的方法論」
+                </div>
+            </div>
+            
+            <!-- 情境1 -->
+            <div id="scenario1" class="scenario">
+                <h2>🏘️ 情境1：地震後，手機基站倒塌，5支隊伍只有1個頻率</h2>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">時間：</span>
+                        <span>地震發生後15分鐘</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">地點：</span>
+                        <span>通訊指揮所</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">學習重點：</span>
+                        <span>CTCSS + 頻率共享</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">📍 現場情況</div>
+                <div class="content-box">
+                    <ul style="margin-left: 20px;">
+                        <li>地震規模6.5，多個基站受損</li>
+                        <li>台北市民防隊（文山、信義、大安、中山、松山五支小隊）</li>
+                        <li>所有手機網路斷掉</li>
+                        <li>僅有對講機可用，但只申請到1個頻率：145.500MHz</li>
+                        <li>5支隊伍都在搶同一個頻率講話，互相干擾，無法協調</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>現場困境：</strong><br/>
+                    指揮官："北投文山隊回報！" <br/>
+                    文山隊："收到！" <br/>
+                    <em>同時，其他隊伍也在發話</em><br/>
+                    → 一團亂，分不出誰是誰
+                </div>
+                
+                <div class="section-title">🎓 解決方案：CTCSS</div>
+                
+                <div class="content-box">
+                    <p><strong>指揮官的說明：</strong></p>
+                    <p style="margin-top: 10px;">「我現在給每支隊伍設定一個『私密頻道』，同一個145.500MHz，但用不同的『鑰匙』」</p>
+                </div>
+                
+                <div class="diagram">同一頻率上的5支隊伍
+
+145.500 MHz
+├─ 隊伍A: CTCSS 67Hz
+├─ 隊伍B: CTCSS 88.5Hz
+├─ 隊伍C: CTCSS 110Hz
+├─ 隊伍D: CTCSS 151.4Hz
+└─ 隊伍E: CTCSS 180Hz
+
+(用RTL-SDR可以看到所有
+ 頻率上的亞音峰值)
+
+現場效果：
+隊伍A發話 → 只有設CTCSS=67Hz的隊伍會聽到
+隊伍B發話 → 只有設CTCSS=88.5Hz的隊伍會聽到
+→ 五支隊伍秩序井然，互不干擾</div>
+                
+                <div class="section-title">🔬 SDR實驗：看見CTCSS</div>
+                
+                <div class="activity">
+                    <strong>演示步驟：</strong>
+                    <div class="diagram">演示流程：
+
+1. 對講機A設CTCSS=67Hz，發話
+   GQRX中FFT看到 67Hz 峰值 ✓
+   
+2. 對講機B設CTCSS=88.5Hz，同時發話
+   GQRX中FFT看到兩個峰值
+   (67Hz + 88.5Hz)
+   
+3. 解除CTCSS，所有隊伍互相干擾
+   GQRX中只看到一個亂糟糟的FFT
+   
+4. 重新加上正確CTCSS
+   GQRX立刻清晰 → 學員：
+   「啊！我看懂了！」</div>
+                </div>
+                
+                <div class="diagram">GQRX FFT視覺化對比
+
+有CTCSS隔離：
+┌─────────────────────────┐
+│  FFT頻譜（0-300Hz範圍）  │
+│                         │
+│                    ⚫ ← 67Hz尖峰
+│                 ╱  ╲    （CTCSS特徵）
+│            ────────────  │
+│         0    67   200 Hz │
+│                         │
+│  CTCSS=67Hz的隊伍收到訊號│
+└─────────────────────────┘
+
+無CTCSS隔離：
+┌─────────────────────────┐
+│  FFT頻譜                │
+│  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ │
+│  全都是雜訊，無法區分    │
+│  → 通訊癱瘓              │
+└─────────────────────────┘</div>
+                
+                <div class="section-title">💡 核心知識點</div>
+                
+                <div class="learnings">
+                    <div class="learning-card">
+                        <strong>CTCSS的作用</strong>
+                        <p>在同一頻率上為不同隊伍開啟「靜噪」，實現多隊隔離</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>技術原理</strong>
+                        <p>67-250Hz的低頻亞音附著在語音上，不同隊伍有不同的「鑰匙」</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>何時使用</strong>
+                        <p>緊急狀況下頻率有限，需要多支隊伍共用一個頻率</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>限制條件</strong>
+                        <p>標準CTCSS只有38組，最多能隔離38支隊伍</p>
+                    </div>
+                </div>
+                
+                <div class="key-point">
+                    CTCSS不提供保密（仍可聽到發射），只控制「接收喇叭開/關」
+                </div>
+                
+                <div class="section-title">📝 課堂活動：CTCSS探險隊</div>
+                
+                <div class="activity">
+                    <strong>目標：</strong>認識38個CTCSS組號
+                    <div style="margin-top: 15px;">
+                        <p><strong>準備材料：</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>對講機設CTCSS為不同值輪流發話</li>
+                            <li>GQRX監聽並記錄瀑布圖</li>
+                            <li>GNU Radio進行頻域分析</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <p><strong>互動遊戲「尋找隱藏的亞音寶藏」：</strong></p>
+                        <ol style="margin-left: 20px;">
+                            <li>組長發話（CTCSS=88.5Hz）
+                                <br/>→ 全體用GQRX尋找FFT中88.5Hz峰值
+                                <br/>→ 誰先發現誰獲勝</li>
+                            <li>設置接收CTCSS
+                                <br/>→ 設為正確組號88.5Hz → 聽到聲音✓
+                                <br/>→ 設為錯誤組號123.0Hz → 靜噪關閉✗
+                                <br/>→ 理解「鑰匙」的概念</li>
+                            <li>多隊伍模擬
+                                <br/>→ 隊伍A：頻率145.500 + CTCSS 88.5Hz
+                                <br/>→ 隊伍B：頻率145.500 + CTCSS 151.4Hz
+                                <br/>→ 同頻不同碼 = 各聽各的</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="section-title">🎯 學習成果檢驗</div>
+                
+                <div class="content-box">
+                    <p><strong>課程結束時，學員應該能：</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✓ 為什麼需要CTCSS：解決同頻多隊問題</li>
+                        <li>✓ 什麼時候用：緊急狀況下頻率有限</li>
+                        <li>✓ 如何用：每支隊伍一個不同的CTCSS碼</li>
+                        <li>✓ 用SDR驗證：看FFT峰值確認CTCSS設定正確</li>
+                        <li>✓ 故障排除：CTCSS碼不符時的解決方案</li>
+                    </ul>
+                </div>
+                
+                <a class="back-to-top" onclick="showScenario('intro')">← 回到課程介紹</a>
+            </div>
+            
+            <!-- 情境2 -->
+            <div id="scenario2" class="scenario">
+                <h2>🏔️ 情境2：山區救援，信號微弱，隊員聽不清指揮官</h2>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">時間：</span>
+                        <span>地震後2小時</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">地點：</span>
+                        <span>山區倒塌建築搜救</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">學習重點：</span>
+                        <span>RF增益 + 靈敏度</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">📍 現場情況</div>
+                <div class="content-box">
+                    <ul style="margin-left: 20px;">
+                        <li>搜救隊在山上廢墟，距離指揮所5km</li>
+                        <li>對講機能收到信號，但很微弱</li>
+                        <li>隊員："指揮所，我聽不清你在說什麼"</li>
+                        <li>指揮官："我已經按最大音量在講了，還有辦法嗎？"</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>關鍵認知轉變：</strong><br/>
+                    ❌ 錯誤想法：發射功率越大越好
+                    <br/>✓ 正確做法：調整RF增益找到最佳接收點
+                </div>
+                
+                <div class="section-title">🎓 解決方案：RF增益調整</div>
+                
+                <div class="content-box">
+                    <p><strong>技術人員用RTL-SDR診斷：</strong></p>
+                    <p style="margin-top: 10px;">「原來你們的對講機RF增益設太低了！信號其實有來，但沒有被放大」</p>
+                </div>
+                
+                <div class="diagram">用GQRX實時演示增益效果：
+
+調整前（RF增益=10dB）：
+┌──────────────────────────┐
+│   FFT頻譜                 │
+│   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀       │
+│     ▲ ← 微弱信號           │
+│    ╱ ╲                    │
+└──────────────────────────┘
+FFT高度 = 信號強度 = 太弱
+
+調整後（RF增益=35dB）：
+┌──────────────────────────┐
+│   FFT頻譜                 │
+│   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀       │
+│        ▲▲                │
+│       ╱██╲               │ ← 清晰的信號
+│    ▀╱████╲▀▀             │
+└──────────────────────────┘
+FFT高度 = 清晰可聞！
+
+隊員："啊！現在能聽清楚了！"</div>
+                
+                <div class="section-title">🔬 SDR實驗：身體感受學習</div>
+                
+                <div class="activity">
+                    <strong>實驗做法：</strong>
+                    <div style="margin-top: 15px;">
+                        <ol style="margin-left: 20px;">
+                            <li>指揮官在500m外發話</li>
+                            <li>學員A：RF增益設10dB → 聽不清</li>
+                            <li>學員B：RF增益設35dB → 清晰！</li>
+                            <li>學員C：RF增益設49dB（最高）
+                                <br/>→ 聽得到，但噪聲很大，反而更難聽清</li>
+                        </ol>
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 6px;">
+                        <p><strong>重要結論：</strong><br/>
+                        「最大增益≠最好效果」<br/>
+                        「最佳增益=信號清晰但沒有過度噪聲」</p>
+                    </div>
+                </div>
+                
+                <div class="section-title">📊 RF增益與靈敏度的關係</div>
+                
+                <div class="diagram">增益設定與效果對應表：
+
+增益   FFT山峰  底噪    SNR    語音清晰度
+─────────────────────────────────────
+0dB   -60dBm   -80dB   -20    無
+10dB  -50dBm   -75dB   -25    無
+20dB  -40dBm   -70dB   -30    弱
+30dB  -30dBm   -60dB   -30    良好✓
+40dB  -20dBm   -40dB   -20    好但噪聲多
+49.6dB -10dBm  -20dB   +10    噪聲蓋過語音✗
+
+【最佳增益點】 = 30-35dB（此例）</div>
+                
+                <div class="learnings">
+                    <div class="learning-card">
+                        <strong>RF增益的作用</strong>
+                        <p>放大接收機的微弱信號，提升靈敏度</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>為何不能盲目調高</strong>
+                        <p>會把雜訊也放大，降低信噪比</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>最佳做法</strong>
+                        <p>調至「剛好清晰」的位置，信號清晰但沒有過度噪聲</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>現場應用</strong>
+                        <p>信號不好時的第一個調整選項</p>
+                    </div>
+                </div>
+                
+                <div class="key-point">
+                    RF增益的最佳值依環境而異，沒有「一體通用」的設定。需要根據現場調整。
+                </div>
+                
+                <div class="section-title">📝 課堂活動：靈敏度獵人遊戲</div>
+                
+                <div class="activity">
+                    <strong>角色分配：</strong>
+                    <div style="margin-top: 15px;">
+                        <ul style="margin-left: 20px;">
+                            <li><strong>隊長（發話者）：</strong>在不同距離發話
+                                <br/>距離：100m、300m、500m、800m、1km</li>
+                            <li><strong>技術員：</strong>用GQRX監聽，調整RF增益
+                                <br/>目標：讓隊員聽到最清晰的聲音</li>
+                            <li><strong>隊員：</strong>聽音質並評分
+                                <br/>1分 = 完全聽不到
+                                <br/>5分 = 很清晰，沒雜訊</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: #f0f4ff; border-radius: 6px;">
+                        <p><strong>每個距離找到「最佳RF增益」並記錄表格</strong></p>
+                        <p style="margin-top: 10px;">結論：距離越遠 → 需要越高的RF增益</p>
+                    </div>
+                </div>
+                
+                <div class="section-title">🎯 學習成果檢驗</div>
+                
+                <div class="content-box">
+                    <p><strong>課程結束時，學員應該能：</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✓ RF增益的作用：放大微弱信號</li>
+                        <li>✓ 為什麼不能盲目調高：會把雜訊也放大</li>
+                        <li>✓ 最佳做法：調至「剛好清晰」的位置</li>
+                        <li>✓ 現場應用：信號不好時的第一個調整選項</li>
+                        <li>✓ 用GQRX判斷：觀察FFT山峰高度和底噪水平</li>
+                    </ul>
+                </div>
+                
+                <a class="back-to-top" onclick="showScenario('intro')">← 回到課程介紹</a>
+            </div>
+            
+            <!-- 情境3 -->
+            <div id="scenario3" class="scenario">
+                <h2>📡 情境3：中繼台故障，隊伍改用直聯，信號卻更弱</h2>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">時間：</span>
+                        <span>救援第4小時</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">地點：</span>
+                        <span>不同災區</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">學習重點：</span>
+                        <span>頻寬（12.5kHz vs 25kHz）</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">📍 現場情況</div>
+                <div class="content-box">
+                    <ul style="margin-left: 20px;">
+                        <li>原本靠中繼台（在信義高樓）轉發信號</li>
+                        <li>中繼台停電受損</li>
+                        <li>隊伍改用直聯（互相直接通話，不經過中繼台）</li>
+                        <li>隊長A和隊長B都在不同的災區，相距3km</li>
+                        <li>直聯時訊號很弱，幾乎無法通話</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>關鍵認知轉變：</strong><br/>
+                    頻寬不是「美學」選擇，是「效率」選擇
+                </div>
+                
+                <div class="section-title">🎓 解決方案：改用窄頻</div>
+                
+                <div class="content-box">
+                    <p><strong>技術人員用GQRX檢查對講機設定</strong></p>
+                    <p style="margin-top: 10px;">發現問題：<br/>
+                    隊伍A的對講機設定：25kHz (寬頻)<br/>
+                    隊伍B的對講機設定：12.5kHz (窄頻)</p>
+                </div>
+                
+                <div class="diagram">解釋原理：
+
+25kHz頻寬 = 信號分散在更寬的範圍
+       這在有中繼台時沒問題（中繼台功率大）
+       
+但直聯時，信號本來就弱
+再分散到25kHz範圍，能量密度就更低了
+
+12.5kHz頻寬 = 信號集中在更窄的範圍
+       在直聯環境中，能量密度高
+       因此距離更遠、清晰度更好</div>
+                
+                <div class="diagram">用GQRX FFT對比：
+
+25kHz模式（能量分散）：
+┌─────────────────────────┐
+│        ▲                │
+│       ╱ ╲               │
+│    ╱     ╲   寬度大     │
+│ ──────────────────     │
+│  145.4  145.5  145.6    │
+│                         │
+│  能量密度低 → 易互相干擾 │
+└─────────────────────────┘
+
+12.5kHz模式（能量集中）：
+┌─────────────────────────┐
+│          ▲              │
+│         ╱ ╲             │
+│        ╱   ╲   寬度小   │
+│ ──────────────────     │
+│  145.4  145.5  145.6    │
+│                         │
+│  能量密度高 → 清晰度優   │
+└─────────────────────────┘</div>
+                
+                <div class="section-title">🔬 SDR實驗：頻寬實驗室</div>
+                
+                <div class="activity">
+                    <strong>對比測試：</strong>
+                    <div style="margin-top: 15px;">
+                        <p><strong>設定1：</strong>145.500MHz，25kHz，1W功率，無CTCSS</p>
+                        <p><strong>設定2：</strong>145.500MHz，12.5kHz，1W功率，無CTCSS</p>
+                    </div>
+                </div>
+                
+                <table class="comparison-table">
+                    <tr>
+                        <th>測試環境</th>
+                        <th>25kHz成功率</th>
+                        <th>12.5kHz成功率</th>
+                        <th>性能差異</th>
+                    </tr>
+                    <tr>
+                        <td>室內300m遠</td>
+                        <td>70%</td>
+                        <td>95%</td>
+                        <td>窄頻+25%</td>
+                    </tr>
+                    <tr>
+                        <td>隔著一堵牆</td>
+                        <td>40%</td>
+                        <td>85%</td>
+                        <td>差異大</td>
+                    </tr>
+                    <tr>
+                        <td>公園開闊地1km遠</td>
+                        <td>60%</td>
+                        <td>90%</td>
+                        <td>窄頻優勢</td>
+                    </tr>
+                </table>
+                
+                <div class="key-point">
+                    相同功率下，窄頻在困難環境中優勢明顯。這就是為什麼現代民防都要用12.5kHz。
+                </div>
+                
+                <div class="learnings">
+                    <div class="learning-card">
+                        <strong>頻寬的影響</strong>
+                        <p>不是「美學」選擇，是「效率」選擇</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>何時用寬頻</strong>
+                        <p>有中繼台幫助轉發時可用</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>何時用窄頻</strong>
+                        <p>直聯、信號弱、需要節省電力時</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>現場決策</strong>
+                        <p>災害時應優先用窄頻提高效率</p>
+                    </div>
+                </div>
+                
+                <div class="section-title">🎯 學習成果檢驗</div>
+                
+                <div class="content-box">
+                    <p><strong>課程結束時，學員應該能：</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✓ 測量FFT波形寬度判斷頻寬設定</li>
+                        <li>✓ 理解能量密度對通訊效率的影響</li>
+                        <li>✓ 在不同環境選擇合適的頻寬</li>
+                        <li>✓ 用SDR驗證頻寬改變對信號的影響</li>
+                    </ul>
+                </div>
+                
+                <a class="back-to-top" onclick="showScenario('intro')">← 回到課程介紹</a>
+            </div>
+            
+            <!-- 情境4 -->
+            <div id="scenario4" class="scenario">
+                <h2>🏢 情境4：同一棟受困建築有40個人，只有1台對講機</h2>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">時間：</span>
+                        <span>地震後6小時</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">地點：</span>
+                        <span>倒塌辦公大樓</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">學習重點：</span>
+                        <span>多頻道 + CTCSS層級管理</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">📍 現場情況</div>
+                <div class="content-box">
+                    <ul style="margin-left: 20px;">
+                        <li>辦公大樓倒塌，40人被困不同樓層</li>
+                        <li>搜救隊只有1台對講機與指揮所通訊</li>
+                        <li>需要逐層確認傷患數量、位置、傷情</li>
+                        <li>不能讓40人都搶對講機講話</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>傳統做法（很低效）：</strong><br/>
+                    「大樓，報告傷患！」<br/>
+                    → 40個人同時尖叫<br/>
+                    → 對講機收到雜訊<br/>
+                    → 指揮所什麼都聽不清
+                </div>
+                
+                <div class="section-title">🎓 解決方案：層級化指揮通訊</div>
+                
+                <div class="diagram">建立「指揮系統」
+
+主頻率：145.500MHz
+└─ 用CTCSS分層管理
+   ├─ CTCSS 67.0Hz：1樓、2樓隊
+   ├─ CTCSS 88.5Hz：3樓、4樓隊
+   ├─ CTCSS 110.9Hz：5樓、6樓隊
+   └─ CTCSS 131.8Hz：指揮所
+
+報告流程：
+1. 1樓隊員報告傷患：「1樓東側發現5人」
+   （按住PTT + CTCSS 67Hz自動發射）
+   
+2. 指揮所只設定無CTCSS（所有頻道都能收）
+   「收到，1樓東側5人」
+   
+3. 3樓隊員看到1樓的報告，知道自己輪到了
+   報告：「3樓南側發現8人，其中2人受傷」
+   
+4. 指揮官在指揮所統一記錄
+   → 有組織、不混亂</div>
+                
+                <div class="section-title">🔬 SDR監控全景</div>
+                
+                <div class="diagram">用GQRX監控中繼台運作
+
+設定RTL-SDR+GQRX進行「通訊監測」
+
+監聽145.500MHz，看到：
+┌─────────────────────────┐
+│  145.500MHz FFT圖        │
+│                         │
+│  67Hz ✓ 1樓報告中       │
+│  88Hz                   │
+│  110Hz                  │
+│  131Hz                  │
+│                         │
+│  瀑布圖：不同高度       │
+│  代表不同樓層在通話     │
+│  → 指揮官清楚掌握       │
+└─────────────────────────┘</div>
+                
+                <div class="learnings">
+                    <div class="learning-card">
+                        <strong>頻率是共享的「馬路」</strong>
+                        <p>145.500MHz是通訊的基本管道</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>CTCSS是號碼牌</strong>
+                        <p>每支隊伍的「身分」，識別來源</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>層級管理</strong>
+                        <p>越高位置越包容（無CTCSS設定）</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>應急策略</strong>
+                        <p>限制資源時如何最有效地協調</p>
+                    </div>
+                </div>
+                
+                <div class="key-point">
+                    有組織的通訊系統，救援效率能提升10倍
+                </div>
+                
+                <div class="section-title">📝 課堂活動：救災通訊指揮模擬</div>
+                
+                <div class="activity">
+                    <strong>場景：</strong>模擬大樓被困40人，5支隊伍搜救
+                    <div style="margin-top: 15px;">
+                        <p><strong>器材：</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>5台對講機（分別設不同CTCSS）</li>
+                            <li>1台指揮機（無CTCSS限制）</li>
+                            <li>GQRX監聽軟體顯示在大螢幕</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <p><strong>流程：</strong></p>
+                        <ol style="margin-left: 20px;">
+                            <li>學員分組（每組1支隊伍+幾個「傷患」）</li>
+                            <li>輪流報告傷患情況</li>
+                            <li>指揮官（教官）記錄所有報告</li>
+                            <li>檢查是否有遺漏或混亂</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="section-title">🎯 學習成果檢驗</div>
+                
+                <div class="content-box">
+                    <p><strong>課程結束時，學員應該能：</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✓ 設計層級化通訊系統</li>
+                        <li>✓ 分配CTCSS碼給不同隊伍</li>
+                        <li>✓ 用GQRX監控通訊狀況</li>
+                        <li>✓ 快速找出通訊故障點</li>
+                        <li>✓ 在大規模救援中協調多支隊伍</li>
+                    </ul>
+                </div>
+                
+                <a class="back-to-top" onclick="showScenario('intro')">← 回到課程介紹</a>
+            </div>
+            
+            <!-- 情境5 -->
+            <div id="scenario5" class="scenario">
+                <h2>🔧 情境5：天線被砸壞，信號完全消失</h2>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">時間：</span>
+                        <span>救援第8小時</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">地點：</span>
+                        <span>災區指揮所</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">學習重點：</span>
+                        <span>天線診斷 + 故障排除</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">📍 現場情況</div>
+                <div class="content-box">
+                    <p><strong>突然通訊中斷：</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>指揮官："所有隊伍，回報！"</li>
+                        <li>無回應...無回應...</li>
+                        <li>5分鐘後："對講機還有電，但收不到任何聲音"</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>危機時刻：</strong><br/>
+                    通訊完全中斷意味著救援協調無法進行<br/>
+                    需要快速診斷和解決問題
+                </div>
+                
+                <div class="section-title">🎓 SDR診斷流程</div>
+                
+                <div class="activity">
+                    <strong>步驟1：檢查頻率設定</strong>
+                    <div style="margin-top: 10px;">
+                        用GQRX監聽145.500MHz<br/>
+                        結果：完全無信號（FFT全是底噪）
+                    </div>
+                </div>
+                
+                <div class="activity">
+                    <strong>步驟2：檢查天線</strong>
+                    <div style="margin-top: 10px;">
+                        肉眼檢查：發現天線被坍塌物砸歪<br/>
+                        拆下天線，接上RTL-SDR + 跳線<br/>
+                        監聽相同頻率<br/>
+                        結果：仍無信號 → 天線損壞確診
+                    </div>
+                </div>
+                
+                <div class="activity">
+                    <strong>步驟3：用備用對講機測試</strong>
+                    <div style="margin-top: 10px;">
+                        備用對講機發話到145.500MHz<br/>
+                        用RTL-SDR監聽 → 看得到清晰信號！<br/>
+                        結論：原對講機的發射端可能也損壞
+                    </div>
+                </div>
+                
+                <div class="activity">
+                    <strong>步驟4：解決方案</strong>
+                    <div style="margin-top: 10px;">
+                        ├─ 臨時方案：用備用對講機繼續通訊<br/>
+                        ├─ 長期方案：找一根臨時天線<br/>
+                        │  （甚至可以用電話線臨時綁起來當λ/4天線）<br/>
+                        └─ 驗證：接上臨時天線後再測<br/>
+                           用RTL-SDR確認信號恢復正常
+                    </div>
+                </div>
+                
+                <div class="diagram">沒有SDR vs 有SDR的診斷時間
+
+沒有RTL-SDR的做法：
+「對講機沒聲音」
+→ 猜測是頻率不對？CTCSS不對？電池沒電？
+→ 逐一試錯，浪費時間
+→ 診斷時間：30分鐘以上
+
+有RTL-SDR的做法：
+「立刻看FFT圖」
+→ 無信號 = 肯定是硬體問題（天線或電台）
+→ 換天線立即驗證
+→ 診斷時間：2-5分鐘</div>
+                
+                <div class="key-point">
+                    在緊急情況下，快速診斷的能力能救人。SDR成為現場應急的「診斷工具」。
+                </div>
+                
+                <div class="section-title">📝 課堂活動：天線應急工坊</div>
+                
+                <div class="activity">
+                    <strong>實驗1：好天線 vs 損壞天線</strong>
+                    <div style="margin-top: 10px;">
+                        1. 用好天線的對講機 vs 損壞天線的對講機<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;同時在145.500MHz發話<br/>
+                        2. 用GQRX對比FFT：<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;├─ 好天線：尖銳高峰<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;└─ 壞天線：寬鈍低谷
+                    </div>
+                </div>
+                
+                <div class="activity">
+                    <strong>實驗2：臨時天線應急</strong>
+                    <div style="margin-top: 10px;">
+                        1. 用臨時天線（電話線綁成λ/4）<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;替換損壞天線<br/>
+                        2. 用GQRX驗證：<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp;尖峰恢復 → 臨時方案成功
+                    </div>
+                </div>
+                
+                <div class="activity">
+                    <strong>實驗3：天線位置優化</strong>
+                    <div style="margin-top: 10px;">
+                        1. 測試不同角度/高度<br/>
+                        2. 找到最佳位置（FFT峰值最高）<br/>
+                        3. 理解：天線方向和高度影響信號強度
+                    </div>
+                </div>
+                
+                <div class="learnings">
+                    <div class="learning-card">
+                        <strong>天線對信號的決定性作用</strong>
+                        <p>好天線 = 好信號，這是基礎</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>故障診斷的科學方法</strong>
+                        <p>靠測量和數據，不靠猜測</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>SDR診斷工具的價值</strong>
+                        <p>2分鐘內定位問題，5分鐘內解決</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>備用天線的重要性</strong>
+                        <p>應急時能快速恢復通訊</p>
+                    </div>
+                </div>
+                
+                <div class="section-title">🎯 學習成果檢驗</div>
+                
+                <div class="content-box">
+                    <p><strong>課程結束時，學員應該能：</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✓ 用SDR快速診斷天線故障</li>
+                        <li>✓ 製作和應用臨時天線</li>
+                        <li>✓ 優化天線位置和方向</li>
+                        <li>✓ 在資源限制下科學應對故障</li>
+                    </ul>
+                </div>
+                
+                <a class="back-to-top" onclick="showScenario('intro')">← 回到課程介紹</a>
+            </div>
+            
+            <!-- 情境6 -->
+            <div id="scenario6" class="scenario">
+                <h2>⚡ 情境6：干擾信號，指揮官聽到別人的講話</h2>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">時間：</span>
+                        <span>救援第12小時</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">地點：</span>
+                        <span>指揮所</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">學習重點：</span>
+                        <span>掃頻 + 干擾診斷</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">📍 現場情況</div>
+                <div class="content-box">
+                    <p><strong>神祕的干擾：</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>指揮官："搜救隊A，報告現場情況"</li>
+                        <li>隊A："...（被打斷）..."</li>
+                        <li>陌生聲音："...天氣很好，今天釣魚..."</li>
+                        <li>指揮官："誰講話！？"</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>關鍵認知：</strong><br/>
+                    干擾不是「看不見的魔鬼」<br/>
+                    用FFT和瀑布圖，我們能清楚看到它在哪裡
+                </div>
+                
+                <div class="section-title">🎓 SDR分析干擾源</div>
+                
+                <div class="activity">
+                    <strong>技術人員用GQRX瀑布圖診斷：</strong>
+                    <div style="margin-top: 10px;">
+                        監聽145.500MHz，看到：
+                    </div>
+                </div>
+                
+                <div class="diagram">瀑布圖顯示干擾信號：
+
+┌────────────────────────┐
+│  瀑布圖（時間向下）     │
+│                        │
+│  時間1: ▓▓▓░░░░░       │ ← 正常隊伍通話
+│  時間2: ▓▓▓░░░░░       │
+│  時間3: ▓▓▓▓▓▓▓▓▓      │ ← 異常訊號！
+│  時間4: ░░░░░░░░░      │    比正常信號強很多
+│  
+│  異常訊號頻率位置：
+│  FFT顯示尖峰在145.510MHz
+│  （偏離設定的145.500MHz）
+└────────────────────────┘
+
+初步結論：
+「有人在145.510MHz廣播，
+ 信號很強，干擾了我們的145.500MHz」</div>
+                
+                <div class="section-title">🔍 進一步診斷：掃頻找干擾源</div>
+                
+                <div class="activity">
+                    <strong>掃描145.0-146.0MHz全段找到干擾源</strong>
+                    <div style="margin-top: 10px;">
+                        GQRX掃頻結果：<br/>
+                        ├─ 145.500MHz: 我方隊伍（正常）<br/>
+                        ├─ 145.510MHz: 異常強訊號（干擾源）<br/>
+                        │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可能是：<br/>
+                        │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 業餘無線電愛好者<br/>
+                        │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 工業設備無線電<br/>
+                        │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 違法電台<br/>
+                        ├─ 145.620MHz: 空閒<br/>
+                        └─ 145.740MHz: 另一支民防隊
+                    </div>
+                </div>
+                
+                <div class="section-title">💡 對策</div>
+                
+                <div class="content-box">
+                    <p><strong>對策1：改用145.620MHz</strong></p>
+                    <p style="margin-top: 10px;">用RTL-SDR驗證145.620完全無信號</p>
+                </div>
+                
+                <div class="content-box">
+                    <p><strong>對策2：聯繫可能的干擾源</strong></p>
+                    <p style="margin-top: 10px;">掌握干擾電台的大致位置（從信號強度推估距離）</p>
+                </div>
+                
+                <div class="section-title">🎯 信號三角定位</div>
+                
+                <div class="diagram">用信號強度推估干擾源位置：
+
+監聽點A（東邊）：
+GQRX中干擾信號強度 = S7
+
+監聽點B（北邊）：
+GQRX中干擾信號強度 = S4
+
+監聽點C（西邊）：
+GQRX中干擾信號強度 = S2
+
+結論：
+干擾源大約在「東北方向」
+（靠近監聽點A）
+
+這個信息可以幫助尋找非法電台
+或故障設備的位置</div>
+                
+                <div class="learnings">
+                    <div class="learning-card">
+                        <strong>干擾是可見的</strong>
+                        <p>FFT能清楚顯示干擾信號位置</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>瀑布圖顯示時間軸</strong>
+                        <p>能看到干擾何時出現</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>信號強度是線索</strong>
+                        <p>強度大 = 距離近</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>應急應對</strong>
+                        <p>換頻率是第一選擇，但也要報告給NCC</p>
+                    </div>
+                </div>
+                
+                <div class="section-title">📝 課堂活動：尋找隱形干擾源</div>
+                
+                <div class="activity">
+                    <strong>場景：</strong>教室內放置一台隱藏的「干擾電台」<br/>
+                    在145.520MHz廣播
+                    <div style="margin-top: 15px;">
+                        <p><strong>學員任務：用GQRX找出干擾源</strong></p>
+                        <ol style="margin-left: 20px;">
+                            <li>監聽145.500MHz → 發現干擾</li>
+                            <li>用掃頻功能找出干擾在145.520MHz</li>
+                            <li>用信號強度：
+                                <br/>├─ 講台位置測得 S8（很強）
+                                <br/>├─ 教室後測得 S3（很弱）
+                                <br/>└─ 結論：干擾源在講台附近</li>
+                            <li>上前搜查，發現隱藏設備</li>
+                        </ol>
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: #e7f3ff; border-radius: 6px;">
+                        <p><strong>獲勝條件：</strong>在5分鐘內找到干擾源</p>
+                        <p style="margin-top: 10px;">靠的是正確使用GQRX的診斷功能</p>
+                    </div>
+                </div>
+                
+                <div class="section-title">🎯 學習成果檢驗</div>
+                
+                <div class="content-box">
+                    <p><strong>課程結束時，學員應該能：</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✓ 用FFT識別干擾信號</li>
+                        <li>✓ 用掃頻功能定位干擾頻率</li>
+                        <li>✓ 用信號強度推估干擾源距離</li>
+                        <li>✓ 快速換頻率或採取其他對策</li>
+                        <li>✓ 向相關單位報告干擾</li>
+                    </ul>
+                </div>
+                
+                <a class="back-to-top" onclick="showScenario('intro')">← 回到課程介紹</a>
+            </div>
+            
+            <!-- 情境7 -->
+            <div id="scenario7" class="scenario">
+                <h2>🌉 情境7：多支隊伍需要跨區通訊，直聯無法到達</h2>
+                
+                <div class="scenario-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">時間：</span>
+                        <span>救援第24小時</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">地點：</span>
+                        <span>不同行政區</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">學習重點：</span>
+                        <span>中繼台 + 頻率對設定</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">📍 現場情況</div>
+                <div class="content-box">
+                    <ul style="margin-left: 20px;">
+                        <li>文山區搜救隊需要與信義區協調</li>
+                        <li>兩地直線距離3km，但有山丘遮擋</li>
+                        <li>頻率：145.500MHz</li>
+                        <li>直聯完全無法通話</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <strong>問題分析：</strong><br/>
+                    地形遮擋 = 信號無法直線傳播<br/>
+                    需要用中繼台來「轉發」信號
+                </div>
+                
+                <div class="section-title">🎓 解決方案：架設臨時中繼站</div>
+                
+                <div class="diagram">中繼台原理（信號轉發）：
+
+直聯失敗的情況：
+隊伍A ←(無法直聯)→ 隊伍B
+      無法翻過山丘
+
+使用中繼台解決：
+隊伍A 發145.500
+         ↓
+      中繼台(放在高處)
+      收145.500 → 發145.620
+         ↓
+隊伍B 收145.620
+
+頻率設定：
+隊伍A/B都設：
+  發射頻率：145.500
+  接收頻率：145.620
+  
+中繼台設：
+  接收：145.500
+  發射：145.620</div>
+                
+                <div class="section-title">🔬 SDR監控中繼台運作</div>
+                
+                <div class="activity">
+                    <strong>設定RTL-SDR+GQRX進行「中繼台健康檢查」</strong>
+                    <div style="margin-top: 10px;">
+                        監聽145.500 + 145.620 雙頻
+                    </div>
+                </div>
+                
+                <div class="diagram">時間軸視角的中繼運作：
+
+時間1: 隊伍A在145.500發話
+│  └─ GQRX看到：
+│     145.500 = 隊伍A信號
+│     145.620 = 空（還沒中繼）
+│
+時間2: 中繼台接收並轉發
+│  └─ GQRX看到：
+│     145.500 = 隊伍A信號(收）
+│     145.620 = 中繼台轉發(發)
+│
+時間3: 隊伍B在145.620接收
+│  └─ GQRX看到：
+│     145.500 = 無（隊伍A停止）
+│     145.620 = 隊伍B接收中
+│
+結論：中繼台工作正常 ✓</div>
+                
+                <div class="diagram">GQRX瀑布圖展示中繼效果：
+
+之前（直聯失敗）：
+┌──────────────────────────┐
+│145.500 MHz               │
+│                          │
+│▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀   │
+│（通不了）                │
+└──────────────────────────┘
+
+之後（用中繼台）：
+┌──────────────────────────┐
+│145.500: ▓▓▓░░░▓▓▓       │ ← 隊伍A發話
+│145.620: ░▓▓▓░░░▓▓       │ ← 中繼台轉發
+│         信號強度↑        │
+│         清晰可聞 ✓       │
+└──────────────────────────┘</div>
+                
+                <div class="learnings">
+                    <div class="learning-card">
+                        <strong>為什麼需要中繼台</strong>
+                        <p>克服地形遮擋，擴大通訊範圍</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>頻率對的必要性</strong>
+                        <p>避免自己干擾自己（接收信號）</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>中繼台維護檢查</strong>
+                        <p>定期測試頻率對是否正常</p>
+                    </div>
+                    <div class="learning-card">
+                        <strong>網絡思想</strong>
+                        <p>個點 → 網絡，建立應急通訊骨幹</p>
+                    </div>
+                </div>
+                
+                <div class="section-title">📝 課堂活動：中繼台設計挑戰</div>
+                
+                <div class="activity">
+                    <strong>場景：</strong>五支隊伍分散在不同地形
+                    <div style="margin-top: 15px;">
+                        <ul style="margin-left: 20px;">
+                            <li>A隊：東邊山谷（與其他隊無法直聯）</li>
+                            <li>B隊：西邊山谷（與其他隊無法直聯）</li>
+                            <li>C隊：北邊高地（可見其他所有隊）</li>
+                            <li>D隊：南邊市區（與C隊直聯困難）</li>
+                            <li>E隊：中央指揮所</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <p><strong>任務：</strong>設計頻率方案讓所有隊伍能通話</p>
+                    </div>
+                </div>
+                
+                <div class="activity">
+                    <strong>解決方案（多種可能）：</strong>
+                    <div style="margin-top: 10px;">
+                        <p><strong>方案1（簡單型）：</strong></p>
+                        <ul style="margin-left: 30px;">
+                            <li>主頻率：145.500 (所有隊都用)</li>
+                            <li>中繼台放在C隊高地</li>
+                            <li>設定接收145.500，發射145.620</li>
+                            <li>各隊改為：發145.500，聽145.620</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <p><strong>方案2（複雜型）：</strong></p>
+                        <ul style="margin-left: 30px;">
+                            <li>多個中繼台</li>
+                            <li>頻率網：145.500 ↔ 145.620 ↔ 145.740</li>
+                            <li>級聯轉發</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="activity">
+                    <strong>評估標準：</strong>
+                    <div style="margin-top: 10px;">
+                        用RTL-SDR模擬監聽，檢驗：
+                        <ul style="margin-left: 20px;">
+                            <li>A隊能否聽到所有隊伍？✓</li>
+                            <li>B隊能否聽到所有隊伍？✓</li>
+                            <li>信號強度是否足夠？✓</li>
+                            <li>有無互相干擾？✓</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="section-title">🎯 學習成果檢驗</div>
+                
+                <div class="content-box">
+                    <p><strong>課程結束時，學員應該能：</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✓ 理解中繼台的工作原理</li>
+                        <li>✓ 設計頻率對避免互相干擾</li>
+                        <li>✓ 根據地形選擇中繼台位置</li>
+                        <li>✓ 用GQRX監控中繼台運作</li>
+                        <li>✓ 建立應急通訊的網狀結構</li>
+                    </ul>
+                </div>
+                
+                <a class="back-to-top" onclick="showScenario('intro')">← 回到課程介紹</a>
+            </div>
+        </div>
+        
+        <footer>
+            <h3>課程總覽：七大情境 × 七個對講機參數</h3>
+            <table style="margin-top: 20px; font-size: 0.9em;">
+                <tr>
+                    <th>情境</th>
+                    <th>核心問題</th>
+                    <th>學習參數</th>
+                    <th>SDR應用</th>
+                </tr>
+                <tr>
+                    <td>1：同頻多隊</td>
+                    <td>5支隊伍搶1頻率</td>
+                    <td>CTCSS</td>
+                    <td>FFT看亞音峰值</td>
+                </tr>
+                <tr>
+                    <td>2：山區弱信號</td>
+                    <td>信號微弱聽不清</td>
+                    <td>RF增益 + 靈敏度</td>
+                    <td>FFT山峰高度</td>
+                </tr>
+                <tr>
+                    <td>3：直聯效率</td>
+                    <td>直聯距離短</td>
+                    <td>頻寬</td>
+                    <td>FFT波寬對比</td>
+                </tr>
+                <tr>
+                    <td>4：大型指揮</td>
+                    <td>40人層級協調</td>
+                    <td>多頻道 + CTCSS層級</td>
+                    <td>瀑布圖分層</td>
+                </tr>
+                <tr>
+                    <td>5：天線損壞</td>
+                    <td>信號突然消失</td>
+                    <td>天線 + 故障診斷</td>
+                    <td>FFT呈現無信號</td>
+                </tr>
+                <tr>
+                    <td>6：干擾信號</td>
+                    <td>有人干擾頻率</td>
+                    <td>掃頻 + 干擾診斷</td>
+                    <td>FFT異常尖峰</td>
+                </tr>
+                <tr>
+                    <td>7：跨區通訊</td>
+                    <td>無法越過地形</td>
+                    <td>中繼台 + 頻率對</td>
+                    <td>瀑布圖雙頻監控</td>
+                </tr>
+            </table>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd;">
+                <p><strong>課程理念：</strong> 從「學習參數」 → 「學習解決問題的方法論」</p>
+                <p style="margin-top: 10px; color: #666;">每個參數都對應一個真實災害情景，每個情景都用SDR可視化展示，讓學員深度理解「為什麼」和「什麼時候用」。</p>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        function showScenario(id) {
+            // 隱藏所有情境
+            const scenarios = document.querySelectorAll('.scenario');
+            scenarios.forEach(s => s.classList.remove('active'));
+            
+            // 顯示選中的情境
+            const selected = document.getElementById(id);
+            if (selected) {
+                selected.classList.add('active');
+                // 滾動到頂部
+                window.scrollTo(0, 0);
+            }
+        }
+    </script>
+</body>
+</html>

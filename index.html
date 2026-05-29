@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>無線電學習站 — 課程・工具・模擬器</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #06100a;
+  --surface:  #0b1a10;
+  --surface2: #101f16;
+  --border:   #163020;
+  --green:    #00ff88;
+  --green-dim:#00cc66;
+  --amber:    #ffb830;
+  --blue:     #00aaff;
+  --red:      #ff4455;
+  --text:     #b8d8c0;
+  --text-dim: #4a7055;
+  --mono:     'Share Tech Mono', monospace;
+  --sans:     'Noto Sans TC', sans-serif;
+  --display:  'Orbitron', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 掃描線背景 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.015) 2px, rgba(0,255,136,0.015) 4px),
+    radial-gradient(ellipse at 20% 50%, rgba(0,255,136,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(0,170,255,0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+header {
+  padding: 48px 0 36px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.signal-icon {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.signal-icon::before,
+.signal-icon::after {
+  content: '';
+  position: absolute;
+  border: 1px solid var(--green);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: pulse-ring 2s ease-out infinite;
+}
+.signal-icon::before { width: 68px; height: 68px; animation-delay: 0s; }
+.signal-icon::after  { width: 90px; height: 90px; animation-delay: 0.6s; }
+@keyframes pulse-ring {
+  0%   { opacity: 0.4; transform: scale(0.9); }
+  100% { opacity: 0;   transform: scale(1.1); }
+}
+.signal-icon svg { width: 22px; height: 22px; fill: var(--green); }
+
+.header-title h1 {
+  font-family: var(--display);
+  font-size: clamp(20px, 4vw, 32px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(0,255,136,0.3);
+}
+.header-title .sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--green);
+  letter-spacing: 3px;
+  margin-top: 4px;
+}
+
+.header-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.meta-item {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.meta-item .dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 1.5s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+.meta-item.amber .dot { background: var(--amber); }
+.meta-item.blue  .dot { background: var(--blue); }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--green);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0 20px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── CARDS ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--card-accent, var(--green));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.card:hover {
+  border-color: var(--card-accent, var(--green));
+  background: var(--surface2);
+  transform: translateY(-2px);
+}
+.card:hover::before { opacity: 1; }
+
+.card-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--card-accent, var(--green));
+  border: 1px solid var(--card-accent, var(--green));
+  display: inline-block;
+  padding: 2px 8px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+.card-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+.card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.card p {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+.card-arrow {
+  position: absolute;
+  bottom: 16px; right: 16px;
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--card-accent, var(--green));
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.card:hover .card-arrow { opacity: 1; transform: translateX(4px); }
+
+/* accent 顏色 */
+.accent-green  { --card-accent: var(--green); }
+.accent-amber  { --card-accent: var(--amber); }
+.accent-blue   { --card-accent: var(--blue); }
+.accent-red    { --card-accent: var(--red); }
+
+/* ── FOOTER ── */
+footer {
+  margin-top: 60px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+footer .f-left {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+footer .f-right {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+/* ── 小螢幕 ── */
+@media (max-width: 600px) {
+  .cards { grid-template-columns: 1fr; }
+  .header-top { gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="signal-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+        </svg>
+      </div>
+      <div class="header-title">
+        <h1>無線電學習站</h1>
+        <div class="sub">HAM RADIO · SDR · CIVIL DEFENSE</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-item"><span class="dot"></span>3 套課程</div>
+      <div class="meta-item amber"><span class="dot"></span>4 個互動工具</div>
+      <div class="meta-item blue"><span class="dot"></span>1 套模擬器</div>
+    </div>
+  </header>
+
+  <!-- 課程教材 -->
+  <div class="section-label">📚 &nbsp;課程教材</div>
+  <div class="cards">
+
+    <a class="card accent-green" href="courses/sdr-basic.html">
+      <div class="card-badge">COURSE · SDR</div>
+      <span class="card-icon">📡</span>
+      <h3>SDR 情境化課程</h3>
+      <p>透過實際情境學習 SDR 無線電參數，從頻率、頻寬到調變，實戰入門。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a class="card accent-green" href="courses/sdr-advanced.html">
+      <div class="card-badge">COURSE · ADVANCED</div>
+      <span class="card-icon">🔬</span>
+      <h3>SDR 深化課程：RF 理論與驗證</h3>
+      <p>深入 RF 訊號理論，結合 SDR 實機驗證，給想打穩基礎的進階學習者。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a class="card accent-amber" href="courses/rf-glossary.html">
+      <div class="card-badge">REFERENCE · 術語</div>
+      <span class="card-icon">📖</span>
+      <h3>RF 無線電術語白話手冊</h3>
+      <p>用白話解釋常見 RF 術語，不用背英文縮寫，查了就懂，隨時翻閱。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- 互動工具 -->
+  <div class="section-label">🛠️ &nbsp;互動工具 — 二等業餘無線電</div>
+  <div class="cards">
+
+    <a class="card accent-blue" href="tools/spectrum-viewer.html">
+      <div class="card-badge">TOOL · 頻譜</div>
+      <span class="card-icon">📶</span>
+      <h3>業餘頻段互動頻譜</h3>
+      <p>視覺化瀏覽台灣業餘無線電各頻段分配，互動查詢頻率範圍與用途。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a class="card accent-blue" href="tools/modulation-viewer.html">
+      <div class="card-badge">TOOL · 調變</div>
+      <span class="card-icon">〰️</span>
+      <h3>調變方式視覺化</h3>
+      <p>AM、FM、SSB、CW 等調變方式的波形動態比較，理解訊號本質。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a class="card accent-blue" href="tools/circuit-calculator.html">
+      <div class="card-badge">TOOL · 電路</div>
+      <span class="card-icon">⚡</span>
+      <h3>電路計算互動工具</h3>
+      <p>歐姆定律、功率、阻抗計算，備考實用，輸入參數即時得出結果。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a class="card accent-amber" href="tools/callsign-decoder.html">
+      <div class="card-badge">TOOL · 呼號</div>
+      <span class="card-icon">🔍</span>
+      <h3>台灣業餘電台呼號解碼器</h3>
+      <p>輸入呼號自動解析地區、等級與類型，搭配地圖視覺化顯示電台位置。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- 模擬器 -->
+  <div class="section-label">🎮 &nbsp;模擬器</div>
+  <div class="cards">
+
+    <a class="card accent-red" href="simulators/civil-defense.html">
+      <div class="card-badge">SIMULATOR · 民防</div>
+      <span class="card-icon">🛡️</span>
+      <h3>民防無線電參數模擬器</h3>
+      <p>模擬民防無線電通訊場景，練習頻率、CTCSS 設定與多組隊伍協調操作。</p>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-left">無線電學習站 · HAM RADIO LEARNING HUB</div>
+    <div class="f-right">靜態網站 · 無需後端 · 可離線使用</div>
+  </footer>
+
+</div>
+</body>
+</html>
