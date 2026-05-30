@@ -58,29 +58,30 @@
       <div class="concept-bd">
         <div class="explain">無線電信號在空氣中以「波」的形式傳播，每個波每秒振動的次數就是頻率，單位是 Hz（赫茲）。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像廣播電台一樣，「台北廣播 FM 98.1」就是在 98.1MHz 這個頻率上。你把對講機「調到 145.500MHz」，就是在聽那個頻率上的對話，就像調廣播電台。</div>
-        <div class="visual">常見頻率範圍：
-VHF 144–148 MHz → 對講機常用（如145.500）
-UHF 430–440 MHz → 手持對講機常用（如433.500）
-FM廣播 87.5–108 MHz → 收音機
-
-頻率越高 → 波越短 → 穿透力越弱但帶寬越大</div>
+        <table class="tbl">
+          <tr><th>頻段</th><th>範圍</th><th>用途</th></tr>
+          <tr><td><b>VHF</b></td><td><span class="readout">144–148 MHz</span></td><td>對講機常用（145.500）</td></tr>
+          <tr><td><b>UHF</b></td><td><span class="readout">430–440 MHz</span></td><td>手持對講機（433.500）</td></tr>
+          <tr><td>FM 廣播</td><td><span class="readout">87.5–108 MHz</span></td><td>收音機</td></tr>
+        </table>
+        <div class="gnote">頻率越高 → 波越短 → 穿透力越弱但頻寬越大。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>頻率就是「電台號碼」，兩台對講機要通話，電台號碼必須一樣。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span><span class="ctag scen">情境1</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico">〰️</span><div><div class="title">波長</div><div class="en">Wavelength (λ)</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="audio-waveform"></i></span><div><div class="title">波長</div><div class="en">Wavelength (λ)</div></div></div>
       <div class="concept-bd">
         <div class="explain">一個完整無線電波的「長度」，單位是公尺或公分。頻率越高，波長越短。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>把無線電波想成水波紋。你快速揮手（高頻），水波紋密集、每個波紋很短。你慢慢揮手（低頻），波紋稀疏、每個波紋很長。</div>
-        <div class="visual">計算公式（這個夠簡單，記住吧）：
-波長(公尺) = 300 ÷ 頻率(MHz)
-
-145MHz → 300 ÷ 145 ≈ 2.07公尺（波長2公尺）
-435MHz → 300 ÷ 435 ≈ 0.69公尺（波長69公分）
-
-這直接決定天線該做多長！</div>
+        <div class="formula">波長(公尺) = 300 ÷ 頻率(MHz)</div>
+        <table class="tbl">
+          <tr><th>頻率</th><th>波長</th><th>λ/4 天線</th></tr>
+          <tr><td><span class="readout">145 MHz</span></td><td>≈ 2.07 m</td><td>≈ 52 cm</td></tr>
+          <tr><td><span class="readout">435 MHz</span></td><td>≈ 0.69 m</td><td>≈ 17 cm</td></tr>
+        </table>
+        <div class="gnote">波長直接決定天線該做多長。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>頻率 × 波長 = 300（光速的簡化）。145MHz 的對講機，天線長約 52 公分（波長的四分之一）。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span><span class="ctag scen">情境5</span></div>
       </div>
@@ -91,16 +92,13 @@ FM廣播 87.5–108 MHz → 收音機
       <div class="concept-bd">
         <div class="explain">FM 是「調頻」的縮寫。把聲音「藏進」無線電波的一種方式。對講機和廣播電台都用 FM。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你講話時聲音忽高忽低，FM 就是把這個「高低起伏」轉換成電波頻率的「快慢變化」。收音機再把「快慢變化」還原成聲音。就像摩斯密碼，但編碼規則不同。</div>
-        <div class="visual">AM（調幅）：改變波的「高度（振幅）」來藏信息
-  ─波波波─  →  ───波─波波────
-
-FM（調頻）：改變波的「密度（頻率）」來藏信息
-  密─稀─密  →  聲音的高低起伏
-
-FM的優點：
-  ✓ 抗干擾（捕捉效應）
-  ✓ 音質較AM清晰
-  ✓ 民防對講機的標準</div>
+        <figure class="svgfig">
+          <div class="svgfig-cap"><b>AM 調幅</b>：改變波的「高度（振幅）」藏訊息</div>
+          <svg viewBox="0 0 300 46" preserveAspectRatio="none"><path d="M0.0,23.0 L5.0,17.2 L11.0,23.5 L16.0,29.2 L21.0,23.8 L27.0,16.2 L32.0,22.7 L37.0,30.6 L43.0,22.7 L48.0,14.1 L54.0,24.2 L59.0,33.3 L65.0,20.7 L70.0,11.2 L76.0,26.7 L81.0,36.2 L87.0,17.8 L92.0,8.6 L98.0,30.0 L102.0,39.1 L108.0,18.8 L113.0,5.8 L119.0,28.9 L124.0,40.9 L130.0,15.4 L135.0,4.9 L141.0,32.2 L145.0,42.2 L151.0,17.4 L156.0,4.1 L162.0,30.0 L166.0,41.9 L172.0,19.9 L177.0,4.8 L183.0,27.4 L188.0,40.1 L194.0,17.5 L199.0,7.4 L205.0,29.2 L210.0,36.9 L216.0,16.3 L221.0,10.9 L227.0,29.8 L231.0,34.5 L237.0,19.0 L242.0,13.2 L248.0,27.2 L252.0,31.9 L258.0,20.9 L263.0,15.4 L269.0,25.4 L274.0,29.6 L280.0,20.4 L285.0,17.2 L291.0,25.8 L295.0,28.8 L300.0,23.0" style="fill:none;stroke:var(--primary);stroke-width:1.7"/></svg>
+          <div class="svgfig-cap"><b>FM 調頻</b>：改變波的「密度（頻率）」藏訊息</div>
+          <svg viewBox="0 0 300 46" preserveAspectRatio="none"><path d="M0.0,19.8 L6.0,5.2 L8.0,3.7 L11.0,5.6 L16.0,18.1 L22.0,36.8 L26.0,42.3 L30.0,37.8 L35.0,21.4 L41.0,4.5 L43.0,3.8 L47.0,12.1 L52.0,32.2 L56.0,42.1 L60.0,36.6 L65.0,14.6 L69.0,3.8 L73.0,11.9 L78.0,36.3 L81.0,42.3 L85.0,29.9 L90.0,5.5 L92.0,4.0 L97.0,26.5 L101.0,42.2 L105.0,29.4 L110.0,4.1 L112.0,5.8 L117.0,34.8 L120.0,42.1 L124.0,22.6 L128.0,3.8 L132.0,19.4 L137.0,41.6 L140.0,29.6 L144.0,5.3 L147.0,8.4 L152.0,39.5 L155.0,39.1 L159.0,13.4 L162.0,3.7 L167.0,29.8 L171.0,41.7 L175.0,20.2 L179.0,3.7 L184.0,27.2 L188.0,42.3 L192.0,26.2 L196.0,5.2 L199.0,6.9 L204.0,34.2 L208.0,41.5 L212.0,24.2 L217.0,3.9 L221.0,12.2 L226.0,36.6 L230.0,41.6 L234.0,28.4 L239.0,7.3 L242.0,3.8 L247.0,16.7 L252.0,36.4 L256.0,42.3 L261.0,32.4 L266.0,14.2 L270.0,4.8 L273.0,4.1 L278.0,14.6 L284.0,33.9 L289.0,42.2 L294.0,37.4 L300.0,19.8" style="fill:none;stroke:var(--teal);stroke-width:1.7"/></svg>
+        </figure>
+        <div class="gnote">FM 優點：抗干擾（捕捉效應）、音質較 AM 清晰，是民防對講機標準。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FM 廣播和對講機的原理一樣。你每天聽的台北 FM 電台就是 FM 調制！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
@@ -111,14 +109,15 @@ FM的優點：
       <div class="concept-bd">
         <div class="explain">接收到的信號有多強，用 S1 到 S9 表示，S9 最強。通訊報告時說「你的信號是五九」，意思就是 S5 S9 的最高值，信號很強。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像手機的格數。1格=S3，2格=S5，3格=S7，4格=S9。格數越多，訊號越強，通話越清晰。</div>
-        <div class="visual">S值對照表：
-S1  ────── 幾乎聽不到（-121dBm）
-S3  ──────── 很弱（-115dBm）
-S5  ─────────── 勉強可聽（-109dBm）
-S7  ──────────────── 中等清晰（-103dBm）
-S9  ──────────────────── 很強（-97dBm）
-
-每增加1個S值 ≈ 信號強度增加6dB（約4倍功率）</div>
+        <table class="tbl">
+          <tr><th>S 值</th><th>強度</th><th>說明</th></tr>
+          <tr><td><b>S1</b></td><td><span class="readout">−121 dBm</span></td><td>幾乎聽不到</td></tr>
+          <tr><td><b>S3</b></td><td><span class="readout">−115 dBm</span></td><td>很弱</td></tr>
+          <tr><td><b>S5</b></td><td><span class="readout">−109 dBm</span></td><td>勉強可聽</td></tr>
+          <tr><td><b>S7</b></td><td><span class="readout">−103 dBm</span></td><td>中等清晰</td></tr>
+          <tr><td><b>S9</b></td><td><span class="readout">−97 dBm</span></td><td>很強</td></tr>
+        </table>
+        <div class="gnote">每增加 1 個 S 值 ≈ 強 6 dB（約 4 倍功率）。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「五九報告」是無線電通訊裡說對方信號最完美的方式，就像給 5 顆星的評價！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
@@ -129,18 +128,14 @@ S9  ──────────────────── 很強（-97dBm
       <div class="concept-bd">
         <div class="explain">功率是信號有多「用力」發射，單位是瓦（W）。dBm 是另一種表示方式，更方便計算弱信號。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>瓦特就像燈泡的亮度。1W 對講機就是 1 瓦的燈泡，5W 就是 5 瓦，更亮（更遠）。dBm 就像把亮度轉換成「刻度」，讓你更容易比較非常暗到非常亮的範圍。</div>
-        <div class="visual">常用換算（記幾個就夠）：
-1W  = 30 dBm  （對講機低功率）
-5W  = 37 dBm  （對講機標準功率）
-10W = 40 dBm  （車載台）
-25W = 44 dBm  （基地台）
-
-接收信號（非常弱）：
--90 dBm ≈ 0.000000001W（還是能通話）
--120 dBm = 接近靈敏度極限
-
-dBm每增加3 = 功率約加倍
-dBm每增加10 = 功率增加10倍</div>
+        <table class="tbl">
+          <tr><th>功率</th><th>dBm</th><th>典型</th></tr>
+          <tr><td>1 W</td><td><span class="readout">30 dBm</span></td><td>對講機低功率</td></tr>
+          <tr><td>5 W</td><td><span class="readout">37 dBm</span></td><td>對講機標準</td></tr>
+          <tr><td>10 W</td><td><span class="readout">40 dBm</span></td><td>車載台</td></tr>
+          <tr><td>25 W</td><td><span class="readout">44 dBm</span></td><td>基地台</td></tr>
+        </table>
+        <div class="gnote">+3 dBm ≈ 功率加倍、+10 dBm = 10 倍；接收靈敏度極限約 <span class="readout">−120 dBm</span>。</div>
         <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>很多人以為功率大就一定能通話。錯！天線方向、地形、頻率都影響更大。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
@@ -151,17 +146,14 @@ dBm每增加10 = 功率增加10倍</div>
       <div class="concept-bd">
         <div class="explain">兩種不同的頻率範圍，決定無線電信號的「個性」：能傳多遠、能不能穿牆、天線要多長。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>VHF 像「長跑選手」，跑得遠但體型大（天線長）。UHF 像「城市跑者」，更靈活能在建築物間穿梭，但跑不那麼遠。</div>
-        <div class="visual">VHF（30–300MHz，台灣民防常用144–148MHz）
-  ├─ 波長：1–10公尺
-  ├─ 天線長：約51公分（144MHz的λ/4）
-  ├─ 特性：傳播遠、但建築物穿透差
-  └─ 用途：山地搜救、長距離通聯
-
-UHF（300–3000MHz，台灣民防常用430–440MHz）
-  ├─ 波長：10公分–1公尺
-  ├─ 天線長：約17公分（435MHz的λ/4）
-  ├─ 特性：穿透建築物較佳，城市適用
-  └─ 用途：市區救災、室內通訊</div>
+        <table class="tbl">
+          <tr><th></th><th>VHF</th><th>UHF</th></tr>
+          <tr><td>頻率</td><td><span class="readout">30–300 MHz</span><br>常用 144–148</td><td><span class="readout">300–3000 MHz</span><br>常用 430–440</td></tr>
+          <tr><td>波長</td><td>1–10 m</td><td>10 cm–1 m</td></tr>
+          <tr><td>λ/4 天線</td><td>≈ 51 cm</td><td>≈ 17 cm</td></tr>
+          <tr><td>特性</td><td>傳得遠、穿牆差</td><td>穿牆較佳、城市適用</td></tr>
+          <tr><td>用途</td><td>山地搜救、長距</td><td>市區救災、室內</td></tr>
+        </table>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>VHF＝視野好的郊外，UHF＝城市裡的街道。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
