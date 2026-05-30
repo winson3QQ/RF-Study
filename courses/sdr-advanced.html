@@ -49,15 +49,14 @@
     <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>核心理念</span>不只教「怎麼用」，更教「為什麼這樣用」及背後的物理和數學原理。</div>
 
     <div class="sec-h"><i data-lucide="target"></i>五層深化學習模式</div>
-    <div class="visual">第1層 ─ 災害現場困難     為什麼需要這個參數？
-       ↓
-第2層 ─ RF物理原理        這個參數在RF層面做了什麼？
-       ↓
-第3層 ─ 數學公式推導      如何量化計算、預測結果？
-       ↓
-第4層 ─ SDR實驗驗證      用GQRX/GNU Radio實際測量
-       ↓
-第5層 ─ 現場應急應用      災害時如何快速正確決策</div>
+    <table class="tbl">
+      <tr><th>層</th><th>學什麼</th></tr>
+      <tr><td>第 1 層　災害現場</td><td>為什麼需要這個參數？</td></tr>
+      <tr><td>第 2 層　RF 物理</td><td>這個參數在 RF 層面做了什麼？</td></tr>
+      <tr><td>第 3 層　數學推導</td><td>如何量化計算、預測結果？</td></tr>
+      <tr><td>第 4 層　SDR 驗證</td><td>用 GQRX / GNU Radio 實際測量</td></tr>
+      <tr><td>第 5 層　現場應用</td><td>災害時如何快速正確決策</td></tr>
+    </table>
 
     <div class="sec-h"><i data-lucide="lightbulb"></i>為何需要 RF 理論深化？</div>
     <table class="tbl">
@@ -160,20 +159,16 @@ FM調制指數：
       </ul>
     </div>
 
-    <div class="visual">GQRX中的CTCSS視覺化（音頻頻譜視圖）
-
-有CTCSS 67Hz時：
-  0─────────────────────────────────300 Hz
-              ⚫ ← 67Hz尖峰（CTCSS信號）
-           ╱   ╲
-  ─────────────────────────────────
-  上方是語音成分（300Hz以上）
-
-切換成88.5Hz：
-  0─────────────────────────────────300 Hz
-                    ⚫ ← 88.5Hz尖峰
-                 ╱   ╲
-  ─────────────────────────────────</div>
+    <figure class="svgfig">
+      <div class="svgfig-cap">音頻頻譜：<b>CTCSS 67Hz 尖峰</b>位在語音（300Hz 以上）下方</div>
+      <svg viewBox="0 0 300 70">
+        <path d="M0,52 L40,51 L58,40 L67,15 L76,40 L95,51 L150,52 L230,51 L300,52 L300,70 L0,70 Z" style="fill:var(--teal-soft)"/>
+        <path d="M0,52 L40,51 L58,40 L67,15 L76,40 L95,51 L150,52 L230,51 L300,52" style="fill:none;stroke:var(--teal);stroke-width:1.6"/>
+        <circle cx="67" cy="15" r="3.5" style="fill:var(--primary)"/>
+      </svg>
+      <div class="axis"><span>0 Hz</span><span>CTCSS 67Hz</span><span>300 Hz</span></div>
+    </figure>
+    <div class="gnote">切到 88.5Hz 時尖峰會往右移到 88.5 的位置——用 FFT 就能確認 CTCSS 設定是否正確。</div>
 
     <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
@@ -257,26 +252,14 @@ RF增益的dB計算：
       </ul>
     </div>
 
-    <div class="visual">GQRX FFT增益效果視覺化（500m距離）
-
-RF增益 0dB：
-  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ← 底噪
-    ↑ 信號幾乎看不見               語音：無
-
-RF增益 20dB：
-      ▲
-     ╱ ╲
-  ▀▀▀█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀   語音：微弱
-
-RF增益 35dB（最佳點）：
-        ▲▲
-       ╱██╲
-  ▀▀▀╱████╲▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀   語音：清晰 ✓
-
-RF增益 49dB（過載）：
-      ▲▲▲▲▲
-     ╱███████
-  ▀▀███████████▀▀▀▀▀▀▀▀▀▀▀   語音：噪聲蓋過 ✗</div>
+    <table class="tbl">
+      <tr><th>RF 增益</th><th>FFT 峰值</th><th>語音</th></tr>
+      <tr><td>0 dB</td><td>幾乎沒入底噪</td><td>無</td></tr>
+      <tr><td>20 dB</td><td>小峰冒出</td><td>微弱</td></tr>
+      <tr><td><b>35 dB（最佳）</b></td><td>峰高、SNR 最大</td><td><b>清晰</b></td></tr>
+      <tr><td>49 dB（過載）</td><td>底噪一起抬高</td><td>噪聲蓋過</td></tr>
+    </table>
+    <div class="gnote">增益不是越高越好——目標是讓「峰值−底噪」差值（SNR）最大的那個點。</div>
 
     <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
@@ -353,28 +336,17 @@ Carson規則（FM頻寬計算）：
       </ul>
     </div>
 
-    <div class="visual">GQRX FFT頻寬視覺化對比
-
-25kHz模式（能量分散）：
-  ┌─────────────────────────────────────┐
-  │            ▲                        │
-  │           ╱ ╲                       │
-  │          ╱   ╲                      │
-  │         ╱     ╲   ←寬度≈25kHz      │
-  │        ╱       ╲                    │
-  │────────────────────────────────────│
-  │  145.4875    145.500    145.5125MHz  │
-  └─────────────────────────────────────┘
-
-12.5kHz模式（能量集中）：
-  ┌─────────────────────────────────────┐
-  │              ▲                      │
-  │             ╱╲                      │
-  │            ╱  ╲  ←寬度≈12.5kHz     │
-  │───────────╱────╲───────────────────│
-  │  145.4875    145.500    145.5125MHz  │
-  └─────────────────────────────────────┘
-  能量集中 → 功率密度更高 → 信號更清晰</div>
+    <figure class="svgfig">
+      <div class="svgfig-cap">同功率下：<b>12.5kHz 窄頻</b>能量更集中、峰更高</div>
+      <svg viewBox="0 0 300 76">
+        <line x1="0" y1="60" x2="300" y2="60" style="stroke:var(--border-strong);stroke-width:1"/>
+        <path d="M30,60 L80,30 L130,60 Z" style="fill:var(--honey-soft);stroke:var(--honey);stroke-width:1.4"/>
+        <path d="M198,60 L222,16 L246,60 Z" style="fill:var(--teal-soft);stroke:var(--teal);stroke-width:1.4"/>
+        <text x="80" y="72" style="fill:var(--honey-ink);font:9px var(--font-mono)" text-anchor="middle">25kHz 寬</text>
+        <text x="222" y="72" style="fill:var(--teal-ink);font:9px var(--font-mono)" text-anchor="middle">12.5kHz 窄</text>
+      </svg>
+    </figure>
+    <div class="gnote">能量集中 → 功率密度更高 → 相同功率下信號更清晰。</div>
 
     <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
@@ -454,18 +426,14 @@ CTCSS碼選擇建議（避免互調干擾）：
       </ul>
     </div>
 
-    <div class="visual">GQRX瀑布圖：時間軸顯示層級通訊
-
-時間 ↓（新→舊由上而下）
-─────────────────────────────────────
-13:00:01  ████████  指揮所廣播（無CTCSS）
-13:00:03  ▓▓▓▓▓▓▓  1-2樓確認（CTCSS 67Hz）
-13:00:10  ▓▓▓▓▓▓▓  3-4樓確認（CTCSS 88.5Hz）
-13:00:17  ▓▓▓▓▓▓▓  5-6樓確認（CTCSS 110.9Hz）
-─────────────────────────────────────
-│指揮所監聽時：看到全部信號
-│1-2樓監聽時：只聽到廣播 + 自己的確認
-│→ 不被其他層的通話干擾</div>
+    <table class="tbl">
+      <tr><th>時間</th><th>事件</th><th>CTCSS</th></tr>
+      <tr><td>13:00:01</td><td>指揮所廣播</td><td>無</td></tr>
+      <tr><td>13:00:03</td><td>1-2 樓確認</td><td>67 Hz</td></tr>
+      <tr><td>13:00:10</td><td>3-4 樓確認</td><td>88.5 Hz</td></tr>
+      <tr><td>13:00:17</td><td>5-6 樓確認</td><td>110.9 Hz</td></tr>
+    </table>
+    <div class="gnote">指揮所監聽看到全部；各樓只聽到廣播＋自己——不被其他層干擾（物理上仍是同一頻率、需輪流發話）。</div>
 
     <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>CTCSS 層級化 ≈ 在同一頻率上創造「虛擬分頻道」——但這是「選聽」上的虛擬分頻，物理上仍是<strong>一個頻率、同時只能一人講</strong>。必須搭配輪流發話的通訊規程才成立，不是讓各層可以同時開講。</div>
   </div>
@@ -542,28 +510,13 @@ UHF 435MHz對講機：
       </ul>
     </div>
 
-    <div class="visual">天線狀態對應的GQRX FFT特徵
-
-正常天線：
-  ┌──────────────────────────┐
-  │          ▲▲             │
-  │         ╱██╲            │ 清晰信號峰值
-  │   ▀▀▀▀╱████╲▀▀▀▀▀▀   │ 峰值約 -60dBm
-  └──────────────────────────┘
-
-天線鬆動（SWR≈3）：
-  ┌──────────────────────────┐
-  │        ▲               │
-  │       ╱ ╲              │ 信號衰減約15-20dB
-  │ ▀▀▀▀╱   ╲▀▀▀▀▀▀▀▀   │ 峰值約 -75dBm
-  └──────────────────────────┘
-
-天線完全損壞：
-  ┌──────────────────────────┐
-  │                         │
-  │ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ │ 全是底噪
-  │            （無峰值）     │ 峰值 ≤ -100dBm
-  └──────────────────────────┘</div>
+    <table class="tbl">
+      <tr><th>天線狀態</th><th>FFT 峰值</th><th>判讀</th></tr>
+      <tr><td>正常</td><td><span class="readout">≈ −60 dBm</span></td><td>清晰信號峰</td></tr>
+      <tr><td>鬆動（SWR≈3）</td><td><span class="readout">≈ −75 dBm</span></td><td>衰減 15–20 dB</td></tr>
+      <tr><td>完全損壞</td><td><span class="readout">≤ −100 dBm</span></td><td>全是底噪、無峰</td></tr>
+    </table>
+    <div class="gnote">信號消失先看 FFT 而非猜測——2 分鐘內可分辨是天線問題還是設定問題。</div>
 
     <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>信號消失的第一個診斷工具是 FFT，不是猜測。2 分鐘內可定位是天線問題還是設定問題。</div>
   </div>
@@ -644,22 +597,18 @@ UHF 435MHz對講機：
       </ul>
     </div>
 
-    <div class="visual">GQRX掃頻視圖：找干擾峰值
-
-掃描 144.0–147.0MHz 全段：
-  ┌─────────────────────────────────────────┐
-  │ FFT（144.0–147.0MHz）                   │
-  │                                         │
-  │         ⚫        ⚫⚫                   │
-  │       ╱   ╲    ╱ ████╲                 │
-  │   ▀▀╱     ╲▀▀╱       ╲▀▀▀▀▀▀▀▀▀▀▀  │
-  │                                         │
-  │   ↑              ↑                      │
-  │  145.500MHz      145.510MHz             │
-  │  (我方頻率)       (干擾頻率！)            │
-  └─────────────────────────────────────────┘
-
-干擾更強（145.510MHz）→ FM捕捉效應讓干擾壓過我方信號</div>
+    <figure class="svgfig">
+      <div class="svgfig-cap">掃頻 144–147MHz：<b>干擾峰比我方更高</b></div>
+      <svg viewBox="0 0 300 78">
+        <path d="M0,58 L50,56 L95,57 L113,42 L125,30 L137,44 L152,50 L165,40 L175,14 L185,40 L208,54 L250,56 L300,57 L300,78 L0,78 Z" style="fill:var(--teal-soft)"/>
+        <path d="M0,58 L50,56 L95,57 L113,42 L125,30 L137,44 L152,50 L165,40 L175,14 L185,40 L208,54 L250,56 L300,57" style="fill:none;stroke:var(--teal);stroke-width:1.6"/>
+        <circle cx="125" cy="30" r="3" style="fill:var(--ink-2)"/>
+        <circle cx="175" cy="14" r="3.5" style="fill:var(--rose)"/>
+        <text x="95" y="72" style="fill:var(--ink-3);font:9px var(--font-mono)" text-anchor="middle">145.500 我方</text>
+        <text x="218" y="72" style="fill:var(--rose-ink);font:9px var(--font-mono)" text-anchor="middle">.510 干擾</text>
+      </svg>
+    </figure>
+    <div class="gnote">干擾更強 → FM 捕捉效應讓它壓過我方信號。三角定位推算方向、快速換頻是最有效處置。</div>
 
     <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>干擾不是魔鬼，用 FFT 能清楚看到它的頻率和強度，三角定位能推算方向，快速換頻是最有效的應急處置。</div>
   </div>
@@ -746,21 +695,13 @@ UHF 435MHz對講機：
       </ul>
     </div>
 
-    <div class="visual">GQRX雙頻瀑布圖：中繼台工作時間軸
-
-時間 ↓  145.500MHz（接收）  146.100MHz（轉發）
-─────────────────────────────────────────────
-t=0   ▓▓▓▓▓▓▓▓▓▓▓▓       (無)
-t=0.1 ▓▓▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓▓▓  ← 中繼延遲
-t=1.5 (無)               ▓▓▓▓▓▓▓▓▓▓▓▓
-─────────────────────────────────────────────
-文山隊在145.500發話 → 中繼台收到後轉發到146.100
-→ 信義隊在146.100收到 ✓
-
-中繼台故障時：
-t=0   ▓▓▓▓▓▓▓▓▓▓▓▓       (無)
-t=0.1 ▓▓▓▓▓▓▓▓▓▓▓▓       (無)  ← 沒有轉發！
-→ 立刻在GQRX上看出中繼台故障</div>
+    <table class="tbl">
+      <tr><th>時間</th><th>145.500（接收）</th><th>146.100（轉發）</th></tr>
+      <tr><td>t = 0</td><td>有信號</td><td>無</td></tr>
+      <tr><td>t = 0.1</td><td>有信號</td><td>有信號（中繼延遲）</td></tr>
+      <tr><td>t = 1.5</td><td>無</td><td>有信號</td></tr>
+    </table>
+    <div class="gnote">文山隊發 145.500 → 中繼台轉發 146.100 → 信義隊收到。中繼台故障時 146.100 一直無轉發，在 GQRX 上立刻看得出來。</div>
 
     <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
