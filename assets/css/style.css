@@ -238,6 +238,20 @@ a:hover { color: var(--primary-strong); }
 .callout.task { background: var(--teal-soft); border-left: 4px solid var(--teal); color: #134f4a; }
 .callout.task .ct { color: var(--teal-ink); }
 
+/* prominent step-flow card (SOP / closed-loop sequence — a teaching centrepiece) */
+.flowcard { background: linear-gradient(180deg, var(--surface-soft), var(--surface)); border: 1px solid var(--border); border-left: 5px solid var(--primary); border-radius: var(--r-lg); padding: 20px 22px; margin: 16px 0; box-shadow: var(--shadow-md); }
+.flowcard-h { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 800; font-size: 17px; color: var(--primary-ink); margin-bottom: 16px; }
+.flowcard-h svg { width: 20px; height: 20px; stroke-width: 2.25; flex-shrink: 0; }
+.flow .step { position: relative; display: flex; gap: 14px; padding-bottom: 16px; }
+.flow .step:last-child { padding-bottom: 0; }
+.flow .step::before { content: ''; position: absolute; left: 15px; top: 30px; bottom: -2px; width: 2px; background: var(--primary-soft); }
+.flow .step:last-child::before { display: none; }
+.flow .num { flex-shrink: 0; width: 31px; height: 31px; border-radius: 50%; background: var(--primary); color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; z-index: 1; }
+.flow .body { padding-top: 3px; }
+.flow .body .t { font-family: var(--font-display); font-weight: 700; font-size: 15.5px; color: var(--ink); line-height: 1.4; }
+.flow .body .d { font-size: 13.5px; color: var(--ink-2); line-height: 1.6; margin-top: 2px; }
+.flow .tmark { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--primary-ink); background: var(--primary-soft); border-radius: var(--r-pill); padding: 2px 9px; margin-left: 8px; white-space: nowrap; }
+
 /* embedded figure (photos / labelled diagrams) */
 .fig { margin: 16px 0; text-align: center; }
 .fig img { max-width: 100%; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--shadow-sm); }

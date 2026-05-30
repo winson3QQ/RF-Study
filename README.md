@@ -8,7 +8,7 @@
 radio-site/
 ├── index.html              ← 首頁（從這裡進入所有內容）
 ├── courses/                ← 課程教材
-│   ├── sdr-basic.html      SDR 情境化課程
+│   ├── basic-radio.html    基礎無線電使用（實機操作 + 考照準備）
 │   ├── sdr-advanced.html   SDR 深化課程（RF 理論）
 │   └── rf-glossary.html    RF 術語白話手冊
 ├── tools/                  ← 互動工具（二等業餘無線電）

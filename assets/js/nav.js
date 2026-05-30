@@ -9,7 +9,7 @@
   var section = window.SITE_SECTION || '';
 
   var links = [
-    { key: 'courses',    label: '課程', href: root + 'courses/sdr-basic.html' },
+    { key: 'courses',    label: '課程', href: root + 'courses/basic-radio.html' },
     { key: 'tools',      label: '工具', href: root + 'tools/spectrum-viewer.html' },
     { key: 'simulators', label: '模擬器', href: root + 'simulators/civil-defense.html' },
     { key: 'glossary',   label: '白話手冊', href: root + 'courses/rf-glossary.html' }

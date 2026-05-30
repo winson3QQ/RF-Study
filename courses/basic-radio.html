@@ -150,10 +150,19 @@
     <!-- 8. 閉環溝通與術語 -->
     <div class="sec-h"><i data-lucide="repeat"></i>閉環溝通與常用術語</div>
     <div class="prose-card">
-      <p><strong>閉環溝通（Closed-loop）</strong>確保訊息有送到、有被理解。一次完整的回報照這個環走：</p>
-      <div class="visual">對方呼號 → 自己呼號 → 按 PTT（等 1 sec）
-   → 我的位置 → 狀況 → 需求 → 結語（術語）
-      → 放開 PTT（等 0.5 sec）→ 等對方回覆</div>
+      <p><strong>閉環溝通（Closed-loop）</strong>確保訊息有送到、有被理解。<strong>這是全課最該背起來的發話流程</strong>：</p>
+      <div class="flowcard">
+        <div class="flowcard-h"><i data-lucide="repeat"></i>一次完整發話的 7 個步驟</div>
+        <div class="flow">
+          <div class="step"><span class="num">1</span><div class="body"><div class="t">叫對方呼號</div><div class="d">先呼叫你要通話的對象。</div></div></div>
+          <div class="step"><span class="num">2</span><div class="body"><div class="t">報自己呼號</div><div class="d">讓對方知道是誰在發話。</div></div></div>
+          <div class="step"><span class="num">3</span><div class="body"><div class="t">按下 PTT<span class="tmark">等 1 sec</span></div><div class="d">按住後停一下再開口，避免開頭被吃掉。</div></div></div>
+          <div class="step"><span class="num">4</span><div class="body"><div class="t">講內容：位置 → 狀況 → 需求</div><div class="d">簡單明確，必要時先寫下來再講。</div></div></div>
+          <div class="step"><span class="num">5</span><div class="body"><div class="t">結語（術語）</div><div class="d">例如「OVER」＝我說完了，請你回覆。</div></div></div>
+          <div class="step"><span class="num">6</span><div class="body"><div class="t">放開 PTT<span class="tmark">等 0.5 sec</span></div><div class="d">講完也停一下再放開發射鍵。</div></div></div>
+          <div class="step"><span class="num">7</span><div class="body"><div class="t">等對方回覆</div><div class="d">對方覆誦／回應，訊息成功「閉環」。</div></div></div>
+        </div>
+      </div>
       <table class="tbl">
         <tr><th>術語</th><th>意義</th></tr>
         <tr><td><b>Over</b></td><td>我說完了，<b>請回覆</b>。</td></tr>
@@ -344,7 +353,7 @@
 </div>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script src="../assets/js/nav.js?v=2"></script>
+<script src="../assets/js/nav.js?v=3"></script>
 <script>
   function showPart(id, btn) {
     document.querySelectorAll('.scenario').forEach(s => s.classList.remove('active'));
