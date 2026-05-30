@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>超外差接收機互動解析 — 二等業餘無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+:root {
+  --mono: var(--font-mono); --txt: var(--ink-2); --dim: var(--ink-3);
+  --s1: var(--surface); --s2: var(--surface-soft);
+  --acc: var(--teal-ink); --g: var(--leaf-ink); --amb: var(--honey-ink); --red: var(--rose-ink); --pur: #6D3FC0; --org: #C2620E;
+}
+.tab.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.tab.on:hover { color: #fff; }
+
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+
+/* block diagram — dark screen */
+#diagram-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 12px; margin-bottom: 12px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+#diagram-canvas { display: block; min-width: 600px; cursor: pointer; background: #0c1820; border-radius: var(--r-sm); }
+
+/* mode buttons */
+.mode-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.mbtn { font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 8px 15px; border: 1.5px solid var(--border-strong); border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.mbtn.on, .mbtn:hover { border-color: var(--teal); color: var(--teal-ink); background: var(--teal-soft); }
+
+/* block info */
+.block-info { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 16px; margin-bottom: 12px; min-height: 90px; box-shadow: var(--shadow-sm); }
+.bi-name { font-family: var(--font-display); font-weight: 800; font-size: 17px; color: var(--teal-ink); margin-bottom: 7px; }
+.bi-fn { font-size: 13.5px; color: var(--ink-2); line-height: 1.75; margin-bottom: 9px; white-space: pre-line; }
+.bi-exam { font-size: 12px; line-height: 1.65; background: var(--honey-soft); border-left: 3px solid var(--honey); border-radius: var(--r-sm); padding: 8px 11px; color: var(--honey-ink); display: flex; align-items: flex-start; gap: 7px; }
+.bi-exam svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
+
+/* freq row */
+.freq-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 12px 15px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--r-md); margin-bottom: 12px; font-family: var(--font-mono); font-size: 12.5px; }
+.freq-row label { color: var(--ink-3); font-size: 11px; font-family: var(--font-sans); font-weight: 700; }
+.freq-row input { background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--r-sm); color: var(--ink); font-family: var(--font-mono); font-size: 14px; padding: 7px 11px; width: 110px; outline: none; }
+.freq-row input:focus { border-color: var(--primary); box-shadow: var(--ring); }
+.freq-badge { font-size: 11px; color: var(--ink-3); }
+
+/* tables */
+.chain-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.chain-table th { padding: 9px 12px; text-align: left; font-family: var(--font-display); font-size: 12px; color: var(--teal-ink); background: var(--teal-soft); font-weight: 700; border-bottom: 1px solid var(--border); }
+.chain-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink-2); }
+.chain-table tr:last-child td { border-bottom: none; }
+.chain-table tbody tr:hover td { background: var(--surface-soft); cursor: pointer; }
+.chain-table tr.on td { background: var(--teal-soft); }
+.chain-table tr.on td:first-child { box-shadow: inset 3px 0 0 var(--teal); }
+
+/* SWR calc */
+.swr-calc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.swr-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.ig label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); display: block; margin-bottom: 5px; }
+.ig .irow { display: flex; align-items: center; background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--r-md); transition: all var(--dur) var(--ease); }
+.ig .irow:focus-within { border-color: var(--primary); box-shadow: var(--ring); }
+.ig .irow input { flex: 1; background: transparent; border: none; outline: none; color: var(--ink); font-family: var(--font-mono); font-size: 16px; padding: 10px 12px; min-width: 0; }
+.ig .irow .unit { padding: 10px 12px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); border-left: 1px solid var(--border); }
+.swr-result { background: var(--surface-soft); border: 1px solid var(--border); border-left: 4px solid var(--leaf); border-radius: var(--r-md); padding: 14px; font-family: var(--font-mono); }
+.swr-val { font-size: 24px; color: var(--leaf-ink); font-weight: 700; margin-bottom: 7px; }
+.swr-steps { font-size: 12px; color: var(--ink-2); line-height: 1.9; }
+.swr-steps span { color: var(--teal-ink); font-weight: 700; }
+.swr-steps svg { width: 13px; height: 13px; vertical-align: -2px; }
+.swr-bar-wrap { margin-top: 11px; }
+.swr-bar-bg { height: 8px; background: var(--border); border-radius: var(--r-pill); position: relative; overflow: hidden; }
+.swr-bar-fill { height: 100%; background: var(--leaf); border-radius: var(--r-pill); transition: width .3s; }
+.swr-label-row { display: flex; justify-content: space-between; font-size: 9px; color: var(--ink-3); margin-top: 4px; }
+
+/* exam cards */
+.exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 600px) { .exam-grid { grid-template-columns: 1fr; } }
+.ecard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 13px 14px; box-shadow: var(--shadow-sm); }
+.eq { font-size: 13px; color: var(--ink); margin-bottom: 7px; line-height: 1.6; font-weight: 600; }
+.ea { font-family: var(--font-mono); font-size: 12px; color: var(--leaf-ink); border-top: 1px solid var(--border); padding-top: 7px; line-height: 1.6; }
+.ekw { color: var(--teal-ink); font-weight: 700; }
+
+/* wave previews */
+.wave-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+@media (max-width: 500px) { .wave-row { grid-template-columns: 1fr 1fr; } }
+.wcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px; box-shadow: var(--shadow-sm); }
+.wcard canvas { width: 100%; display: block; background: #040810; border-radius: 4px; }
+.wcard-label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); text-align: center; margin-top: 6px; letter-spacing: .5px; }
+
+/* exam trap */
+.trap { display: flex; align-items: flex-start; gap: 8px; background: var(--rose-soft); border: 1px solid #f3c9c5; border-left: 4px solid var(--rose); border-radius: var(--r-md); padding: 11px 14px; font-size: 12.5px; color: var(--ink-2); line-height: 1.75; }
+.trap svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--rose-ink); }
+.trap strong { color: var(--rose-ink); }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">超外差接收機互動解析</div>
+  <p class="tool-sub">對應「無線電系統原理」題庫 · 點擊方塊圖各級了解功能，附 SWR 駐波比與 dBi／dBd 增益計算機。</p>
+
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('block')"><i data-lucide="radio-receiver"></i> 方塊圖互動</button>
+    <button class="tab" onclick="switchTab('swr')"><i data-lucide="activity"></i> SWR 計算機</button>
+    <button class="tab" onclick="switchTab('antenna')"><i data-lucide="radio-tower"></i> 天線增益</button>
+    <button class="tab" onclick="switchTab('exam')"><i data-lucide="graduation-cap"></i> 考試速查</button>
+  </div>
+
+  <!-- ═══ BLOCK DIAGRAM TAB ═══ -->
+  <div id="tab-block">
+    <div class="st">接收機類型選擇</div>
+    <div class="mode-row" id="mode-row"></div>
+
+    <div id="diagram-wrap">
+      <canvas id="diagram-canvas" height="200"></canvas>
+    </div>
+
+    <div class="block-info" id="block-info">
+      <div class="bi-name" id="bi-name">點擊上方任一方塊查看詳細說明</div>
+      <div class="bi-fn" id="bi-fn" style="color:var(--ink-3)">超外差接收機是業餘無線電最常見的架構，訊號從天線進入後，依序經過多個處理級。</div>
+      <div class="bi-exam" id="bi-exam" style="display:none"></div>
+    </div>
+
+    <div class="freq-row">
+      <label>接收頻率</label>
+      <input type="number" id="rx-freq" value="14200" oninput="updateFreqCalc()">
+      <span class="freq-badge">kHz</span>
+      <span id="fc-lo" style="color:var(--pur)">本地振盪：—</span>
+      <span id="fc-if" style="color:var(--honey-ink)">中頻 IF：—</span>
+      <span id="fc-image" style="color:var(--rose-ink)">鏡像頻率：—</span>
+    </div>
+
+    <div class="st">各級訊號波形預覽</div>
+    <div class="wave-row" id="wave-row"></div>
+
+    <div class="st">訊號處理流程表</div>
+    <table class="chain-table" id="chain-table">
+      <thead><tr><th>級別</th><th>輸入</th><th>輸出</th><th>功能</th></tr></thead>
+      <tbody id="chain-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ═══ SWR TAB ═══ -->
+  <div id="tab-swr" style="display:none">
+    <div class="st">SWR 駐波比計算機</div>
+
+    <div style="background:var(--surface-soft);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:var(--r-md);padding:13px;margin-bottom:12px;font-family:var(--font-mono);font-size:12.5px;line-height:1.8;">
+      <strong style="color:var(--teal-ink)">公式：SWR = Z_L / Z_0（若 Z_L &gt; Z_0）或 Z_0 / Z_L（若 Z_0 &gt; Z_L）</strong><br>
+      <span style="color:var(--ink-3)">Z_L = 負載阻抗（天線饋點） · Z_0 = 饋線特性阻抗（通常 50Ω）· 完美匹配 SWR = 1:1</span>
+    </div>
+
+    <div class="swr-calc">
+      <div class="swr-inputs">
+        <div class="ig">
+          <label>饋線阻抗 Z₀</label>
+          <div class="irow"><input type="number" id="swr-z0" value="50" oninput="calcSwr()"><div class="unit">Ω</div></div>
+        </div>
+        <div class="ig">
+          <label>天線阻抗 Z_L</label>
+          <div class="irow"><input type="number" id="swr-zl" value="200" oninput="calcSwr()"><div class="unit">Ω</div></div>
+        </div>
+      </div>
+      <div class="swr-result" id="swr-result">
+        <div class="swr-val" id="swr-val">—</div>
+        <div class="swr-steps" id="swr-steps"></div>
+        <div class="swr-bar-wrap">
+          <div class="swr-bar-bg"><div class="swr-bar-fill" id="swr-bar" style="width:5%"></div></div>
+          <div class="swr-label-row"><span>1:1 完美</span><span>2:1 可接受</span><span>5:1 差</span><span>10:1 很差</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="st">SWR 考試常見計算題</div>
+    <table class="chain-table">
+      <thead><tr><th>饋線 Z₀</th><th>天線 Z_L</th><th>SWR</th><th>計算</th></tr></thead>
+      <tbody>
+        <tr onclick="setSwrExample(50,200)"><td style="color:var(--teal-ink)">50Ω</td><td>200Ω</td><td style="color:var(--leaf-ink)">4:1</td><td style="color:var(--ink-3)">200/50 = 4</td></tr>
+        <tr onclick="setSwrExample(50,10)"><td style="color:var(--teal-ink)">50Ω</td><td>10Ω</td><td style="color:var(--leaf-ink)">5:1</td><td style="color:var(--ink-3)">50/10 = 5</td></tr>
+        <tr onclick="setSwrExample(50,50)"><td style="color:var(--teal-ink)">50Ω</td><td>50Ω</td><td style="color:var(--leaf-ink)">1:1</td><td style="color:var(--ink-3)">完美匹配</td></tr>
+        <tr onclick="setSwrExample(50,25)"><td style="color:var(--teal-ink)">50Ω</td><td>25Ω</td><td style="color:var(--leaf-ink)">2:1</td><td style="color:var(--ink-3)">50/25 = 2</td></tr>
+        <tr onclick="setSwrExample(50,300)"><td style="color:var(--teal-ink)">50Ω</td><td>300Ω</td><td style="color:var(--leaf-ink)">6:1</td><td style="color:var(--ink-3)">300/50 = 6</td></tr>
+      </tbody>
+    </table>
+
+    <div class="trap"><i data-lucide="triangle-alert"></i><span>考試陷阱：饋線末端加匹配網路讓 SWR 變 1:1，<strong>但饋線上的 SWR 不會改變</strong>——饋線中的駐波是由天線阻抗決定的，匹配網路只改變發射機看到的阻抗。</span></div>
+  </div>
+
+  <!-- ═══ ANTENNA GAIN TAB ═══ -->
+  <div id="tab-antenna" style="display:none">
+    <div class="st">dBi vs dBd — 天線增益基準</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;" class="ant-grid">
+      <div class="block-info" style="border-left-color:var(--teal);margin-bottom:0;">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:15px;color:var(--teal-ink);margin-bottom:6px;">dBi</div>
+        <div style="font-size:12.5px;line-height:1.7;color:var(--ink-2)">以<strong style="color:var(--teal-ink)">等向性天線</strong>（Isotropic，向所有方向均等輻射）為基準。理論上的完美全向天線，現實中不存在。</div>
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3);margin-top:7px;">0 dBi = 等向性天線增益</div>
+      </div>
+      <div class="block-info" style="border-left-color:var(--pur);margin-bottom:0;">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:15px;color:var(--pur);margin-bottom:6px;">dBd</div>
+        <div style="font-size:12.5px;line-height:1.7;color:var(--ink-2)">以<strong style="color:var(--pur)">半波偶極天線</strong>（Dipole）為基準。最常見的實際天線，工程師常用此基準。</div>
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3);margin-top:7px;">0 dBd = 半波偶極天線增益</div>
+      </div>
+    </div>
+
+    <div style="background:var(--honey-soft);border:1px solid #f0dcae;border-radius:var(--r-md);padding:13px;margin-bottom:12px;font-family:var(--font-mono);font-size:14px;text-align:center;color:var(--honey-ink);font-weight:700;">
+      dBi = dBd + 2.15 dB &nbsp;|&nbsp; dBd = dBi − 2.15 dB
+    </div>
+
+    <div class="swr-calc" style="margin-bottom:12px;">
+      <div style="font-family:var(--font-sans);font-weight:700;font-size:13px;color:var(--ink);margin-bottom:12px;">dBi ↔ dBd 換算</div>
+      <div class="swr-inputs">
+        <div class="ig">
+          <label>輸入 dBi 值</label>
+          <div class="irow"><input type="number" id="ant-dbi" value="6.15" step="0.1" oninput="calcAnt('dbi')"><div class="unit">dBi</div></div>
+        </div>
+        <div class="ig">
+          <label>換算 dBd 值</label>
+          <div class="irow"><input type="number" id="ant-dbd" value="4.0" step="0.1" oninput="calcAnt('dbd')"><div class="unit">dBd</div></div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3);margin-top:10px;" id="ant-note">偶極天線 = 2.15 dBi = 0 dBd</div>
+    </div>
+
+    <div class="st">常見天線增益參考</div>
+    <table class="chain-table">
+      <thead><tr><th>天線類型</th><th>dBd</th><th>dBi</th><th>特性</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--teal-ink)">等向性（理論）</td><td style="color:var(--ink-3)">−2.15</td><td style="color:var(--leaf-ink)">0</td><td style="font-size:11px">全向均等，不存在</td></tr>
+        <tr><td style="color:var(--teal-ink)">半波偶極</td><td style="color:var(--leaf-ink)">0</td><td style="color:var(--leaf-ink)">2.15</td><td style="font-size:11px">基準天線，最常用</td></tr>
+        <tr><td style="color:var(--teal-ink)">1/4波長垂直</td><td>~0</td><td>~2.15</td><td style="font-size:11px">地面作為反射面</td></tr>
+        <tr><td style="color:var(--teal-ink)">3 元素八木</td><td>~7.5</td><td>~9.7</td><td style="font-size:11px">定向，有前後比</td></tr>
+        <tr><td style="color:var(--teal-ink)">5 元素八木</td><td>~10</td><td>~12.15</td><td style="font-size:11px">增益增加，波束更窄</td></tr>
+      </tbody>
+    </table>
+
+    <div class="trap" style="margin-top:10px;"><i data-lucide="triangle-alert"></i><span>考試陷阱：同一天線用 dBi 標示時數字<strong>比 dBd 大 2.15</strong>。廠商廣告常用 dBi，讓增益數字看起來更大。</span></div>
+  </div>
+
+  <!-- ═══ EXAM TAB ═══ -->
+  <div id="tab-exam" style="display:none">
+    <div class="st">系統原理 — 接收機 / 天線 考試題速查</div>
+    <div class="exam-grid" id="exam-grid"></div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+function icons(){ if (window.lucide) lucide.createIcons(); }
+const CFONT = 'Space Mono';
+
+// neon block colours (for dark canvas) -> readable colours (for white surfaces)
+const WEBCOL = {
+  '#44ffaa':'#1F8F76', '#00ccff':'#126B65', '#bb88ff':'#6D3FC0', '#ff8844':'#C2620E',
+  '#ffcc00':'#9A6510', '#ff88cc':'#B5347C', '#ff4466':'#B5342C', '#aac8dc':'#6B6157',
+};
+function webColor(c){ return WEBCOL[c] || 'var(--ink)'; }
+
+// ═══ BLOCK DEFINITIONS ═══
+const MODES = {
+  ssb: {
+    label:'SSB 接收機',
+    blocks:[
+      { id:'ant',   name:'天線',     color:'#44ffaa', x:20,  fn:'將空中電磁波轉換為電訊號。越好的天線，訊號雜訊比越高。',exam:'天線饋點阻抗必須與饋線特性阻抗匹配，否則產生駐波（SWR）。'},
+      { id:'rfa',   name:'RF放大器', color:'#00ccff', x:130, fn:'放大接收到的射頻訊號，同時盡量不增加雜訊。可提升接收機靈敏度。',exam:'RF 放大器提高靈敏度，但也可能放大鏡像頻率的干擾。'},
+      { id:'mix',   name:'混波器',   color:'#bb88ff', x:240, fn:'將RF訊號與本地振盪器訊號「相乘」，產生差頻（中頻 IF）。\nIF = RF - LO 或 LO - RF',exam:'考試：超外差接收機中，混波器處理來自RF放大器與本地振盪器的訊號，輸出中頻（IF）。'},
+      { id:'lo',    name:'本地振盪', color:'#ff8844', x:240, fn:'產生一個固定或可調的頻率，與接收頻率相差一個IF值。\n改變LO頻率就是「調台」。',exam:'LO = 接收頻率 + IF（或 - IF）。SSB收發機用DDS可獲得石英晶體的穩定度。'},
+      { id:'iff',   name:'IF濾波器', color:'#ffcc00', x:370, fn:'只讓中頻（例如455kHz或10.7MHz）通過，濾除其他頻率。\n決定接收機的選擇性（帶寬）。',exam:'DSP IF濾波器的優點：可產生大範圍的濾波器頻寬和形狀（類比濾波器難以做到）。'},
+      { id:'ifa',   name:'IF放大器', color:'#ffcc00', x:460, fn:'放大已濾波的中頻訊號。包含AGC（自動增益控制），防止強訊號過載。',exam:'AGC讓強弱訊號都能保持適當音量輸出。'},
+      { id:'det',   name:'乘積檢測', color:'#ff88cc', x:570, fn:'SSB解調器：將IF訊號與BFO（拍頻振盪器）混頻，還原音頻。\nBFO頻率 = IF頻率。',exam:'考試：單邊帶接收機中，乘積檢測器混合來自IF放大器與BFO的訊號，輸出送入音頻放大器。'},
+      { id:'bfo',   name:'BFO',      color:'#ff4466', x:570, fn:'拍頻振盪器（Beat Frequency Oscillator）：產生與IF同頻的載波，用於SSB/CW解調。\nFM接收機不需要BFO。',exam:'BFO專用於SSB和CW解調。FM接收機使用鑑相器（Discriminator），不用BFO。'},
+      { id:'af',    name:'音頻放大', color:'#44ffaa', x:700, fn:'將解調後的音頻訊號放大到可驅動喇叭或耳機的功率。',exam:'音頻放大器是最後一級。'},
+      { id:'spk',   name:'喇叭',     color:'#aac8dc', x:810, fn:'將電訊號轉換為聲音輸出。',exam:''},
+    ],
+    if: 455,
+  },
+  fm: {
+    label:'FM 接收機',
+    blocks:[
+      { id:'ant',   name:'天線',     color:'#44ffaa', x:20,  fn:'接收VHF/UHF頻段（144MHz、433MHz）訊號。FM天線通常為5/8波長或八木天線。',exam:''},
+      { id:'rfa',   name:'RF放大器', color:'#00ccff', x:130, fn:'放大RF訊號。FM接收機的RF放大器也包含限幅功能，因為FM是振幅固定的。',exam:'FM信號振幅固定，RF放大器輸出振幅不應隨信號強弱而明顯變化。'},
+      { id:'mix',   name:'混波器',   color:'#bb88ff', x:240, fn:'與本地振盪器混頻產生IF。FM接收機通常IF較高（10.7MHz），選擇性更好。',exam:'外差 = 混合兩個射頻信號的另一個術語（考試：混合兩個RF信號稱為「外差」）。'},
+      { id:'lo',    name:'本地振盪', color:'#ff8844', x:240, fn:'FM收發機中，VHF調頻發射機用倍頻器將低頻振盪器頻率乘至工作頻率。',exam:'考試：VHF FM發射機中，什麼級以較低頻率信號產生所需工作頻率？→ 倍頻器。'},
+      { id:'iff',   name:'IF濾波器', color:'#ffcc00', x:370, fn:'FM接收機IF通常為10.7MHz，帶寬約200kHz（廣播）或12.5~25kHz（NFM）。',exam:''},
+      { id:'ifa',   name:'IF放大+限幅',color:'#ffcc00',x:460,fn:'FM接收機包含限幅器（Limiter），將訊號振幅削平為固定值，去除振幅雜訊。\n這是FM抗雜訊能力強的關鍵。',exam:'FM振幅固定→限幅器消除振幅型雜訊→FM抗靜電（QRN）能力優於AM。'},
+      { id:'disc',  name:'鑑相器',   color:'#ff88cc', x:570, fn:'FM解調器：將頻率變化還原為音頻訊號。\n（也稱頻率鑑別器 Discriminator）',exam:'考試：許多FM接收機採用什麼線路將IF放大器信號轉換成音頻信號？→ 鑑相器。'},
+      { id:'af',    name:'音頻放大', color:'#44ffaa', x:700, fn:'放大音頻，通常也包含去加重（de-emphasis）網路，補償發射端的預加重。',exam:''},
+      { id:'spk',   name:'喇叭',     color:'#aac8dc', x:810, fn:'輸出音頻。',exam:''},
+    ],
+    if: 10700,
+  },
+};
+
+let curMode = 'ssb', selBlock = null, animPhase = 0, animId;
+
+function buildModes(){
+  const row = document.getElementById('mode-row');
+  Object.keys(MODES).forEach(k=>{
+    const btn = document.createElement('div');
+    btn.className='mbtn'+(k===curMode?' on':'');
+    btn.id='mb-'+k;
+    btn.textContent = MODES[k].label;
+    btn.onclick=()=>{ curMode=k; document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.id==='mb-'+k)); selBlock=null; updateBlockInfo(null); buildChainTable(); updateFreqCalc(); };
+    row.appendChild(btn);
+  });
+}
+
+function drawDiagram(){
+  const cv=document.getElementById('diagram-canvas');
+  cv.width=cv.offsetWidth||800;
+  const W=cv.width, H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#0c1820'; ctx.fillRect(0,0,W,H);
+
+  const m=MODES[curMode];
+  const mainBlocks=m.blocks.filter(b=>b.id!=='lo'&&b.id!=='bfo');
+  const subBlocks=m.blocks.filter(b=>b.id==='lo'||b.id==='bfo');
+  const bW=80, bH=44, mainY=H/2-22;
+  const scale=W/900;
+
+  for(let i=0;i<mainBlocks.length-1;i++){
+    const b=mainBlocks[i], nb=mainBlocks[i+1];
+    const x1=(b.x+bW)*scale, x2=nb.x*scale, y=mainY+bH/2;
+    const progress=(animPhase+i*0.15)%1;
+    const dotX=x1+(x2-x1)*progress;
+    ctx.strokeStyle='rgba(0,204,255,0.3)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x2,y); ctx.stroke();
+    ctx.fillStyle='rgba(0,220,255,0.9)'; ctx.shadowColor='#00ccff'; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.arc(dotX,y,3,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+  }
+
+  subBlocks.forEach(sb=>{
+    let target=null;
+    if(sb.id==='lo') target=m.blocks.find(b=>b.id==='mix');
+    if(sb.id==='bfo') target=m.blocks.find(b=>b.id==='det');
+    if(!target) return;
+    const tx=(target.x+bW/2)*scale, ty=mainY+bH;
+    const sx=(sb.x+bW/2)*scale, sy=mainY+bH+60;
+    ctx.strokeStyle='rgba(255,136,68,0.35)'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(sx,sy); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  m.blocks.forEach(b=>{
+    const isSub = b.id==='lo'||b.id==='bfo';
+    const y = isSub ? mainY+bH+18 : mainY;
+    const x = b.x*scale;
+    const isSelected = selBlock===b.id;
+    if(isSelected){ ctx.shadowColor=b.color; ctx.shadowBlur=15; }
+    ctx.fillStyle = isSelected ? b.color+'22' : '#101e2a';
+    ctx.strokeStyle = isSelected ? b.color : (b.color+'55');
+    ctx.lineWidth = isSelected ? 2 : 1;
+    ctx.fillRect(x,y,bW*scale,bH);
+    ctx.strokeRect(x,y,bW*scale,bH);
+    ctx.shadowBlur=0;
+    ctx.fillStyle = isSelected ? b.color : b.color+'bb';
+    ctx.font = `bold ${11*Math.min(scale,1)}px ${CFONT}`;
+    ctx.textAlign='center';
+    ctx.fillText(b.name,x+bW*scale/2,y+bH/2+4);
+  });
+
+  cv._blocks = m.blocks.map(b=>({
+    id:b.id, isSub:b.id==='lo'||b.id==='bfo',
+    x:b.x*scale, y:(b.id==='lo'||b.id==='bfo')?mainY+bH+18:mainY,
+    w:bW*scale, h:bH
+  }));
+}
+
+document.getElementById('diagram-canvas').addEventListener('click',e=>{
+  const cv=document.getElementById('diagram-canvas');
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  if(!cv._blocks) return;
+  for(const b of cv._blocks){
+    if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){
+      selBlock=b.id;
+      const bd=MODES[curMode].blocks.find(bl=>bl.id===b.id);
+      updateBlockInfo(bd); highlightChain(b.id);
+      return;
+    }
+  }
+  selBlock=null; updateBlockInfo(null); highlightChain(null);
+});
+
+function updateBlockInfo(b){
+  const nameEl=document.getElementById('bi-name'), fnEl=document.getElementById('bi-fn'),
+        examEl=document.getElementById('bi-exam'), card=document.getElementById('block-info');
+  if(!b){ nameEl.style.color=''; nameEl.textContent='點擊上方任一方塊查看詳細說明'; fnEl.textContent=''; examEl.style.display='none'; card.style.borderLeftColor=''; return; }
+  nameEl.style.color=webColor(b.color);
+  nameEl.textContent=b.name;
+  fnEl.style.color='var(--ink-2)';
+  fnEl.textContent=b.fn;
+  if(b.exam){ examEl.style.display=''; examEl.innerHTML='<i data-lucide="pencil"></i><span>'+b.exam+'</span>'; icons(); }
+  else examEl.style.display='none';
+  card.style.borderLeftColor=webColor(b.color);
+}
+
+function updateFreqCalc(){
+  const rf=parseFloat(document.getElementById('rx-freq').value)||14200;
+  const ifVal=MODES[curMode].if;
+  const lo=rf+ifVal;
+  const img=lo+ifVal;
+  document.getElementById('fc-lo').textContent=`本地振盪：${(lo/1000).toFixed(3)} MHz`;
+  document.getElementById('fc-if').textContent=`中頻 IF：${(ifVal/1000).toFixed(3)} MHz`;
+  document.getElementById('fc-image').textContent=`鏡像頻率：${(img/1000).toFixed(3)} MHz`;
+}
+
+function buildChainTable(){
+  const m=MODES[curMode];
+  const tbody=document.getElementById('chain-body');
+  tbody.innerHTML='';
+  const chain=m.blocks.filter(b=>b.id!=='lo'&&b.id!=='bfo'&&b.id!=='spk');
+  chain.forEach(b=>{
+    const tr=document.createElement('tr');
+    tr.id='chain-'+b.id;
+    tr.innerHTML=`<td style="color:${webColor(b.color)};font-family:var(--font-mono);font-weight:700">${b.name}</td><td style="font-size:11px;color:var(--ink-3)">${getInput(b.id)}</td><td style="font-size:11px;color:var(--ink-3)">${getOutput(b.id)}</td><td style="font-size:12px">${b.fn.split('\n')[0]}</td>`;
+    tr.onclick=()=>{ selBlock=b.id; updateBlockInfo(b); highlightChain(b.id); };
+    tbody.appendChild(tr);
+  });
+}
+
+function highlightChain(id){
+  document.querySelectorAll('.chain-table tr').forEach(tr=>tr.classList.remove('on'));
+  if(id){ const el=document.getElementById('chain-'+id); if(el) el.classList.add('on'); }
+}
+
+function getInput(id){ const m={'ant':'電磁波','rfa':'RF訊號','mix':'RF + LO','iff':'IF（混頻後）','ifa':'IF','det':'IF + BFO','disc':'IF','af':'音頻訊號','spk':'音頻'}; return m[id]||'—'; }
+function getOutput(id){ const m={'ant':'RF訊號','rfa':'放大RF','mix':'中頻 IF','iff':'窄帶IF','ifa':'放大IF','det':'音頻','disc':'音頻','af':'功率音頻'}; return m[id]||'—'; }
+
+function buildWaves(){
+  const wr=document.getElementById('wave-row');
+  wr.innerHTML='';
+  const waves=[
+    {label:'天線接收 (RF)',freq:10,amp:.8},
+    {label:'混頻後 (IF)',freq:3,amp:.7},
+    {label:'IF濾波後',freq:3,amp:.6,narrow:true},
+    {label:'解調音頻',freq:.5,amp:.9,audio:true},
+  ];
+  waves.forEach(w=>{
+    const div=document.createElement('div'); div.className='wcard';
+    const cv=document.createElement('canvas'); cv.height=50;
+    div.appendChild(cv);
+    const lbl=document.createElement('div'); lbl.className='wcard-label'; lbl.textContent=w.label;
+    div.appendChild(lbl);
+    wr.appendChild(div);
+    drawMiniWave(cv,w);
+  });
+}
+
+function drawMiniWave(cv,w){
+  cv.width=cv.offsetWidth||200;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  ctx.fillStyle='#040810'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=w.audio?'#44ffaa':'#00ccff';
+  ctx.lineWidth=1.5; ctx.shadowColor=ctx.strokeStyle; ctx.shadowBlur=4;
+  ctx.beginPath();
+  for(let i=0;i<=W;i++){
+    const t=i/W*Math.PI*2*w.freq;
+    let y=Math.sin(t)*w.amp;
+    if(w.narrow) y*=Math.exp(-Math.abs(Math.sin(t*2))*0.3);
+    ctx.lineTo(i,H/2-y*H*.38);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+}
+
+function calcSwr(){
+  const z0=parseFloat(document.getElementById('swr-z0').value)||50;
+  const zl=parseFloat(document.getElementById('swr-zl').value)||50;
+  if(z0<=0||zl<=0) return;
+  const swr=zl>z0?zl/z0:z0/zl;
+  document.getElementById('swr-val').textContent=`SWR = ${swr.toFixed(2)} : 1`;
+  document.getElementById('swr-steps').innerHTML=`大值/小值 = ${Math.max(z0,zl)} / ${Math.min(z0,zl)} = <span>${swr.toFixed(2)}</span><br>` +
+    (swr<1.5?'<span style="color:var(--leaf-ink)"><i data-lucide="circle-check"></i> 優秀</span>':swr<2?'<span style="color:var(--leaf-ink)"><i data-lucide="circle-check"></i> 良好，可接受</span>':swr<3?'<span style="color:var(--honey-ink)"><i data-lucide="triangle-alert"></i> 尚可</span>':'<span style="color:var(--rose-ink)"><i data-lucide="circle-x"></i> 差，需要改善匹配</span>');
+  const pct=Math.min(100,(swr-1)/9*100);
+  document.getElementById('swr-bar').style.width=Math.max(3,pct)+'%';
+  document.getElementById('swr-bar').style.background=swr<2?'var(--leaf)':swr<4?'var(--honey)':'var(--rose)';
+  document.getElementById('swr-result').style.borderLeftColor=swr<2?'var(--leaf)':swr<4?'var(--honey)':'var(--rose)';
+  icons();
+}
+function setSwrExample(z0,zl){ document.getElementById('swr-z0').value=z0; document.getElementById('swr-zl').value=zl; calcSwr(); }
+
+function calcAnt(from){
+  if(from==='dbi'){
+    const dbi=parseFloat(document.getElementById('ant-dbi').value)||0;
+    document.getElementById('ant-dbd').value=(dbi-2.15).toFixed(2);
+    document.getElementById('ant-note').textContent=`${dbi} dBi = ${(dbi-2.15).toFixed(2)} dBd（相對半波偶極）`;
+  } else {
+    const dbd=parseFloat(document.getElementById('ant-dbd').value)||0;
+    document.getElementById('ant-dbi').value=(dbd+2.15).toFixed(2);
+    document.getElementById('ant-note').textContent=`${dbd} dBd = ${(dbd+2.15).toFixed(2)} dBi（相對等向性天線）`;
+  }
+}
+
+const EXAM_QA=[
+  {q:'超外差接收機中，哪個電路處理RF放大器與本地振盪器的訊號？',a:'混波器（Mixer）'},
+  {q:'單邊帶接收機中，乘積檢測器混合什麼兩個訊號？',a:'中頻放大器（IF）輸出 + BFO（拍頻振盪器）'},
+  {q:'FM接收機用什麼線路將IF轉換成音頻？',a:'鑑相器（Discriminator / Phase Detector）'},
+  {q:'DSP IF濾波器比類比濾波器的優點是什麼？',a:'可以產生大範圍的濾波器頻寬和形狀'},
+  {q:'dBi 與 dBd 相差多少？哪個數字比較大？',a:'dBi 比 dBd 高 2.15 dB（dBi數字較大）'},
+  {q:'dBi 和 dBd 各以什麼天線為基準？',a:'dBi = 等向性天線；dBd = 半波偶極天線'},
+  {q:'50Ω饋線接200Ω天線，SWR是多少？',a:'4:1（200/50=4）'},
+  {q:'50Ω饋線接10Ω天線，SWR是多少？',a:'5:1（50/10=5）'},
+  {q:'高SWR對饋線損失有什麼影響？',a:'若饋線有損失，高SWR下損失會增加'},
+  {q:'在發射機端加匹配網路讓SWR=1:1後，饋線上的SWR是多少？',a:'仍然是原來的SWR（例如5:1），匹配網路不改變饋線上的駐波'},
+  {q:'VHF FM發射機中，什麼級將低頻振盪器頻率倍增至工作頻率？',a:'倍頻器（Multiplier）'},
+  {q:'BFO（拍頻振盪器）用於解調哪些模式？FM需要嗎？',a:'SSB和CW需要BFO；FM不需要（用鑑相器）'},
+];
+
+function buildExam(){
+  const g=document.getElementById('exam-grid');
+  EXAM_QA.forEach(q=>{
+    const div=document.createElement('div'); div.className='ecard';
+    div.innerHTML=`<div class="eq">${q.q}</div><div class="ea">→ <span class="ekw">${q.a}</span></div>`;
+    g.appendChild(div);
+  });
+}
+
+function switchTab(name){
+  ['block','swr','antenna','exam'].forEach(t=>{ document.getElementById('tab-'+t).style.display=t===name?'':'none'; });
+  document.querySelectorAll('.tabs .tab').forEach((el,i)=>{ el.classList.toggle('on',['block','swr','antenna','exam'][i]===name); });
+  if(name==='block') startAnim();
+}
+
+function startAnim(){
+  if(animId) return;
+  function loop(){ animPhase=(animPhase+0.008)%1; drawDiagram(); animId=requestAnimationFrame(loop); }
+  animId=requestAnimationFrame(loop);
+}
+
+// ═══ INIT ═══
+buildModes();
+buildChainTable();
+buildWaves();
+buildExam();
+calcSwr();
+updateFreqCalc();
+icons();
+startAnim();
+window.addEventListener('resize',()=>{ buildWaves(); });
+</script>
+</body>
+</html>
