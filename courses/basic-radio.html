@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基礎無線電使用：實機操作入門</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<script>window.SITE_SECTION = 'courses';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="read-hero">
+    <div class="eyebrow">COURSE · 基礎操作</div>
+    <h1>基礎無線電使用</h1>
+    <p>給第一次拿起對講機的人——從開機、設定頻率、發射功率，到通聯禮節與狀況回報，一步步學會實機操作，不用先懂理論。</p>
+  </div>
+
+  <!-- 分頁 -->
+  <div class="tabs">
+    <button class="tab active" onclick="showPart('intro', this)"><i data-lucide="book-open"></i> 課程介紹</button>
+    <button class="tab" onclick="showPart('operate', this)"><i data-lucide="radio"></i> 實機操作篇</button>
+    <button class="tab" onclick="showPart('exam', this)"><i data-lucide="graduation-cap"></i> 考照準備篇</button>
+  </div>
+
+  <!-- ============ 課程介紹 ============ -->
+  <div id="intro" class="scenario active">
+    <div class="prose-card">
+      <h2>這門課是什麼？</h2>
+      <p>很多人買了對講機，卻不知道怎麼開機、怎麼設頻率、按哪個鍵才會發話。這門課<strong>不談艱深理論</strong>，先帶你把機器拿在手上操作一遍：設定、發射、通聯、回報，全部用得到的實務動作。</p>
+      <p>學完這篇，你就能在<strong>合法頻段</strong>內正確設定機器、用正確的禮節和別人通聯，並在緊急時做出清楚的狀況回報。</p>
+      <div class="callout task"><span class="ct"><i data-lucide="hand"></i>本課特色：動動手</span>每個段落都附「動動手」小任務——拿起你的機器跟著做一次，比看十遍還記得住。</div>
+    </div>
+
+    <div class="sec-h"><i data-lucide="list-checks"></i>課程結構</div>
+    <div class="lcards">
+      <div class="lcard"><strong>實機操作篇</strong><p>認識機器、執照認證、設定頻率、發射功率、通訊要素、通報禮節、狀況回報格式。</p></div>
+      <div class="lcard"><strong>考照準備篇</strong><p>電磁波與頻率基礎、頻帶分類、三等業餘頻段與功率、執照與考試流程。</p></div>
+    </div>
+
+    <div class="callout info"><span class="ct"><i data-lucide="info"></i>教材來源</span>本課程內容整理自「台灣曙豐防災自訓團」基礎無線電教案，並依本站白話教學風格重新編排。</div>
+  </div>
+
+  <!-- ============ 實機操作篇 ============ -->
+  <div id="operate" class="scenario">
+
+    <!-- 1. 認識機器 -->
+    <div class="sec-h"><i data-lucide="radio"></i>認識你的無線電</div>
+    <div class="prose-card">
+      <p>先認得機器上的每個部位和按鍵，後面的設定才不會手忙腳亂。下圖標出一台典型手持對講機的各部位：</p>
+      <figure class="fig">
+        <img class="contain" src="../assets/img/radio-parts.png" alt="手持無線電各部位與按鍵標示圖">
+        <figcaption>手持對講機各部位與配件（天線・電池・背夾・充電座・變壓器）</figcaption>
+      </figure>
+      <div class="callout task"><span class="ct"><i data-lucide="hand"></i>動動手</span>把機器<strong>關機</strong>後，試著拆掉能拆的部分（電池、天線、背夾），認識結構後再裝回去。</div>
+    </div>
+
+    <div class="sec-h"><i data-lucide="square-mouse-pointer"></i>常用按鍵速查</div>
+    <table class="tbl">
+      <tr><th>按鍵</th><th>功能</th></tr>
+      <tr><td><b>PTT</b>（發射鍵）</td><td>Push To Talk，按住才發射訊號；放開才能聽別人說話。</td></tr>
+      <tr><td><b>BAND</b></td><td>切換 VHF / UHF 頻道。</td></tr>
+      <tr><td><b>A / B</b></td><td>調整發話／接收頻率。A 為上排主頻道，B 為下排副頻道。</td></tr>
+      <tr><td><b>VFO / MR</b></td><td>頻率／頻道模式切換（要先把頻道記憶起來才有作用）。</td></tr>
+      <tr><td><b>SCAN</b></td><td>頻道掃描，會停在有訊號的頻道上。</td></tr>
+      <tr><td><b>STEP</b></td><td>步進頻率，每次上／下調的間隔（2.5 / 5.0 / 6.25 / 10.0 / 12.5 / 25.0 kHz）。</td></tr>
+    </table>
+
+    <!-- 2. 執照與認證 -->
+    <div class="sec-h"><i data-lucide="badge-check"></i>執照與型式認證</div>
+    <div class="prose-card">
+      <p>在台灣合法使用業餘無線電，需要<strong>行動業餘無線電電台執照</strong>，而且機器必須是<strong>型式認證合格</strong>的機種。認證合格的機子，打開電池蓋後機身會貼有 NCC 型式認證貼紙。</p>
+      <figure class="fig">
+        <img class="contain" src="../assets/img/ncc-cert.jpg" alt="機身 NCC 型式認證標籤位置">
+        <figcaption>電池拆下後，機身上的 NCC 型式認證標籤</figcaption>
+      </figure>
+      <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>免照 FRS 不建議</span>免照的 FRS 機型功率低（<span class="readout">0.5W</span>）、頻率少（僅 14 組），通聯距離與彈性都很有限，<strong>不建議作為正式用途</strong>。</div>
+      <p><a class="btn btn-ghost" href="https://www.ncc.gov.tw/chinese/news.aspx?site_content_sn=2000414" target="_blank" rel="noopener"><i data-lucide="external-link"></i> 三等型式認證合格清單（NCC）</a></p>
+    </div>
+
+    <!-- 3. 設定頻率 -->
+    <div class="sec-h"><i data-lucide="sliders-horizontal"></i>設定頻率</div>
+    <div class="prose-card">
+      <p>把機器設定在以下<strong>合法頻段</strong>內的某個固定頻率：</p>
+      <table class="tbl">
+        <tr><th>頻段</th><th>合法範圍</th></tr>
+        <tr><td><b>VHF</b></td><td><span class="readout">144 – 146 MHz</span></td></tr>
+        <tr><td><b>UHF</b></td><td><span class="readout">432 – 440 MHz</span></td></tr>
+      </table>
+      <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>緊急頻率不可亂用</span>國際救災救難頻率為 <span class="readout">145.000</span> 與 <span class="readout">433.000</span>，NCC 宣導為緊急呼叫頻道。<strong>不當使用這兩個頻率，罰款新台幣 10 萬元以上</strong>。</div>
+      <div class="callout task"><span class="ct"><i data-lucide="hand"></i>動動手</span>把<strong>步進頻率（STEP）設為 10.0 kHz</strong>，再用 SCAN 掃描看看會停在哪個有訊號的頻道。</div>
+    </div>
+
+    <!-- 4. 發射功率 -->
+    <div class="sec-h"><i data-lucide="battery-charging"></i>發射功率</div>
+    <div class="prose-card">
+      <p>通過 NCC 型式認證的機子，<strong>最大發射功率已固定</strong>，你能調的是最大功率以下的範圍。按下 <b>PTT</b> 鍵就會發射訊號——<strong>即使你沒有說話</strong>。</p>
+      <table class="tbl">
+        <tr><th>設定</th><th>說明</th></tr>
+        <tr><td><b>TXP</b>（發射功率）</td><td>可設 <b>High / Low</b> 兩段準位。High 比 Low 耗電。</td></tr>
+      </table>
+      <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>天線拆下時請勿按發射</span>沒接天線就按 PTT 發射，反射的能量會把機器<strong>燒壞</strong>。</div>
+      <div class="callout task"><span class="ct"><i data-lucide="hand"></i>動動手</span>把 <strong>TXP 設為 Low</strong>，平時近距離通聯用低功率就夠，省電又不干擾別人。</div>
+    </div>
+
+    <!-- 5. 通訊基本要素 -->
+    <div class="sec-h"><i data-lucide="signal"></i>無線通訊基本要素</div>
+    <div class="prose-card">
+      <p>無線通訊就像面對面說話，只要以下要素齊備，雙方就有機會通上：</p>
+      <div class="lcards">
+        <div class="lcard"><strong>頻率對準</strong><p>雙方要在<b>相同頻率</b>——傳送者發話的頻率，要和接收者「耳朵」聽的頻率一樣。</p></div>
+        <div class="lcard"><strong>功率適當</strong><p>音量要剛好，不是越大越好。太遠聽不見，太近反而聽不清楚。</p></div>
+        <div class="lcard"><strong>天線方向</strong><p>方向要對，等於「對著接收者說話」。</p></div>
+        <div class="lcard"><strong>調變方式一致</strong><p>要用對方能理解的「語言」（同一種調變方式）。</p></div>
+        <div class="lcard"><strong>沒有干擾</strong><p>周圍不能太吵，否則訊號被蓋過。</p></div>
+      </div>
+      <div class="callout info"><span class="ct"><i data-lucide="info"></i>無線電是「半雙工」</span>同一個頻率<strong>一次只能一個人講</strong>——頻率被佔住，其他人就無法使用。所以才需要通聯禮節（下一節）。</div>
+    </div>
+
+    <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>接下來</span>「通報順序與禮節」「狀況回報格式（SALUTE / MIST / METHANE）」與「考照準備篇」整理中，會接著補上。</div>
+
+  </div>
+
+  <!-- ============ 考照準備篇（建置中） ============ -->
+  <div id="exam" class="scenario">
+    <div class="prose-card">
+      <h2>考照準備篇</h2>
+      <p>這一篇會涵蓋：電磁波與頻率基礎（<span class="readout">v = λ × f</span>）、頻帶分類（VLF~SHF）、三等業餘頻段與發射功率、執照與考試流程。<strong>整理中，很快補上。</strong></p>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=2"></script>
+<script>
+  function showPart(id, btn) {
+    document.querySelectorAll('.scenario').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+    var el = document.getElementById(id);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

@@ -235,6 +235,14 @@ a:hover { color: var(--primary-strong); }
 .callout.warn .ct { color: var(--rose-ink); }
 .callout.info { background: var(--sky-soft); border-left: 4px solid var(--sky); color: #2c4a63; }
 .callout.info .ct { color: var(--sky-ink); }
+.callout.task { background: var(--teal-soft); border-left: 4px solid var(--teal); color: #134f4a; }
+.callout.task .ct { color: var(--teal-ink); }
+
+/* embedded figure (photos / labelled diagrams) */
+.fig { margin: 16px 0; text-align: center; }
+.fig img { max-width: 100%; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--shadow-sm); }
+.fig img.contain { max-height: 460px; width: auto; }
+.fig figcaption { font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); margin-top: 8px; }
 
 .visual { background: var(--bg-tint); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 11px 13px; margin-top: 12px; font-family: var(--font-mono); font-size: 12px; white-space: pre; overflow-x: auto; line-height: 1.55; color: var(--ink-2); }
 
