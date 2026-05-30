@@ -79,6 +79,18 @@
       </ul>
     </div>
     <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>任何民防隊可用最低成本自建「無線電實驗室」，學員可在真實信號上驗證每一條理論。</div>
+
+    <div class="sec-h"><i data-lucide="clipboard-list"></i>課程總覽：七大情境 × RF 理論 × SDR 工具</div>
+    <table class="tbl">
+      <tr><th>情境</th><th>核心困難</th><th>RF 參數</th><th>關鍵公式</th><th>SDR 工具</th></tr>
+      <tr><td>1：CTCSS</td><td>5 隊搶 1 頻</td><td>亞音頻調制</td><td>FM 調制指數 β=Δf/f_m</td><td>GQRX 音頻 FFT</td></tr>
+      <tr><td>2：RF 增益</td><td>山區弱信號</td><td>接收靈敏度</td><td>S=-174+10lg(B)+NF+SNR</td><td>GQRX SNR 測量</td></tr>
+      <tr><td>3：頻寬</td><td>直聯距離短</td><td>頻譜效率</td><td>PSD=P/B，Carson 規則</td><td>FFT 波寬對比</td></tr>
+      <tr><td>4：層級</td><td>40 人指揮混亂</td><td>CTCSS 分層</td><td>碼間距 ≥20Hz</td><td>瀑布圖時間軸</td></tr>
+      <tr><td>5：天線</td><td>信號突然消失</td><td>波長匹配</td><td>λ=c/f, L=λ/4×0.95</td><td>FFT 底噪診斷</td></tr>
+      <tr><td>6：干擾</td><td>陌生聲音干擾</td><td>捕捉效應</td><td>Friis 路徑衰減公式</td><td>掃頻+三角定位</td></tr>
+      <tr><td>7：中繼</td><td>地形阻擋通話</td><td>雙工頻率對</td><td>菲涅耳區計算</td><td>雙頻瀑布圖</td></tr>
+    </table>
   </div>
 
   <!-- 情境1 -->
@@ -703,6 +715,14 @@ UHF 435MHz對講機：
     </table>
     <div class="gnote">文山隊發 145.500 → 中繼台轉發 146.100 → 信義隊收到。中繼台故障時 146.100 一直無轉發，在 GQRX 上立刻看得出來。</div>
 
+    <div class="sec-h"><i data-lucide="key-round"></i>CTCSS 在中繼台的應用</div>
+    <div class="prose-card">
+      <p>很多中繼台需要「鑰匙」才肯轉發——這把鑰匙就是 <strong>CTCSS 亞音頻</strong>。你發射時必須同時送出中繼台指定的 CTCSS 碼，中繼台收到正確的亞音頻才會「開啟」並轉發你的訊號。</p>
+      <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>使用中繼台要設三樣：<strong>頻率</strong>（如 145.500）＋<strong>偏移</strong>（如 +600kHz）＋<strong>發射 CTCSS（Tone / T）</strong>。少設 CTCSS，按了發話鍵中繼台也不會動。</div>
+      <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>中繼台的 CTCSS 是「存取碼（開門用）」，和情境 1 用 CTCSS「選聽分隊」目的不同——但原理一樣：都是用亞音頻控制「要不要打開」。它一樣<strong>不是加密</strong>，無設 CTCSS 的人仍聽得到中繼台轉發的內容。</div>
+      <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>中繼台像一台「公用擴音器」，但要先刷對門禁卡（CTCSS）它才幫你廣播；刷錯卡或不刷，喊破喉嚨它也不理你。</div>
+    </div>
+
     <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
       <tr><th>地形情況</th><th>中繼台部署策略</th><th>SDR 驗證方式</th></tr>
@@ -713,19 +733,6 @@ UHF 435MHz對講機：
     </table>
     <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>中繼台是「把低谷的信號搬到山頂再播出」，雙工頻率是「防止自己講話時堵住自己的耳朵」。</div>
   </div>
-
-  <!-- 總覽 -->
-  <div class="sec-h"><i data-lucide="clipboard-list"></i>課程總覽：七大情境 × RF 理論 × SDR 工具</div>
-  <table class="tbl">
-    <tr><th>情境</th><th>核心困難</th><th>RF 參數</th><th>關鍵公式</th><th>SDR 工具</th></tr>
-    <tr><td>1：CTCSS</td><td>5 隊搶 1 頻</td><td>亞音頻調制</td><td>FM 調制指數 β=Δf/f_m</td><td>GQRX 音頻 FFT</td></tr>
-    <tr><td>2：RF 增益</td><td>山區弱信號</td><td>接收靈敏度</td><td>S=-174+10lg(B)+NF+SNR</td><td>GQRX SNR 測量</td></tr>
-    <tr><td>3：頻寬</td><td>直聯距離短</td><td>頻譜效率</td><td>PSD=P/B，Carson 規則</td><td>FFT 波寬對比</td></tr>
-    <tr><td>4：層級</td><td>40 人指揮混亂</td><td>CTCSS 分層</td><td>碼間距 ≥20Hz</td><td>瀑布圖時間軸</td></tr>
-    <tr><td>5：天線</td><td>信號突然消失</td><td>波長匹配</td><td>λ=c/f, L=λ/4×0.95</td><td>FFT 底噪診斷</td></tr>
-    <tr><td>6：干擾</td><td>陌生聲音干擾</td><td>捕捉效應</td><td>Friis 路徑衰減公式</td><td>掃頻+三角定位</td></tr>
-    <tr><td>7：中繼</td><td>地形阻擋通話</td><td>雙工頻率對</td><td>菲涅耳區計算</td><td>雙頻瀑布圖</td></tr>
-  </table>
 
 </div>
 
