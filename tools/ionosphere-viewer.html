@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電離層傳播互動視覺化 — 二等業餘無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+/* tool palette mapped onto the warm design system (readable on white) */
+:root {
+  --mono: var(--font-mono);
+  --txt: var(--ink-2); --dim: var(--ink-3);
+  --s1: var(--surface); --s2: var(--surface-soft);
+  --acc: var(--teal-ink); --g: var(--leaf-ink); --amb: var(--honey-ink); --red: var(--rose-ink);
+  --pur: #6D3FC0;
+  --D: #C43A2E; --E: #9A6510; --F1: #225F95; --F2: #6D3FC0;
+}
+
+/* tabs reuse the site .tabs/.tab pill; add the tool's .on active state */
+.tab.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.tab.on:hover { color: #fff; }
+
+/* section title */
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 24px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+
+/* solar condition selector */
+.solar-panel { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.solar-card { flex: 1; min-width: 150px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-md); padding: 14px 12px; text-align: center; cursor: pointer; transition: all var(--dur) var(--ease); box-shadow: var(--shadow-sm); }
+.solar-card:hover { border-color: var(--border-strong); }
+.solar-card.on { border-color: var(--honey); background: var(--honey-soft); }
+.solar-card .si { display: flex; justify-content: center; margin-bottom: 7px; color: var(--ink-2); }
+.solar-card.on .si { color: var(--honey-ink); }
+.solar-card .si svg { width: 26px; height: 26px; stroke-width: 2; }
+.solar-card .sn { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--ink); }
+.solar-card .sv { font-family: var(--font-mono); font-size: 11px; margin-top: 4px; color: var(--ink-3); }
+
+/* main visualisation — dark "sky screen" + warm controls */
+#viz-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 12px; }
+#main-canvas { width: 100%; display: block; cursor: crosshair; background: #0b1320; }
+.ctrl-row { display: flex; flex-wrap: wrap; gap: 14px; padding: 14px 16px; background: var(--surface-soft); border-top: 1px solid var(--border); }
+.ctrl-group { display: flex; flex-direction: column; gap: 5px; min-width: 160px; flex: 1; }
+.ctrl-group label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); }
+.ctrl-group .val { font-family: var(--font-mono); font-size: 14px; color: var(--teal-ink); font-weight: 700; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: var(--shadow-sm); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: var(--primary); cursor: pointer; }
+.time-btns { display: flex; gap: 8px; }
+.tbtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 8px 12px; border: 1.5px solid var(--border-strong); border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); flex: 1; }
+.tbtn:hover { border-color: var(--primary); color: var(--primary-ink); }
+.tbtn.on { border-color: var(--primary); background: var(--primary); color: #fff; }
+.tbtn svg { width: 14px; height: 14px; }
+
+/* warn */
+.warn { display: none; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 700; padding: 11px 15px; border-radius: var(--r-md); border: 1px solid #f3c9c5; border-left: 4px solid var(--rose); background: var(--rose-soft); color: var(--rose-ink); margin-bottom: 12px; }
+.warn.show { display: flex; }
+.warn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+/* info / path cards */
+.info-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 640px) { .info-panel { grid-template-columns: 1fr; } }
+.info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px; box-shadow: var(--shadow-sm); }
+.ic-title { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--ink); margin-bottom: 10px; }
+.lr { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; font-size: 12px; }
+.lr .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.lr .lname { min-width: 32px; font-weight: 800; font-family: var(--font-mono); }
+.lr .linfo { color: var(--ink-2); font-size: 11.5px; line-height: 1.5; }
+.lr .lbadge { font-family: var(--font-mono); font-size: 9px; padding: 2px 7px; border: 1px solid; border-radius: var(--r-pill); margin-left: auto; flex-shrink: 0; }
+
+.path-card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.path-title { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--ink); margin-bottom: 11px; }
+.path-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+@media (max-width: 500px) { .path-stats { grid-template-columns: repeat(2, 1fr); } }
+.ps { text-align: center; background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 6px; }
+.ps .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 4px; }
+.ps .v { font-family: var(--font-mono); font-size: 15px; color: var(--teal-ink); font-weight: 700; }
+.ps .v.g { color: var(--leaf-ink); }
+.ps .v.r { color: var(--rose-ink); }
+.ps .v.a { color: var(--honey-ink); }
+
+/* exam table */
+.ex-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.ex-table th { padding: 10px 12px; text-align: left; font-family: var(--font-display); font-size: 12px; color: var(--teal-ink); background: var(--teal-soft); font-weight: 700; border-bottom: 1px solid var(--border); }
+.ex-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--ink-2); }
+.ex-table tr:last-child td { border-bottom: none; }
+.ex-table tbody tr:nth-child(even) td { background: var(--surface-soft); }
+.ex-table .q { color: var(--ink); font-weight: 600; }
+.ex-table .a { color: var(--leaf-ink); font-weight: 600; }
+
+/* small exam note (inside layer cards) */
+.note { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; line-height: 1.6; border-radius: var(--r-sm); padding: 8px 11px; margin-top: 9px; }
+.note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
+
+/* frequency quick ref */
+.freq-ref { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+@media (max-width: 500px) { .freq-ref { grid-template-columns: 1fr 1fr; } }
+.fr-card { background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 9px 11px; cursor: pointer; transition: all var(--dur) var(--ease); }
+.fr-card:hover { border-color: var(--teal); background: var(--surface); }
+.fr-card .fr-band { font-family: var(--font-mono); font-size: 13px; color: var(--teal-ink); font-weight: 700; }
+.fr-card .fr-layer { font-family: var(--font-mono); font-size: 10px; margin-top: 2px; }
+.fr-card .fr-note { font-size: 11px; color: var(--ink-3); margin-top: 3px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">電離層傳播互動視覺化</div>
+  <p class="tool-sub">對應「無線電系統原理」題庫 · 拖動滑桿改變頻率／仰角／時間，觀察天波訊號路徑與反射層變化。</p>
+
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('viz')"><i data-lucide="radio-tower"></i> 互動視覺化</button>
+    <button class="tab" onclick="switchTab('layers')"><i data-lucide="layers"></i> 各層詳解</button>
+    <button class="tab" onclick="switchTab('exam')"><i data-lucide="graduation-cap"></i> 考試題速查</button>
+  </div>
+
+  <!-- ═══ VIZ TAB ═══ -->
+  <div id="tab-viz">
+
+    <div class="st">太陽活動條件</div>
+    <div class="solar-panel">
+      <div class="solar-card on" id="sc-high" onclick="setSolar('high')">
+        <div class="si"><i data-lucide="sun"></i></div>
+        <div class="sn">太陽活躍期</div>
+        <div class="sv" style="color:var(--leaf-ink)">黑子多 · MUF 高</div>
+      </div>
+      <div class="solar-card" id="sc-low" onclick="setSolar('low')">
+        <div class="si"><i data-lucide="moon"></i></div>
+        <div class="sn">太陽寧靜期</div>
+        <div class="sv">黑子少 · MUF 低</div>
+      </div>
+      <div class="solar-card" id="sc-storm" onclick="setSolar('storm')">
+        <div class="si"><i data-lucide="zap"></i></div>
+        <div class="sn">磁暴發生</div>
+        <div class="sv" style="color:var(--rose-ink)">K 指標高 · 傳播劣化</div>
+      </div>
+    </div>
+
+    <div id="viz-wrap">
+      <canvas id="main-canvas" height="380"></canvas>
+      <div class="ctrl-row">
+        <div class="ctrl-group">
+          <label>發射頻率</label>
+          <input type="range" id="sl-freq" min="1.8" max="50" value="14" step="0.1" oninput="redraw()">
+          <span class="val" id="sv-freq">14.0 MHz</span>
+        </div>
+        <div class="ctrl-group">
+          <label>發射仰角</label>
+          <input type="range" id="sl-angle" min="5" max="85" value="25" step="1" oninput="redraw()">
+          <span class="val" id="sv-angle">25°</span>
+        </div>
+        <div class="ctrl-group">
+          <label>時間</label>
+          <div class="time-btns">
+            <div class="tbtn on" id="tb-day" onclick="setTime('day')"><i data-lucide="sun"></i> 白天</div>
+            <div class="tbtn" id="tb-night" onclick="setTime('night')"><i data-lucide="moon"></i> 夜晚</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn" id="warn-box"><i data-lucide="triangle-alert"></i>頻率超過 MUF 或低於 LUF——電波無法被電離層反射</div>
+
+    <div class="path-card">
+      <div class="path-title">目前傳播狀態</div>
+      <div class="path-stats">
+        <div class="ps"><div class="k">反射層</div><div class="v" id="ps-layer">—</div></div>
+        <div class="ps"><div class="k">跳躍距離</div><div class="v" id="ps-dist">—</div></div>
+        <div class="ps"><div class="k">MUF</div><div class="v a" id="ps-muf">—</div></div>
+        <div class="ps"><div class="k">LUF</div><div class="v" id="ps-luf">—</div></div>
+      </div>
+      <div style="margin-top:11px;font-size:13px;color:var(--ink-2);line-height:1.8;border-top:1px solid var(--border);padding-top:11px;" id="ps-desc"></div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-card">
+        <div class="ic-title">電離層各層</div>
+        <div class="layer-rows">
+          <div class="lr">
+            <div class="dot" style="background:var(--D)"></div>
+            <span class="lname" style="color:var(--D)">D層</span>
+            <span class="linfo">60-90km · 白天才有 · 吸收低頻訊號（&lt;10MHz）</span>
+            <span class="lbadge" style="border-color:var(--D);color:var(--D)">日間存在</span>
+          </div>
+          <div class="lr">
+            <div class="dot" style="background:var(--E)"></div>
+            <span class="lname" style="color:var(--E)">E層</span>
+            <span class="linfo">90-150km · 反射中波 · E跳躍~1920km</span>
+            <span class="lbadge" style="border-color:var(--E);color:var(--E)">日間強</span>
+          </div>
+          <div class="lr">
+            <div class="dot" style="background:var(--F1)"></div>
+            <span class="lname" style="color:var(--F1)">F1層</span>
+            <span class="linfo">150-250km · 白天才出現，夜晚與F2合併</span>
+            <span class="lbadge" style="border-color:var(--F1);color:var(--F1)">日間</span>
+          </div>
+          <div class="lr">
+            <div class="dot" style="background:var(--F2)"></div>
+            <span class="lname" style="color:var(--F2)">F2層</span>
+            <span class="linfo">250-500km · 最高 · 長距離主力 · 跳躍~4000km</span>
+            <span class="lbadge" style="border-color:var(--F2);color:var(--F2)">全天</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="ic-title">頻段速查 — 點擊套用</div>
+        <div class="freq-ref" style="grid-template-columns:1fr 1fr;">
+          <div class="fr-card" onclick="setFreq(3.6)"><div class="fr-band">3.6 MHz</div><div class="fr-layer" style="color:var(--E)">80m 夜間長距</div><div class="fr-note">夜間D層消失後可遠傳</div></div>
+          <div class="fr-card" onclick="setFreq(7.1)"><div class="fr-band">7.1 MHz</div><div class="fr-layer" style="color:var(--E)">40m 標準HF</div><div class="fr-note">日間受D層吸收</div></div>
+          <div class="fr-card" onclick="setFreq(14.2)"><div class="fr-band">14.2 MHz</div><div class="fr-layer" style="color:var(--F2)">20m 主力DX</div><div class="fr-note">F2反射，最穩定</div></div>
+          <div class="fr-card" onclick="setFreq(21.2)"><div class="fr-band">21.2 MHz</div><div class="fr-layer" style="color:var(--F2)">15m 活躍期佳</div><div class="fr-note">需高太陽活動</div></div>
+          <div class="fr-card" onclick="setFreq(28.5)"><div class="fr-band">28.5 MHz</div><div class="fr-layer" style="color:var(--F2)">10m 活躍期最遠</div><div class="fr-note">接近MUF邊界</div></div>
+          <div class="fr-card" onclick="setFreq(50)"><div class="fr-band">50 MHz</div><div class="fr-layer" style="color:var(--pur)">6m 偶發E跳</div><div class="fr-note">通常穿透電離層</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /viz tab -->
+
+  <!-- ═══ LAYERS TAB ═══ -->
+  <div id="tab-layers" style="display:none">
+    <div class="st">電離層各層詳解</div>
+
+    <div class="info-panel">
+      <div class="info-card" style="border-left:3px solid var(--D)">
+        <div class="ic-title" style="color:var(--D)">D 層 — 吸收者</div>
+        <div style="font-size:12.5px;line-height:1.8;">
+          <strong style="color:var(--D)">高度：</strong>60~90 km<br>
+          <strong style="color:var(--D)">存在時間：</strong>白天才有，日落後消失<br>
+          <strong style="color:var(--D)">作用：</strong>吸收 10MHz 以下頻率的長彈跳訊號<br>
+          <strong style="color:var(--D)">影響：</strong>日間 40m/80m/160m 長距離困難
+        </div>
+        <div class="note" style="background:var(--rose-soft);color:var(--rose-ink)"><i data-lucide="pencil"></i><span>考試：「日間 40m 長距通訊困難」→ D層吸收</span></div>
+      </div>
+      <div class="info-card" style="border-left:3px solid var(--E)">
+        <div class="ic-title" style="color:var(--E)">E 層 — 中距反射</div>
+        <div style="font-size:12.5px;line-height:1.8;">
+          <strong style="color:var(--E)">高度：</strong>90~150 km<br>
+          <strong style="color:var(--E)">存在時間：</strong>白天較強，夜晚較弱<br>
+          <strong style="color:var(--E)">跳躍距離：</strong>最長約 <strong>1,920 km</strong><br>
+          <strong style="color:var(--E)">偶發E（Es）：</strong>可反射 VHF，不可預測
+        </div>
+        <div class="note" style="background:var(--honey-soft);color:var(--honey-ink)"><i data-lucide="pencil"></i><span>考試：E層一次跳躍 = 1,920km</span></div>
+      </div>
+      <div class="info-card" style="border-left:3px solid var(--F1)">
+        <div class="ic-title" style="color:var(--F1)">F1 層 — 日間分層</div>
+        <div style="font-size:12.5px;line-height:1.8;">
+          <strong style="color:var(--F1)">高度：</strong>150~250 km<br>
+          <strong style="color:var(--F1)">存在時間：</strong>白天才分離，夜晚與F2合併為單一F層<br>
+          <strong style="color:var(--F1)">作用：</strong>次要反射層，吸收部分能量
+        </div>
+        <div class="note" style="background:var(--sky-soft);color:var(--sky-ink)"><i data-lucide="pencil"></i><span>考試：夜晚 F1+F2 合併成單一 F 層</span></div>
+      </div>
+      <div class="info-card" style="border-left:3px solid var(--F2)">
+        <div class="ic-title" style="color:var(--F2)">F2 層 — 長距主力</div>
+        <div style="font-size:12.5px;line-height:1.8;">
+          <strong style="color:var(--F2)">高度：</strong>250~500 km（最高）<br>
+          <strong style="color:var(--F2)">存在時間：</strong>全天（最高點在太陽正上方時）<br>
+          <strong style="color:var(--F2)">跳躍距離：</strong>最長約 <strong>4,000 km</strong><br>
+          <strong style="color:var(--F2)">為何是長距主力：</strong>最高→跳得最遠
+        </div>
+        <div class="note" style="background:#efe7fb;color:var(--pur)"><i data-lucide="pencil"></i><span>考試：F2 一次跳躍 = 4,000km；F2最高→負責長距DX</span></div>
+      </div>
+    </div>
+
+    <div class="st">MUF / LUF / 臨界角</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;" class="muf-grid">
+      <div class="info-card" style="border-left:3px solid var(--honey)">
+        <div class="ic-title" style="color:var(--honey-ink)">MUF 最高可用頻率</div>
+        <div style="font-size:12.5px;line-height:1.7;color:var(--ink-2)">最高可被電離層反射的頻率。超過 MUF → 訊號穿透電離層消失到太空。<br><br>使用頻率應<strong style="color:var(--leaf-ink)">稍低於 MUF</strong></div>
+      </div>
+      <div class="info-card" style="border-left:3px solid var(--teal)">
+        <div class="ic-title" style="color:var(--teal-ink)">LUF 最低可用頻率</div>
+        <div style="font-size:12.5px;line-height:1.7;color:var(--ink-2)">低於 LUF → 電波被 D 層完全吸收，無法到達。<br><br>若 LUF &gt; MUF → <strong style="color:var(--rose-ink)">無任何頻率可用！</strong></div>
+      </div>
+      <div class="info-card" style="border-left:3px solid var(--pur)">
+        <div class="ic-title" style="color:var(--pur)">臨界角</div>
+        <div style="font-size:12.5px;line-height:1.7;color:var(--ink-2)">能被反射回地球的<strong style="color:var(--pur)">最高</strong>發射仰角。超過臨界角 → 穿透電離層。低角度（接近水平）= 跳得更遠。</div>
+      </div>
+    </div>
+
+    <div class="st">NVIS 近垂直入射天波</div>
+    <div class="info-card" style="border-left:3px solid var(--leaf);margin-bottom:12px;">
+      <div style="font-size:12.5px;line-height:1.8;color:var(--ink-2)">
+        <strong style="color:var(--leaf-ink)">NVIS（Near Vertical Incidence Skywave）</strong>：以極高仰角（接近垂直）發射，訊號幾乎垂直打到電離層後折返，覆蓋發射點周圍 0~600km 範圍。<br><br>
+        適用場合：災難通訊、山區通聯（不需長距離，但地波又到不了）<br>
+        使用頻率：MF/HF 低頻段（3.5~10 MHz）<br>
+        天線安裝高度：距地面 <strong style="color:var(--leaf-ink)">1/8~1/4 波長</strong>（刻意低掛以增加仰角）
+      </div>
+      <div class="note" style="background:var(--leaf-soft);color:var(--leaf-ink)"><i data-lucide="pencil"></i><span>考試：NVIS = 高仰角短距離 MF/HF · 天線低掛 1/8~1/4λ · 覆蓋盲區</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ EXAM TAB ═══ -->
+  <div id="tab-exam" style="display:none">
+    <div class="st">傳播相關考試題速查（系統原理題組）</div>
+    <table class="ex-table">
+      <thead><tr><th>題號方向</th><th class="q">考題重點</th><th class="a">答案／記憶點</th></tr></thead>
+      <tbody>
+        <tr><td>D/E/F層高度</td><td class="q">哪層離地表最近？</td><td class="a">D層（60-90km）</td></tr>
+        <tr><td>D層作用</td><td class="q">日間40m/80m/160m長距困難原因？</td><td class="a">D層吸收10MHz以下訊號</td></tr>
+        <tr><td>F2層</td><td class="q">F2為何是長距離傳播主要區塊？</td><td class="a">F2最高（250-500km），跳躍距離最遠</td></tr>
+        <tr><td>跳躍距離</td><td class="q">F2一次跳躍最長距離？</td><td class="a">約 4,000 km</td></tr>
+        <tr><td>跳躍距離</td><td class="q">E層一次跳躍最長距離？</td><td class="a">約 1,920 km</td></tr>
+        <tr><td>日夜變化</td><td class="q">電離層最高點何時出現？</td><td class="a">太陽在正上方時</td></tr>
+        <tr><td>日夜變化</td><td class="q">夜晚F1/F2如何變化？</td><td class="a">合併成單一F層；D層消失</td></tr>
+        <tr><td>MUF</td><td class="q">MUF是什麼？</td><td class="a">兩點間通訊的最高可用頻率</td></tr>
+        <tr><td>LUF</td><td class="q">LUF是什麼？低於LUF會如何？</td><td class="a">最低可用頻率；低於LUF→電波被完全吸收</td></tr>
+        <tr><td>MUF/LUF</td><td class="q">LUF超越MUF時發生什麼？</td><td class="a">無任何HF頻率可支援天波通訊</td></tr>
+        <tr><td>最佳頻率</td><td class="q">選擇最低衰減頻率應選？</td><td class="a">稍低於MUF的頻率</td></tr>
+        <tr><td>臨界角</td><td class="q">臨界角定義？</td><td class="a">能被反射回地球的最高發射仰角</td></tr>
+        <tr><td>太陽黑子</td><td class="q">高太陽黑子數對通信影響？</td><td class="a">加強HF高頻及VHF低頻長距通訊</td></tr>
+        <tr><td>太陽週期</td><td class="q">典型太陽黑子週期多長？</td><td class="a">約 11 年</td></tr>
+        <tr><td>28天週期</td><td class="q">HF傳播每28天週期性變化原因？</td><td class="a">太陽自轉（自轉週期約28天）</td></tr>
+        <tr><td>太陽閃焰</td><td class="q">閃焰產生X光幾分鐘影響地球？</td><td class="a">8分鐘（光速傳播）</td></tr>
+        <tr><td>日冕放射</td><td class="q">日冕電離子多久影響地球？</td><td class="a">20~40小時（粒子速度較慢）</td></tr>
+        <tr><td>磁暴</td><td class="q">磁暴對無線電影響？</td><td class="a">降低高緯度HF傳播；K指標升高</td></tr>
+        <tr><td>磁暴</td><td class="q">K指標代表什麼？</td><td class="a">地球磁場的短期安定性</td></tr>
+        <tr><td>A指標</td><td class="q">A指標代表什麼？</td><td class="a">地球地磁場的長期安定性</td></tr>
+        <tr><td>極光</td><td class="q">高地磁活動對通訊有何好處？</td><td class="a">極光可以反射VHF訊號</td></tr>
+        <tr><td>NVIS</td><td class="q">NVIS傳播是什麼？</td><td class="a">使用高仰角的短距離MF或HF通訊</td></tr>
+        <tr><td>NVIS</td><td class="q">NVIS天線通常安裝高度？</td><td class="a">離地 1/8~1/4 波長</td></tr>
+        <tr><td>散射傳播</td><td class="q">HF散射訊號聽起來如何？</td><td class="a">有顫抖的聲音（多路徑散射）</td></tr>
+        <tr><td>盲區</td><td class="q">何種傳播使訊號對地波太遠、天波太近？</td><td class="a">散射（Skip Zone盲區）</td></tr>
+        <tr><td>太陽流量指數</td><td class="q">太陽流量指數（SFI）測量什麼？</td><td class="a">波長10.7公分的太陽輻射強度</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+// ═══ STATE ═══
+let curTime = 'day';
+let curSolar = 'high';
+let animId = null;
+let signalPhase = 0;
+const CFONT = 'Space Mono';
+
+const SOLAR = {
+  high: { mufBase: 28, label: '活躍期', color: '#ffcc00' },
+  low:  { mufBase: 14, label: '寧靜期', color: '#44aaff' },
+  storm:{ mufBase: 8,  label: '磁暴中', color: '#ff4455' },
+};
+
+function setSolar(s) {
+  curSolar = s;
+  ['high','low','storm'].forEach(k => document.getElementById('sc-'+k).classList.toggle('on', k===s));
+  redraw();
+}
+function setTime(t) {
+  curTime = t;
+  ['day','night'].forEach(k => document.getElementById('tb-'+k).classList.toggle('on', k===t));
+  redraw();
+}
+function setFreq(f) {
+  document.getElementById('sl-freq').value = f;
+  redraw();
+}
+
+// ═══ TABS ═══
+function switchTab(name) {
+  ['viz','layers','exam'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? '' : 'none';
+  });
+  document.querySelectorAll('.tabs .tab').forEach((el,i) => {
+    el.classList.toggle('on', ['viz','layers','exam'][i] === name);
+  });
+}
+
+// ═══ MAIN ═══
+function redraw() {
+  const freq = parseFloat(document.getElementById('sl-freq').value);
+  const angle = parseFloat(document.getElementById('sl-angle').value);
+  document.getElementById('sv-freq').textContent = freq.toFixed(1) + ' MHz';
+  document.getElementById('sv-angle').textContent = angle + '°';
+
+  const solar = SOLAR[curSolar];
+  const isDay = curTime === 'day';
+  const muf = solar.mufBase * (isDay ? 1.0 : 0.7);
+  const luf = isDay ? freq * 0.15 + 1 : freq * 0.05 + 0.5;
+  const canReflect = freq <= muf && freq >= luf && curSolar !== 'storm';
+  const reflectLayer = getReflectLayer(freq, isDay, curSolar);
+
+  document.getElementById('warn-box').classList.toggle('show', !canReflect);
+  updateStats(freq, angle, muf, luf, reflectLayer, canReflect, isDay);
+  drawScene(freq, angle, muf, luf, reflectLayer, canReflect, isDay);
+}
+
+function getReflectLayer(freq, isDay, solar) {
+  if (solar === 'storm') return null;
+  if (freq <= 3 && isDay) return null;
+  if (freq <= 10 && isDay) return 'D-absorbed';
+  if (freq <= 10) return 'F';
+  if (freq <= 15) return 'F2';
+  if (freq <= 25) return 'F2';
+  if (freq <= 30) return solar === 'high' ? 'F2' : null;
+  return null;
+}
+
+function updateStats(freq, angle, muf, luf, layer, canReflect, isDay) {
+  const distMap = { 'F2': 4000, 'F': 3500, 'E': 1920, 'D-absorbed': 0 };
+  const layerName = layer === 'D-absorbed' ? 'D層（吸收）' : layer === 'F' ? 'F層（夜）' : layer ? layer : '穿透';
+  const angleFactor = Math.cos((angle * Math.PI) / 180);
+  const baseDist = distMap[layer] || 0;
+  const dist = canReflect && layer !== 'D-absorbed' ? Math.round(baseDist * angleFactor * (0.5 + angleFactor * 0.5)) : 0;
+
+  document.getElementById('ps-layer').textContent = canReflect ? layerName : '無反射';
+  document.getElementById('ps-layer').className = 'v ' + (canReflect ? 'g' : 'r');
+  document.getElementById('ps-dist').textContent = dist > 0 ? `~${dist} km` : '—';
+  document.getElementById('ps-dist').className = 'v ' + (dist > 0 ? '' : 'r');
+  document.getElementById('ps-muf').textContent = muf.toFixed(1) + ' MHz';
+  document.getElementById('ps-luf').textContent = luf.toFixed(1) + ' MHz';
+
+  let desc = '';
+  if (curSolar === 'storm') {
+    desc = '<strong style="color:var(--rose-ink)">磁暴中</strong>：K指標升高，高緯度HF傳播嚴重劣化。MUF降低，大部分傳播路徑中斷。';
+  } else if (!canReflect && freq > muf) {
+    desc = `頻率 ${freq.toFixed(1)} MHz 超過 MUF（${muf.toFixed(1)} MHz）→ 電波<strong>穿透電離層</strong>進入太空，無法反射回地球。應降低頻率。`;
+  } else if (layer === 'D-absorbed') {
+    desc = `白天 D 層存在，${freq.toFixed(1)} MHz 低頻訊號被 D 層大量吸收，長距離天波通訊困難。夜晚 D 層消失後可改善。`;
+  } else if (canReflect) {
+    desc = `${freq.toFixed(1)} MHz 由 <strong>${layerName}</strong> 反射，仰角 ${angle}°，跳躍距離約 <strong>${dist} km</strong>。${angle < 20 ? '低仰角有助於更遠距離通訊。' : angle > 70 ? '高仰角→NVIS短距覆蓋模式。' : ''}`;
+  }
+  document.getElementById('ps-desc').innerHTML = desc;
+}
+
+// ═══ CANVAS ═══
+function drawScene(freq, angle, muf, luf, reflectLayer, canReflect, isDay) {
+  const cv = document.getElementById('main-canvas');
+  cv.width = cv.offsetWidth || 800;
+  const W = cv.width, H = cv.height;
+  const ctx = cv.getContext('2d');
+
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+  if (isDay) {
+    skyGrad.addColorStop(0, '#000820');
+    skyGrad.addColorStop(0.3, '#001840');
+    skyGrad.addColorStop(1, '#002010');
+  } else {
+    skyGrad.addColorStop(0, '#000208');
+    skyGrad.addColorStop(1, '#001020');
+  }
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  if (!isDay) {
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    for (let i = 0; i < 60; i++) {
+      const sx = (Math.sin(i * 137.5) * 0.5 + 0.5) * W;
+      const sy = (Math.sin(i * 97.3) * 0.5 + 0.5) * H * 0.6;
+      ctx.fillRect(sx, sy, 1, 1);
+    }
+  }
+
+  if (isDay) {
+    ctx.fillStyle = 'rgba(255,220,100,0.15)';
+    ctx.beginPath(); ctx.arc(W * 0.85, H * 0.06, 30, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffdd60';
+    ctx.beginPath(); ctx.arc(W * 0.85, H * 0.06, 18, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.fillStyle = 'rgba(200,220,255,0.6)';
+    ctx.beginPath(); ctx.arc(W * 0.85, H * 0.06, 14, 0, Math.PI * 2); ctx.fill();
+  }
+
+  const ground = H - 50;
+  const layers = {
+    D:  { y: ground - H * 0.18, h: H * 0.08, col: 'rgba(255,102,68,', name: 'D層 (60-90km)', active: isDay },
+    E:  { y: ground - H * 0.30, h: H * 0.10, col: 'rgba(255,204,0,',   name: 'E層 (90-150km)', active: true },
+    F1: { y: ground - H * 0.48, h: H * 0.10, col: 'rgba(68,170,255,',  name: 'F1層 (150-250km)', active: isDay },
+    F2: { y: ground - H * 0.68, h: H * 0.12, col: 'rgba(170,102,255,', name: 'F2層 (250-500km)', active: true },
+  };
+  const fNight = { y: ground - H * 0.58, h: H * 0.18, col: 'rgba(180,120,255,', name: 'F層 (夜)', active: !isDay };
+
+  Object.entries(isDay ? layers : { E: layers.E, F: fNight }).forEach(([key, l]) => {
+    const alpha = l.active ? 0.18 : 0.05;
+    ctx.fillStyle = l.col + alpha + ')';
+    ctx.fillRect(0, l.y, W, l.h);
+    const grad = ctx.createLinearGradient(0, l.y, 0, l.y + 3);
+    grad.addColorStop(0, l.col + (l.active ? '0.6)' : '0.1)'));
+    grad.addColorStop(1, l.col + '0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, l.y, W, 3);
+    ctx.fillStyle = l.col + (l.active ? '0.7)' : '0.2)');
+    ctx.font = '11px ' + CFONT;
+    ctx.textAlign = 'left';
+    ctx.fillText(l.name, 8, l.y + 14);
+  });
+
+  if (isDay) {
+    const dl = layers.D;
+    ctx.fillStyle = 'rgba(255,102,68,0.5)';
+    ctx.font = '10px ' + CFONT;
+    ctx.textAlign = 'right';
+    ctx.fillText('吸收低頻訊號', W - 8, dl.y + 16);
+  }
+
+  const groundGrad = ctx.createLinearGradient(0, ground, 0, H);
+  groundGrad.addColorStop(0, '#0a2010');
+  groundGrad.addColorStop(1, '#051008');
+  ctx.fillStyle = groundGrad;
+  ctx.fillRect(0, ground, W, H - ground);
+  ctx.strokeStyle = 'rgba(0,200,80,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, ground); ctx.lineTo(W, ground); ctx.stroke();
+
+  const txX = 80, txY = ground;
+  drawStation(ctx, txX, txY, '#00d4ff', 'TX');
+
+  if (canReflect && reflectLayer && reflectLayer !== 'D-absorbed') {
+    const rl = isDay ? layers[reflectLayer] || layers.F2 : fNight;
+    const reflectY = rl ? rl.y + rl.h / 2 : ground - H * 0.5;
+    const angleRad = (90 - angle) * Math.PI / 180;
+    const dist = (reflectY - ground) / Math.tan(Math.PI / 2 - angleRad);
+    const peakX = txX + Math.abs(dist);
+    const landX = txX + Math.abs(dist) * 2;
+    const skipX = Math.min(landX, W - 60);
+    const progress = (signalPhase % 1);
+
+    ctx.strokeStyle = 'rgba(0,212,255,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(txX, txY);
+    ctx.lineTo(peakX, reflectY);
+    ctx.lineTo(skipX, txY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.shadowColor = '#00d4ff';
+    ctx.shadowBlur = 15;
+    ctx.strokeStyle = 'rgba(0,212,255,0.9)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(txX, txY); ctx.lineTo(peakX, reflectY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(peakX, reflectY); ctx.lineTo(skipX, txY); ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    const t = progress;
+    let dotX, dotY;
+    if (t < 0.5) {
+      const pt = t * 2;
+      dotX = txX + (peakX - txX) * pt;
+      dotY = txY + (reflectY - txY) * pt;
+    } else {
+      const pt = (t - 0.5) * 2;
+      dotX = peakX + (skipX - peakX) * pt;
+      dotY = reflectY + (txY - reflectY) * pt;
+    }
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = '#00ffff';
+    ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.arc(dotX, dotY, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    if (skipX > txX + 60) {
+      ctx.fillStyle = 'rgba(255,68,85,0.15)';
+      ctx.fillRect(txX + 30, ground - 20, skipX - txX - 60, 20);
+      ctx.fillStyle = 'rgba(255,68,85,0.6)';
+      ctx.font = '10px ' + CFONT;
+      ctx.textAlign = 'center';
+      ctx.fillText('盲區 (Skip Zone)', txX + (skipX - txX) / 2, ground - 6);
+    }
+
+    if (skipX < W - 30) {
+      drawStation(ctx, skipX, ground, '#44ff99', 'RX');
+      ctx.fillStyle = 'rgba(68,255,153,0.7)';
+      ctx.font = '10px ' + CFONT;
+      ctx.textAlign = 'center';
+      const d = Math.round(Math.abs(skipX - txX) * 4000 / (W - 140));
+      ctx.fillText(`~${d > 4000 ? 4000 : d} km`, (txX + skipX) / 2, ground + 20);
+    }
+
+    if (skipX < W * 0.6) {
+      const hop2X = skipX + (skipX - txX) * 0.6;
+      if (hop2X < W - 40) {
+        ctx.strokeStyle = 'rgba(68,255,153,0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 6]);
+        ctx.beginPath();
+        ctx.moveTo(skipX, txY);
+        ctx.lineTo(skipX + (hop2X - skipX) / 2, reflectY + 10);
+        ctx.lineTo(hop2X, txY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(68,255,153,0.4)';
+        ctx.font = '9px ' + CFONT;
+        ctx.textAlign = 'center';
+        ctx.fillText('第2跳', skipX + (hop2X - skipX) / 2, reflectY + 8);
+      }
+    }
+
+  } else if (reflectLayer === 'D-absorbed') {
+    const angleRad = (90 - angle) * Math.PI / 180;
+    const dl = layers.D;
+    const dist = (dl.y + dl.h / 2 - ground) / Math.tan(Math.PI / 2 - angleRad);
+    const peakX = txX + Math.abs(dist) * 0.5;
+
+    ctx.strokeStyle = 'rgba(255,102,68,0.6)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(txX, txY); ctx.lineTo(peakX, dl.y + dl.h / 2); ctx.stroke();
+    ctx.setLineDash([]);
+
+    const fadeGrad = ctx.createRadialGradient(peakX, dl.y + dl.h / 2, 0, peakX, dl.y + dl.h / 2, 30);
+    fadeGrad.addColorStop(0, 'rgba(255,102,68,0.8)');
+    fadeGrad.addColorStop(1, 'rgba(255,102,68,0)');
+    ctx.fillStyle = fadeGrad;
+    ctx.beginPath(); ctx.arc(peakX, dl.y + dl.h / 2, 30, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = 'rgba(255,102,68,0.85)';
+    ctx.font = '11px ' + CFONT;
+    ctx.textAlign = 'center';
+    ctx.fillText('D層吸收', peakX, dl.y - 5);
+
+  } else if (!canReflect) {
+    const angleRad = (90 - angle) * Math.PI / 180;
+    const penetrateX = txX + (ground - 20) / Math.tan(Math.PI / 2 - angleRad);
+    ctx.strokeStyle = 'rgba(255,68,85,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(txX, txY); ctx.lineTo(Math.min(penetrateX, W - 20), 20); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(255,68,85,0.85)';
+    ctx.font = '11px ' + CFONT;
+    ctx.textAlign = 'center';
+    ctx.fillText('穿透 → 進入太空', Math.min(penetrateX * 0.6, W * 0.5), 40);
+  }
+
+  if (angle > 70) {
+    ctx.fillStyle = 'rgba(68,255,153,0.8)';
+    ctx.font = '11px ' + CFONT;
+    ctx.textAlign = 'left';
+    ctx.fillText('NVIS 模式', txX + 20, ground - 60);
+  }
+
+  ctx.fillStyle = 'rgba(150,180,210,0.6)';
+  ctx.font = '9px ' + CFONT;
+  ctx.textAlign = 'right';
+  const altLabels = [[ground, '0'], [ground - H * 0.13, '60km'], [ground - H * 0.25, '90km'], [ground - H * 0.4, '150km'], [ground - H * 0.55, '250km'], [ground - H * 0.72, '500km']];
+  altLabels.forEach(([y, lbl]) => {
+    ctx.fillText(lbl, W - 4, y);
+    ctx.strokeStyle = 'rgba(150,180,210,0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W - 30, y); ctx.stroke();
+  });
+}
+
+function drawStation(ctx, x, y, col, label) {
+  ctx.fillStyle = col;
+  ctx.shadowColor = col;
+  ctx.shadowBlur = 8;
+  ctx.fillRect(x - 3, y - 25, 6, 25);
+  ctx.beginPath();
+  ctx.moveTo(x - 12, y - 25);
+  ctx.lineTo(x, y - 38);
+  ctx.lineTo(x + 12, y - 25);
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = col;
+  ctx.font = 'bold 10px ' + CFONT;
+  ctx.textAlign = 'center';
+  ctx.fillText(label, x, y + 14);
+}
+
+// ═══ ANIMATION ═══
+function startAnim() {
+  function loop() {
+    signalPhase = (signalPhase + 0.012) % 1;
+    redraw();
+    animId = requestAnimationFrame(loop);
+  }
+  animId = requestAnimationFrame(loop);
+}
+
+window.addEventListener('resize', redraw);
+if (window.lucide) lucide.createIcons();
+startAnim();
+</script>
+</body>
+</html>
