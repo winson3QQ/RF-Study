@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q 簡語情境訓練 — 二等業餘無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+:root {
+  --mono: var(--font-mono); --txt: var(--ink-2); --dim: var(--ink-3);
+  --s1: var(--surface); --s2: var(--surface-soft);
+  --acc: var(--teal-ink); --g: var(--leaf-ink); --amb: var(--honey-ink); --red: var(--rose-ink); --pur: #6D3FC0;
+}
+
+/* tabs reuse site .tab pill + tool's .on active */
+.tab.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.tab.on:hover { color: #fff; }
+
+/* section title */
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+
+/* scenario scene */
+.radio-scene { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+.scene-label { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--teal-ink); margin-bottom: 14px; }
+.chat-bubbles { display: flex; flex-direction: column; gap: 11px; min-height: 100px; }
+.bubble { display: flex; gap: 10px; align-items: flex-start; }
+.bubble.right { flex-direction: row-reverse; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--surface-soft); border: 1px solid var(--border); color: var(--ink-2); }
+.avatar svg { width: 18px; height: 18px; }
+.bubble-body { background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--r-md); padding: 10px 13px; max-width: 78%; font-size: 13px; line-height: 1.6; }
+.bubble.right .bubble-body { background: var(--primary-soft); border-color: #f3cdbf; }
+.bubble-body .qcode { font-family: var(--font-mono); color: var(--teal-ink); font-size: 14px; font-weight: 700; letter-spacing: 1px; }
+.bubble-body .translation { color: var(--ink-3); font-size: 11px; margin-top: 4px; }
+.callsign { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); margin-bottom: 3px; }
+
+/* question / choices */
+.q-area { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.q-text { font-size: 14px; color: var(--ink); margin-bottom: 13px; line-height: 1.7; font-weight: 600; }
+.q-text strong { color: var(--honey-ink); font-family: var(--font-mono); }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+@media (max-width: 480px) { .choices { grid-template-columns: 1fr; } }
+.choice { font-size: 14px; font-weight: 700; padding: 12px 15px; border: 1.5px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); text-align: center; }
+.choice:hover { border-color: var(--teal); color: var(--teal-ink); }
+.choice.correct { border-color: var(--leaf); background: var(--leaf-soft); color: var(--leaf-ink); }
+.choice.wrong { border-color: var(--rose); background: var(--rose-soft); color: var(--rose-ink); }
+.choice.reveal { border-color: var(--leaf); color: var(--leaf-ink); opacity: .5; }
+
+/* feedback */
+.feedback { font-size: 13px; padding: 12px 15px; border-radius: var(--r-md); border: 1px solid var(--border); margin-bottom: 12px; display: none; line-height: 1.75; }
+.feedback.show { display: block; }
+.feedback.ok { border-color: var(--leaf); border-left: 4px solid var(--leaf); background: var(--leaf-soft); color: var(--leaf-ink); }
+.feedback.ng { border-color: var(--rose); border-left: 4px solid var(--rose); background: var(--rose-soft); color: var(--ink-2); }
+.feedback svg { width: 15px; height: 15px; vertical-align: -2px; }
+.feedback .fq { color: var(--teal-ink); font-family: var(--font-mono); font-size: 15px; font-weight: 700; }
+.feedback .fm { color: var(--honey-ink); }
+
+/* progress / score */
+.progress-bar { height: 4px; background: var(--border); border-radius: 3px; margin-bottom: 14px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--teal); transition: width .3s; }
+.score-area { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); margin-bottom: 10px; }
+.score-area .sc { color: var(--teal-ink); font-weight: 700; }
+
+/* nav buttons */
+.nav-btns { display: flex; gap: 9px; margin-top: 12px; }
+.nbtn { flex: 1; font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 11px; border: 1.5px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.nbtn:hover { border-color: var(--teal); color: var(--teal-ink); }
+.nbtn.primary { border-color: var(--primary); background: var(--primary); color: #fff; }
+.nbtn.primary:hover { background: var(--primary-strong); color: #fff; }
+
+/* quick ref (renamed .qr-card -> .qcard to avoid clash with shared QR card) */
+.qref-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 600px) { .qref-grid { grid-template-columns: 1fr 1fr; } }
+.qcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 13px; cursor: pointer; transition: all var(--dur) var(--ease); box-shadow: var(--shadow-sm); }
+.qcard:hover { border-color: var(--teal); }
+.qcard.highlight { border-color: var(--teal); background: var(--teal-soft); }
+.qr-code { font-family: var(--font-mono); font-size: 18px; color: var(--teal-ink); font-weight: 700; margin-bottom: 5px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+.qc-exam { font-family: var(--font-mono); font-size: 9px; font-weight: 700; color: var(--honey-ink); background: var(--honey-soft); border-radius: var(--r-pill); padding: 2px 7px; }
+.qr-mean { font-size: 13px; color: var(--ink); line-height: 1.5; }
+.qr-cat { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); margin-top: 5px; letter-spacing: 1px; }
+.qr-detail { font-size: 11.5px; color: var(--ink-2); margin-top: 6px; line-height: 1.6; white-space: pre-line; display: none; border-top: 1px solid var(--border); padding-top: 6px; }
+.qcard.highlight .qr-detail { display: block; }
+
+/* search / filter */
+.search { margin-bottom: 12px; }
+.search input { width: 100%; background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--r-md); color: var(--ink); font-family: var(--font-mono); font-size: 15px; padding: 12px 16px; outline: none; transition: all var(--dur) var(--ease); }
+.search input:focus { border-color: var(--primary); box-shadow: var(--ring); }
+.cat-filter { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+.cf { font-family: var(--font-sans); font-weight: 700; font-size: 12px; padding: 6px 13px; border: 1.5px solid var(--border-strong); border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.cf.on, .cf:hover { border-color: var(--teal); color: var(--teal-ink); background: var(--teal-soft); }
+
+/* confuse */
+.similar-box { background: var(--rose-soft); border: 1px solid #f3c9c5; border-left: 4px solid var(--rose); border-radius: var(--r-md); padding: 15px; margin-bottom: 14px; }
+.sb-title { display: flex; align-items: center; gap: 7px; font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--rose-ink); margin-bottom: 11px; }
+.sb-title svg { width: 16px; height: 16px; }
+.sim-pair { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; font-size: 12px; }
+.sim-pair .sc1 { font-family: var(--font-mono); color: var(--rose-ink); font-size: 13px; font-weight: 700; min-width: 42px; }
+.sim-pair .sc2 { font-family: var(--font-mono); color: var(--honey-ink); font-size: 13px; font-weight: 700; min-width: 42px; }
+
+/* flash cards */
+.flash-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--r-xl); padding: 36px 20px; text-align: center; margin-bottom: 12px; cursor: pointer; min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all var(--dur) var(--ease); box-shadow: var(--shadow-sm); }
+.flash-card:hover { border-color: var(--teal); box-shadow: var(--shadow-md); }
+.fc-front { font-family: var(--font-mono); font-size: 44px; color: var(--teal-ink); font-weight: 700; letter-spacing: 3px; }
+.fc-hint { font-size: 11px; color: var(--ink-3); margin-top: 10px; font-family: var(--font-mono); }
+.fc-back { display: none; }
+.fc-back .fc-mean { font-size: 19px; color: var(--leaf-ink); font-weight: 700; margin-bottom: 10px; }
+.fc-back .fc-example { font-size: 12.5px; color: var(--ink-2); font-family: var(--font-mono); line-height: 1.7; white-space: pre-line; }
+.flash-card.flipped .fc-front { display: none; }
+.flash-card.flipped .fc-back { display: block; }
+.flash-card.flipped { border-color: var(--leaf); }
+.fc-btns { display: flex; gap: 9px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">Q 簡語情境訓練</div>
+  <p class="tool-sub">對應「無線電通訊方法」題庫 · 在對話情境中學 Q 碼，不只是死背代碼。</p>
+
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('scenario')"><i data-lucide="radio"></i> 情境練習</button>
+    <button class="tab" onclick="switchTab('flash')"><i data-lucide="layers"></i> 閃卡記憶</button>
+    <button class="tab" onclick="switchTab('ref')"><i data-lucide="book-open"></i> 完整速查</button>
+    <button class="tab" onclick="switchTab('confuse')"><i data-lucide="triangle-alert"></i> 易混淆</button>
+  </div>
+
+  <!-- ═══ SCENARIO TAB ═══ -->
+  <div id="tab-scenario">
+    <div class="score-area">
+      <span>進度 <span class="sc" id="prog-text">0 / 0</span></span>
+      <span>答對 <span class="sc" id="score-text" style="color:var(--leaf-ink)">0</span> 題</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-bar" style="width:0%"></div></div>
+
+    <div class="radio-scene">
+      <div class="scene-label" id="scene-label">無線電通訊情境</div>
+      <div class="chat-bubbles" id="chat-bubbles"></div>
+    </div>
+
+    <div class="q-area">
+      <div class="q-text" id="q-text"></div>
+      <div class="choices" id="choices"></div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="nav-btns">
+      <button class="nbtn" onclick="restartScenario()">↺ 重新開始</button>
+      <button class="nbtn primary" id="next-btn" onclick="nextQuestion()" style="display:none">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- ═══ FLASH TAB ═══ -->
+  <div id="tab-flash" style="display:none">
+    <div class="st">點擊翻牌查看意思</div>
+    <div class="flash-card" id="flash-card" onclick="flipCard()">
+      <div class="fc-front" id="fc-front">QSL</div>
+      <div class="fc-hint">點擊翻牌</div>
+      <div class="fc-back" id="fc-back">
+        <div class="fc-mean" id="fc-mean"></div>
+        <div class="fc-example" id="fc-example"></div>
+      </div>
+    </div>
+    <div class="fc-btns">
+      <button class="nbtn" onclick="prevCard()">← 上一個</button>
+      <button class="nbtn" id="fc-counter" style="cursor:default">1/20</button>
+      <button class="nbtn" onclick="nextCard()">下一個 →</button>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--ink-3);text-align:center;">鍵盤 ← → 翻頁 · 空白鍵翻牌</div>
+  </div>
+
+  <!-- ═══ REF TAB ═══ -->
+  <div id="tab-ref" style="display:none">
+    <div class="search">
+      <input type="text" id="search-input" placeholder="搜尋 Q 碼或關鍵字…" oninput="filterRef()">
+    </div>
+    <div class="cat-filter" id="cat-filter"></div>
+    <div class="qref-grid" id="qref-grid"></div>
+  </div>
+
+  <!-- ═══ CONFUSE TAB ═══ -->
+  <div id="tab-confuse" style="display:none">
+    <div class="st">最容易混淆的 Q 碼配對</div>
+    <div class="similar-box">
+      <div class="sb-title"><i data-lucide="triangle-alert"></i>考試陷阱 — 這些長得很像，意思完全不同</div>
+      <div id="similar-pairs"></div>
+    </div>
+
+    <div class="st">記憶口訣</div>
+    <div id="mnemonics" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+function icons(){ if (window.lucide) lucide.createIcons(); }
+const AVATAR = { '📡':'radio-tower', '🔊':'volume-2', '🔑':'key-round', '📻':'radio' };
+
+// ═══ Q CODE DATA ═══
+const QCODES = [
+  { code:'QRL', mean:'這個頻率正在使用中 / 你在忙嗎？', cat:'頻率', exam:true,
+    example:'QRL? — 詢問頻率是否使用中\n回覆QRL — 是，頻率有人用，請迴避' },
+  { code:'QRM', mean:'你受到人為干擾（其他電臺）', cat:'干擾', exam:true,
+    example:'QRM 2 — 受到輕微人為干擾\nQRM 5 — 嚴重人為干擾，幾乎無法通訊' },
+  { code:'QRN', mean:'你受到靜電雜訊干擾（大氣）', cat:'干擾', exam:true,
+    example:'QRN 3 — 中等靜電干擾\n通常在雷雨季節或低頻段較嚴重' },
+  { code:'QRO', mean:'增大發射功率', cat:'功率', exam:false,
+    example:'QRO 10 — 增加到10瓦\n與QRP（降低功率）相反' },
+  { code:'QRP', mean:'降低發射功率 / 低功率操作（≤5W）', cat:'功率', exam:true,
+    example:'QRP操作 = 5W以下發射\nQRP? — 要我降低功率嗎？' },
+  { code:'QRQ', mean:'發送快一點', cat:'速度', exam:false,
+    example:'QRQ 15 — 請以每分鐘15字發送\n與QRS（發慢）相反' },
+  { code:'QRS', mean:'發送慢一點', cat:'速度', exam:true,
+    example:'收到QRS → 應該發慢一點\nQRS 10 — 請以每分鐘10字發送' },
+  { code:'QRT', mean:'停止發送 / 關閉電台', cat:'操作', exam:false,
+    example:'QRT — 我要關台了\nQRT? — 要我停止發送嗎？' },
+  { code:'QRU', mean:'我沒有任何消息給你', cat:'操作', exam:false,
+    example:'QRU? — 你有什麼消息給我嗎？\nQRU — 沒有，沒有消息' },
+  { code:'QRV', mean:'我準備好了 / 你準備好接收嗎？', cat:'操作', exam:true,
+    example:'QRV — 我準備好了\nQRV? — 你準備好接收了嗎？' },
+  { code:'QRX', mean:'請稍候 / 我將在___時呼叫你', cat:'操作', exam:false,
+    example:'QRX 5 — 請等5分鐘\nQRX 1430 — 我將在14:30呼叫你' },
+  { code:'QRZ', mean:'誰在呼叫我？', cat:'呼叫', exam:false,
+    example:'QRZ? — 誰在呼叫我？\n通常在CQ結束後若沒聽清回叫者使用' },
+  { code:'QSB', mean:'你的訊號強度在變化（衰落）', cat:'訊號', exam:false,
+    example:'QSB 3 — 中等程度衰落\n多路徑傳播常造成QSB現象' },
+  { code:'QSK', mean:'完整插話 / 在發送字詞間可以接收', cat:'CW操作', exam:true,
+    example:'QSK? — 你能做完整插話操作嗎？\nQSK — 我能在發送間隙接收' },
+  { code:'QSL', mean:'我確認收到（回執）', cat:'確認', exam:true,
+    example:'QSL — 收到確認\nQSL卡 = 通聯確認卡（紙本）\nQSL? — 你收到了嗎？' },
+  { code:'QSO', mean:'直接通訊 / 一次通聯', cat:'通訊', exam:false,
+    example:'QSO — 一次通聯\nQSO? — 你能直接與___通訊嗎？' },
+  { code:'QSP', mean:'轉報 / 替我轉達給___', cat:'通訊', exam:false,
+    example:'QSP BV2AB — 請替我轉告BV2AB\n中繼台常使用' },
+  { code:'QSY', mean:'改換其他頻率發射', cat:'頻率', exam:false,
+    example:'QSY 145.000 — 改到145MHz\nQSY? — 要我換頻率嗎？' },
+  { code:'QTH', mean:'我的位置是___ / 你在哪裡？', cat:'位置', exam:false,
+    example:'QTH Taipei — 我在台北\nQTH? — 你在哪裡？' },
+  { code:'QRG', mean:'你的確切頻率是___ / 你的頻率是多少？', cat:'頻率', exam:false,
+    example:'QRG 14.250 — 我的頻率是14.250MHz\nQRG? — 你的確切頻率是多少？' },
+];
+
+// ═══ SCENARIOS ═══
+const SCENARIOS = [
+  { label:'場景一：嘗試使用一個頻率',
+    bubbles:[
+      { side:'left', avatar:'📡', call:'BV2AB', text:'BV2AB 想使用 14.250 MHz…', mono:false },
+      { side:'left', avatar:'📡', call:'BV2AB', text:'（先發送）', mono:false },
+      { side:'right', avatar:'🔊', call:'BV5CD', text:'BV5CD BV5CD, QRL', mono:true, note:'此頻率有人使用' } ],
+    question:'BV5CD 回覆 QRL，代表什麼意思？',
+    correct:'QRL — 頻率正在使用中',
+    choices:['QRL — 頻率正在使用中','QRN — 受到靜電干擾','QRV — 我準備好了','QRT — 停止發送'],
+    code:'QRL',
+    explain:'QRL 的意思是「這個頻率正在使用中」。使用頻率前應先發 QRL? 詢問，若有人回 QRL 則應另尋頻率。' },
+  { label:'場景二：CW 速度太快',
+    bubbles:[
+      { side:'right', avatar:'🔑', call:'BV1AA', text:'CQ CQ CQ DE BV1AA BV1AA K', mono:true, note:'每分鐘30字，很快' },
+      { side:'left', avatar:'📡', call:'BV3BB', text:'BV1AA DE BV3BB', mono:true },
+      { side:'right', avatar:'🔑', call:'BV1AA', text:'（繼續以高速發送長訊息…）', mono:false } ],
+    question:'BV3BB 跟不上 BV1AA 的發送速度，應發送什麼 Q 碼請求對方放慢？',
+    correct:'QRS — 請發慢一點',
+    choices:['QRS — 請發慢一點','QRQ — 請發快一點','QRX — 請稍候','QSK — 完整插話'],
+    code:'QRS',
+    explain:'QRS = 發送慢一點。考試出現過：「CW電台送出 QRS，你應該做什麼？」→ 答案是降低發送速度。與 QRQ（加快）方向相反。' },
+  { label:'場景三：確認收到訊息',
+    bubbles:[
+      { side:'right', avatar:'📡', call:'BV2AB', text:'BV3BB DE BV2AB 請告知你的位置，QTH?', mono:true },
+      { side:'left', avatar:'📻', call:'BV3BB', text:'BV2AB DE BV3BB QTH Taichung, 73', mono:true, note:'QTH = 我的位置' },
+      { side:'right', avatar:'📡', call:'BV2AB', text:'（BV2AB 想確認已收到）', mono:false } ],
+    question:'BV2AB 收到位置報告，想表示「我確認收到」，應使用哪個 Q 碼？',
+    correct:'QSL — 我確認收到',
+    choices:['QSL — 我確認收到','QRU — 我沒有消息','QRV — 我準備好了','QSO — 直接通訊'],
+    code:'QSL',
+    explain:'QSL = 「我確認收到」。也引申為 QSL 卡（通聯確認卡）。這是最常用的 Q 碼之一，任何確認收到訊息的場合都可使用。' },
+  { label:'場景四：雷雨天的通訊干擾',
+    bubbles:[
+      { side:'right', avatar:'📡', call:'BV7GH', text:'BV1AA DE BV7GH 通訊品質如何？', mono:true },
+      { side:'left', avatar:'📡', call:'BV1AA', text:'BV7GH DE BV1AA RST 559,', mono:true },
+      { side:'left', avatar:'📡', call:'BV1AA', text:'受到很多靜電雜訊…', mono:false } ],
+    question:'BV1AA 受到大氣靜電干擾，應使用哪個 Q 碼報告此狀況？',
+    correct:'QRN — 受到靜電（大氣）干擾',
+    choices:['QRM — 受到人為干擾','QRN — 受到靜電（大氣）干擾','QSB — 訊號衰落','QRL — 頻率使用中'],
+    code:'QRN',
+    explain:'QRN = 靜電/大氣雜訊干擾（自然來源）。QRM = 人為干擾（其他電台）。雷雨、大氣放電造成的是 QRN；鄰近電台干擾是 QRM。兩者容易混淆，考試必考！' },
+  { label:'場景五：準備接受訊息',
+    bubbles:[
+      { side:'right', avatar:'📡', call:'BV5EF', text:'BV3BB DE BV5EF 我有緊急訊息要告訴你', mono:true },
+      { side:'left', avatar:'📻', call:'BV3BB', text:'BV5EF DE BV3BB', mono:true },
+      { side:'left', avatar:'📻', call:'BV3BB', text:'（BV3BB 需回覆已準備好接收）', mono:false } ],
+    question:'BV3BB 要回覆「我已準備好接收你的訊息」，應發送哪個 Q 碼？',
+    correct:'QRV — 我準備好了',
+    choices:['QRV — 我準備好了','QRT — 停止發送','QRX — 請稍候','QSP — 請轉報'],
+    code:'QRV',
+    explain:'QRV = 「我準備好了」或詢問「你準備好接收嗎？」。接到通知有訊息要傳達，回覆 QRV 表示可以開始接收。' },
+  { label:'場景六：低功率操作',
+    bubbles:[
+      { side:'left', avatar:'📡', call:'BV2AB', text:'（今天用 5W 進行 QRP 操作…）', mono:false },
+      { side:'right', avatar:'🔊', call:'BV9IJ', text:'BV2AB DE BV9IJ 你的訊號很弱，能增加功率嗎？', mono:true },
+      { side:'left', avatar:'📡', call:'BV2AB', text:'BV9IJ DE BV2AB 正在進行___操作，最大 5W', mono:true } ],
+    question:'BV2AB 以低功率（5W以下）操作，這種操作模式稱為什麼？',
+    correct:'QRP — 低功率操作',
+    choices:['QRP — 低功率操作','QRO — 高功率操作','QRN — 雜訊操作','QRG — 頻率操作'],
+    code:'QRP',
+    explain:'QRP = 降低發射功率，也代表「低功率操作」（通常指5W以下）。是一種挑戰性的玩法，用最小功率試圖與遠距電台通聯。' },
+  { label:'場景七：CW 完整插話',
+    bubbles:[
+      { side:'right', avatar:'🔑', call:'BV4KL', text:'BV3BB DE BV4KL', mono:true },
+      { side:'left', avatar:'📡', call:'BV3BB', text:'BV4KL DE BV3BB 你能在發送間隙接收我的訊號嗎？', mono:true } ],
+    question:'BV3BB 詢問 BV4KL 是否支援「在發送字詞之間仍可接收」的操作模式，這是哪個 Q 碼？',
+    correct:'QSK — 完整插話操作',
+    choices:['QSK — 完整插話操作','QSO — 直接通訊','QSP — 轉報','QSL — 確認收到'],
+    code:'QSK',
+    explain:'QSK = 完整插話（Full Break-in），指在發送 CW 字詞之間的空隙仍然可以接收對方訊號。考試原題：「完整插話電報(QSK)是指——發射電臺在發射字詞之間仍可接收」。' },
+  { label:'場景八：頻率有人為干擾',
+    bubbles:[
+      { side:'left', avatar:'📡', call:'BV1AA', text:'（通話中，突然…）', mono:false },
+      { side:'left', avatar:'📡', call:'BV1AA', text:'（另一個電台闖入，強烈覆蓋…）', mono:false },
+      { side:'right', avatar:'📡', call:'BV6MN', text:'BV1AA DE BV6MN 你有收到嗎？', mono:true } ],
+    question:'BV1AA 的通訊被另一個電台干擾，要報告「受到人為干擾」，應用哪個Q碼？',
+    correct:'QRM — 受到人為（其他電台）干擾',
+    choices:['QRN — 受到靜電干擾','QRM — 受到人為（其他電台）干擾','QSB — 訊號衰落','QRL — 頻率使用中'],
+    code:'QRM',
+    explain:'QRM = 人為干擾（其他電台的訊號）。QRN = 自然干擾（大氣靜電）。記憶口訣：QRM = Man-made（人為），QRN = Nature（自然）。' },
+];
+
+const SIMILAR = [
+  { a:{code:'QRM',mean:'人為干擾（其他電台）'}, b:{code:'QRN',mean:'自然干擾（大氣靜電）'}, tip:'M=Man-made人為；N=Nature自然' },
+  { a:{code:'QRS',mean:'發送慢一點'}, b:{code:'QRQ',mean:'發送快一點'}, tip:'S=Slow慢；Q→R→Q更快' },
+  { a:{code:'QRP',mean:'降低功率（低功率操作）'}, b:{code:'QRO',mean:'增大功率'}, tip:'P小O大：P功率小，O功率大' },
+  { a:{code:'QSL',mean:'確認收到'}, b:{code:'QSO',mean:'直接通訊/一次通聯'}, tip:'SL=確認；SO=聯絡' },
+  { a:{code:'QRL',mean:'頻率使用中/你在忙嗎？'}, b:{code:'QRV',mean:'準備好了'}, tip:'L=Locked使用中；V=Ready準備好' },
+  { a:{code:'QRT',mean:'停止發送/關台'}, b:{code:'QRX',mean:'請稍候/暫停'}, tip:'T=Terminate終止；X=暫停等待' },
+];
+
+const MNEMONICS = [
+  { code:'QSL', tip:'S=Signal確認，L=Logged已記錄 → 確認收到' },
+  { code:'QTH', tip:'TH=地點 → 我的位置' },
+  { code:'QRN', tip:'N=Nature自然 → 大氣靜電' },
+  { code:'QRM', tip:'M=Man-made人為 → 其他電台干擾' },
+  { code:'QRP', tip:'P=Power少 → 低功率，想像P比O小' },
+  { code:'QRS', tip:'S=Slow → 發慢，CW速度太快時用' },
+  { code:'QRL', tip:'RL=Really Listening使用中 → 頻率有人用' },
+  { code:'QRV', tip:'V=Voilà準備好了 → 我準備好接收' },
+];
+
+// ═══ SCENARIO ENGINE ═══
+let scenIdx = 0, score = 0, answered = false;
+const order = shuffleArray([...Array(SCENARIOS.length).keys()]);
+
+function shuffleArray(arr) {
+  for (let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+
+function renderScenario() {
+  if (scenIdx >= order.length) { showComplete(); return; }
+  const s = SCENARIOS[order[scenIdx]];
+  answered = false;
+  document.getElementById('prog-text').textContent = `${scenIdx+1} / ${SCENARIOS.length}`;
+  document.getElementById('prog-bar').style.width = ((scenIdx / SCENARIOS.length) * 100) + '%';
+  document.getElementById('score-text').textContent = score;
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('scene-label').textContent = s.label;
+
+  const bb = document.getElementById('chat-bubbles');
+  bb.innerHTML = '';
+  s.bubbles.forEach((b, i) => {
+    const div = document.createElement('div');
+    div.className = 'bubble ' + (b.side === 'right' ? 'right' : '');
+    div.style.opacity = '0';
+    div.style.transform = 'translateY(10px)';
+    div.style.transition = `opacity .3s ${i*0.12}s, transform .3s ${i*0.12}s`;
+    let inner = `<div class="avatar"><i data-lucide="${AVATAR[b.avatar]||'radio'}"></i></div>
+      <div class="bubble-body"><div class="callsign">${b.call}</div>`;
+    if (b.mono) inner += `<div class="qcode">${b.text}</div>`;
+    else inner += `<div style="font-size:12.5px;color:var(--ink-3)">${b.text}</div>`;
+    if (b.note) inner += `<div class="translation">${b.note}</div>`;
+    inner += '</div>';
+    div.innerHTML = inner;
+    bb.appendChild(div);
+    setTimeout(() => { div.style.opacity='1'; div.style.transform='translateY(0)'; }, 40+i*120);
+  });
+  icons();
+
+  document.getElementById('q-text').innerHTML = s.question.replace(/(QS[A-Z]|QR[A-Z]|QT[A-Z])/g, '<strong>$1</strong>');
+
+  const ch = document.getElementById('choices');
+  ch.innerHTML = '';
+  shuffleArray([...s.choices]).forEach(c => {
+    const btn = document.createElement('div');
+    btn.className = 'choice';
+    btn.textContent = c;
+    btn.onclick = () => checkAnswer(c, s);
+    ch.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+}
+
+function checkAnswer(selected, s) {
+  if (answered) return;
+  answered = true;
+  const isCorrect = selected === s.correct;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.choice').forEach(btn => {
+    btn.onclick = null;
+    if (btn.textContent === s.correct) btn.classList.add('correct');
+    else if (btn.textContent === selected && !isCorrect) btn.classList.add('wrong');
+    else btn.classList.add('reveal');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ng');
+  fb.innerHTML = (isCorrect ? '<i data-lucide="circle-check"></i> 正確！' : '<i data-lucide="circle-x"></i> 錯了。正確答案：') +
+    `<span class="fq"> ${s.code}</span><br><span class="fm">${s.explain}</span>`;
+  icons();
+
+  document.getElementById('score-text').textContent = score;
+  document.getElementById('next-btn').style.display = '';
+}
+
+function nextQuestion() { scenIdx++; renderScenario(); }
+function restartScenario() { scenIdx = 0; score = 0; shuffleArray(order); renderScenario(); }
+
+function showComplete() {
+  document.getElementById('scene-label').textContent = '全部完成！';
+  document.getElementById('chat-bubbles').innerHTML = `
+    <div style="text-align:center;padding:18px;">
+      <div style="color:var(--honey-ink);margin-bottom:10px"><i data-lucide="party-popper" style="width:34px;height:34px"></i></div>
+      <div style="font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--teal-ink);">${score} / ${SCENARIOS.length} 答對</div>
+      <div style="font-size:13px;color:var(--ink-3);margin-top:8px;">
+        ${score===SCENARIOS.length?'完美！全部答對！':score>=SCENARIOS.length*0.7?'很好！繼續加油！':'再複習一次吧！'}
+      </div>
+    </div>`;
+  icons();
+  document.getElementById('q-text').textContent = '';
+  document.getElementById('choices').innerHTML = '';
+  document.getElementById('prog-bar').style.width = '100%';
+  document.getElementById('next-btn').style.display = 'none';
+}
+
+// ═══ FLASH CARDS ═══
+let flashIdx = 0, flipped = false;
+function renderFlash() {
+  const q = QCODES[flashIdx];
+  document.getElementById('flash-card').classList.remove('flipped');
+  flipped = false;
+  document.getElementById('fc-front').textContent = q.code;
+  document.getElementById('fc-mean').textContent = q.mean;
+  document.getElementById('fc-example').textContent = q.example;
+  document.getElementById('fc-counter').textContent = `${flashIdx+1}/${QCODES.length}`;
+  document.querySelector('.fc-hint').textContent = '點擊翻牌';
+}
+function flipCard() {
+  flipped = !flipped;
+  document.getElementById('flash-card').classList.toggle('flipped', flipped);
+  document.querySelector('.fc-hint').textContent = flipped ? '點擊再翻回' : '點擊翻牌';
+}
+function nextCard() { flashIdx = (flashIdx+1)%QCODES.length; renderFlash(); }
+function prevCard() { flashIdx = (flashIdx-1+QCODES.length)%QCODES.length; renderFlash(); }
+document.addEventListener('keydown', e => {
+  if (document.getElementById('tab-flash').style.display === 'none') return;
+  if (e.key==='ArrowRight') nextCard();
+  else if (e.key==='ArrowLeft') prevCard();
+  else if (e.key===' ') { e.preventDefault(); flipCard(); }
+});
+
+// ═══ QUICK REF ═══
+let curCat = 'all';
+function buildRef() {
+  const cats = ['all', ...new Set(QCODES.map(q=>q.cat))];
+  const cf = document.getElementById('cat-filter');
+  cats.forEach(c => {
+    const btn = document.createElement('div');
+    btn.className = 'cf' + (c==='all'?' on':'');
+    btn.textContent = c==='all'?'全部':c;
+    btn.onclick = () => { curCat=c; document.querySelectorAll('.cf').forEach(b=>b.classList.toggle('on',b.textContent===(c==='all'?'全部':c))); filterRef(); };
+    cf.appendChild(btn);
+  });
+  renderRef(QCODES);
+}
+function filterRef() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtered = QCODES.filter(c => {
+    const catOk = curCat==='all' || c.cat===curCat;
+    const searchOk = !q || c.code.toLowerCase().includes(q) || c.mean.includes(q) || c.example.toLowerCase().includes(q);
+    return catOk && searchOk;
+  });
+  renderRef(filtered);
+}
+function renderRef(list) {
+  const grid = document.getElementById('qref-grid');
+  grid.innerHTML = '';
+  list.forEach(q => {
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    card.onclick = () => card.classList.toggle('highlight');
+    card.innerHTML = `<div class="qr-code">${q.code}${q.exam?'<span class="qc-exam">考</span>':''}</div>
+      <div class="qr-mean">${q.mean}</div>
+      <div class="qr-cat">${q.cat}</div>
+      <div class="qr-detail">${q.example}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ═══ CONFUSE ═══
+function buildConfuse() {
+  const pairs = document.getElementById('similar-pairs');
+  SIMILAR.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'sim-pair';
+    div.innerHTML = `<span class="sc1">${s.a.code}</span><span style="color:var(--ink-3)">${s.a.mean}</span>
+      <span style="color:var(--ink-3);font-family:var(--font-mono);font-size:10px;padding:0 4px">VS</span>
+      <span class="sc2">${s.b.code}</span><span style="color:var(--ink-3)">${s.b.mean}</span>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--honey-ink);margin-left:8px">→ ${s.tip}</span>`;
+    pairs.appendChild(div);
+  });
+  const mn = document.getElementById('mnemonics');
+  MNEMONICS.forEach(m => {
+    const card = document.createElement('div');
+    card.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:11px 13px;box-shadow:var(--shadow-sm);';
+    card.innerHTML = `<div style="font-family:var(--font-mono);font-size:16px;color:var(--teal-ink);font-weight:700;margin-bottom:5px">${m.code}</div>
+      <div style="font-size:12px;color:var(--ink-2);line-height:1.6">${m.tip}</div>`;
+    mn.appendChild(card);
+  });
+}
+
+// ═══ TABS ═══
+function switchTab(name) {
+  ['scenario','flash','ref','confuse'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name?'':'none';
+  });
+  document.querySelectorAll('.tabs .tab').forEach((el,i) => {
+    el.classList.toggle('on', ['scenario','flash','ref','confuse'][i]===name);
+  });
+}
+
+// ═══ INIT ═══
+renderScenario();
+renderFlash();
+buildRef();
+buildConfuse();
+icons();
+</script>
+</body>
+</html>
