@@ -238,6 +238,19 @@ a:hover { color: var(--primary-strong); }
 .callout.task { background: var(--teal-soft); border-left: 4px solid var(--teal); color: #134f4a; }
 .callout.task .ct { color: var(--teal-ink); }
 
+/* class-QR card (course pages — scan to take the lesson onto your phone) */
+.qr-card { display: flex; align-items: center; gap: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 20px 24px; margin: 18px 0 4px; box-shadow: var(--shadow-sm); }
+.qr-card img { width: 132px; height: 132px; flex-shrink: 0; border: 1px solid var(--border); border-radius: var(--r-md); }
+.qr-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--ink); margin: 7px 0 6px; }
+.qr-card p { font-size: 14px; color: var(--ink-2); line-height: 1.65; }
+.qr-card .qr-url { display: inline-block; margin-top: 9px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--primary-ink); background: var(--primary-soft); border-radius: var(--r-pill); padding: 4px 13px; word-break: break-all; }
+@media (max-width: 560px) {
+  .qr-card { flex-direction: column; text-align: center; gap: 14px; padding: 18px 16px; }
+  .qr-card img { width: 168px; height: 168px; }
+  .qr-card h3 { font-size: 18px; }
+  .qr-card p { font-size: 13.5px; }
+}
+
 /* prominent step-flow card (SOP / closed-loop sequence — a teaching centrepiece) */
 .flowcard { background: linear-gradient(180deg, var(--surface-soft), var(--surface)); border: 1px solid var(--border); border-left: 5px solid var(--primary); border-radius: var(--r-lg); padding: 20px 22px; margin: 16px 0; box-shadow: var(--shadow-md); }
 .flowcard-h { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 800; font-size: 17px; color: var(--primary-ink); margin-bottom: 16px; }
