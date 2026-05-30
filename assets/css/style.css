@@ -214,7 +214,7 @@ a:hover { color: var(--primary-strong); }
 .concept-hd .ico { font-size: 26px; line-height: 1; display: flex; }
 .concept-hd .ico svg { width: 24px; height: 24px; stroke-width: 2; color: var(--ink); }
 .concept-hd .title { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--ink); line-height: 1.2; }
-.concept-hd .en { font-size: 12px; font-style: italic; color: var(--ink-3); margin-top: 2px; }
+.concept-hd .en { font-size: 13.5px; font-style: italic; font-weight: 500; color: var(--ink-2); margin-top: 3px; }
 .concept-bd { padding: 14px 17px 17px; }
 .concept-bd .explain { font-size: 14px; color: var(--ink-2); line-height: 1.75; }
 

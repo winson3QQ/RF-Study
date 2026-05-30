@@ -42,6 +42,11 @@
     <button class="fbtn" onclick="filterCat('scenario',this)"><i data-lucide="building-2"></i>情境參數</button>
     <button class="fbtn" onclick="filterCat('advanced',this)"><i data-lucide="microscope"></i>進階理論</button>
     <button class="fbtn" onclick="filterCat('propagation',this)"><i data-lucide="waves"></i>電波傳播</button>
+    <button class="fbtn" onclick="filterCat('receiver',this)"><i data-lucide="radio-receiver"></i>接收機</button>
+    <button class="fbtn" onclick="filterCat('power',this)"><i data-lucide="circuit-board"></i>電源/元件</button>
+    <button class="fbtn" onclick="filterCat('emc',this)"><i data-lucide="zap-off"></i>干擾相容</button>
+    <button class="fbtn" onclick="filterCat('safety',this)"><i data-lucide="shield-check"></i>安全防護</button>
+    <button class="fbtn" onclick="filterCat('modulation',this)"><i data-lucide="audio-waveform"></i>調變方式</button>
   </div>
 
   <!-- ===== 基礎概念 ===== -->
@@ -710,6 +715,376 @@ SWR 無限大    開路（天線斷了）或短路</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像同一句話從好幾個方向同時帶著回音傳來，疊在一起就糊掉、抖動。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>散射訊號「顫抖」是辨識特徵；屬自然現象無法消除，用 AGC 緩解音量起伏。</div>
         <div class="tagrow"><span class="ctag adv">傳播</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 接收機 -->
+  <div class="cat-title"><i data-lucide="radio-receiver"></i>接收機：訊號進來後怎麼處理</div>
+  <div class="concept-grid">
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="radio-receiver"></i></span><div><div class="title">超外差接收機</div><div class="en">Superheterodyne Receiver</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">最常見的接收機架構：把收到的高頻訊號先「降頻」到固定的中頻（IF）再處理，選擇性和靈敏度都更好。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像把各種外幣先全換成「同一種貨幣」再數，比每種分開數容易多了——固定中頻就是那個共同貨幣。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>訊號流：天線→RF 放大→混波器→IF 濾波/放大→解調→音頻。重點是「先降到中頻再處理」。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="x"></i></span><div><div class="title">混波器 / 外差</div><div class="en">Mixer / Heterodyne</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">把收到的 RF 與本地振盪（LO）兩個頻率「相乘」，產生差頻＝中頻（IF）。「混合兩個射頻訊號」就叫外差。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像兩個不同音高的音叉一起響，會聽到一個「拍頻」差音——混波器就是製造那個差音（IF）。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span><span class="readout">IF = |RF − LO|</span>。考題：混波器處理「RF 放大器＋本地振盪器」的訊號，輸出中頻。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="sliders-horizontal"></i></span><div><div class="title">本地振盪器（LO）</div><div class="en">Local Oscillator</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">接收機內部自己產生的可調頻率，和接收頻率相差一個 IF。「調台」其實就是在調 LO。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像收音機的選台旋鈕，你轉的不是天線，而是裡面這個本地振盪頻率。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span><span class="readout">LO = 接收頻率 ± IF</span>。SSB 機常用 DDS 合成，獲得石英晶體般的穩定度。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="route"></i></span><div><div class="title">中頻（IF）</div><div class="en">Intermediate Frequency</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">混波後產生的固定頻率（常見 455kHz、10.7MHz）。所有選擇性（帶寬）和主要放大都在這裡做。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像工廠的「標準生產線」——不管進來什麼料，都先轉成同一規格再加工。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>IF 濾波器決定接收機的「選擇性」（帶寬）。DSP IF 濾波器可做出大範圍的帶寬和形狀。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="activity"></i></span><div><div class="title">BFO 拍頻振盪器</div><div class="en">Beat Frequency Oscillator</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">產生一個和 IF 同頻的載波，幫 SSB / CW 還原成可聽的音頻。FM 不需要 BFO。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>SSB/CW 把「載波」省掉了，BFO 就是在接收端「補回那根載波」，聲音才聽得懂。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>BFO 只用於 SSB 和 CW；FM 接收機用「鑑相器」解調，不用 BFO。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="git-compare"></i></span><div><div class="title">鑑相器</div><div class="en">Discriminator</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">FM 的解調器，把「頻率的變化」還原成音頻訊號。也叫頻率鑑別器。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像把「車速的快慢變化」翻譯成「踩多深油門」——鑑相器把頻率高低翻回聲音大小。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>考題：FM 接收機用什麼把 IF 轉成音頻？→ 鑑相器（Discriminator）。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="flip-horizontal"></i></span><div><div class="title">鏡像頻率</div><div class="en">Image Frequency</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">超外差的天生問題：和接收頻率相差「兩倍 IF」的訊號也會混到同一個 IF，造成干擾。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像鏡子裡的「對稱影像」——本尊和鏡像剛好對稱落在 LO 兩側，都被收進來。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span><span class="readout">鏡像頻率 = 接收頻率 + 2×IF</span>。解法：混波器前加「預選器（帶通濾波）」，或用較高的 IF。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="receiver">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="gauge"></i></span><div><div class="title">AGC 自動增益控制</div><div class="en">Automatic Gain Control</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">自動調整放大倍率，讓強訊號和弱訊號輸出的音量都差不多，不會忽大忽小。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像手機通話的自動音量——對方大聲喊或小聲講，你聽到的音量都被拉到差不多。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>強訊號→自動降增益防過載；弱訊號→自動加增益。也能緩解 QSB 衰落的音量起伏。</div>
+        <div class="tagrow"><span class="ctag sdr">接收機</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 電源/元件 -->
+  <div class="cat-title"><i data-lucide="circuit-board"></i>電源/元件：電怎麼變乾淨、元件做什麼</div>
+  <div class="concept-grid">
+
+    <div class="concept" data-tags="power">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="zap"></i></span><div><div class="title">整流（半波/全波/橋式）</div><div class="en">Rectifier</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">把交流電（AC）變成直流脈衝。半波只用一半（180°）；全波/橋式用全部（360°）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像旋轉門只讓人「單向」通過——整流讓電流只能往一個方向流。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>半波用 AC 的 <span class="readout">180°</span>、全波/橋式用 <span class="readout">360°</span>。橋式用 4 顆二極體、不需中心抽頭，最常用。</div>
+        <div class="tagrow"><span class="ctag adv">電源</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="power">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="triangle-alert"></i></span><div><div class="title">反向峰值電壓（PIV）</div><div class="en">Peak Inverse Voltage</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">二極體在「不導通」時要承受的最大反向電壓。選二極體必須撐得住 PIV。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像水壩逆向擋水要承受的最大水壓——選壩當然要選撐得住的。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>半波整流 PIV =「輸出峰值電壓的 2 倍」；全波/橋式 PIV = 等於輸出峰值電壓。最常考！</div>
+        <div class="tagrow"><span class="ctag adv">電源</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="power">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="audio-waveform"></i></span><div><div class="title">漣波與濾波</div><div class="en">Ripple &amp; Filter</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">整流後的直流還是「一跳一跳」的，叫漣波。用電容器（和電感）濾波把它磨平成穩定直流。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>漣波像沒鋪平的碎石路；濾波電容像「填平坑洞」，讓車子（直流）走得平穩。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>濾波電容越大→漣波越小。全波整流漣波是 AC 的 2 倍頻（50→100Hz），比半波好濾。</div>
+        <div class="tagrow"><span class="ctag adv">電源</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="power">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="battery-charging"></i></span><div><div class="title">穩壓器（線性/開關）</div><div class="en">Voltage Regulator</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">把濾波後仍會浮動的電壓「穩定」在固定值。線性穩定但耗電；開關式效率高、元件小。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像汽車定速巡航——不管上坡下坡（輸入變動），輸出車速（電壓）都維持固定。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>開關電源的優點：較高頻率操作 → 可以使用較小型的元件。</div>
+        <div class="tagrow"><span class="ctag adv">電源</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="power">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="triangle-right"></i></span><div><div class="title">二極體（整流 / 蕭特基）</div><div class="en">Diode</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">只讓電流單向通過的元件。整流二極體耐大電流；蕭特基二極體「電容低」，適合 RF 開關。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像單行道路標——只准一個方向走，逆向不通。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>RF 開關電路選「蕭特基二極體」，因為它電容低（切換快、損失小）。</div>
+        <div class="tagrow"><span class="ctag adv">電源</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="power">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="cpu"></i></span><div><div class="title">電晶體（BJT / FET / MOSFET）</div><div class="en">Transistor</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">用小訊號控制大電流的元件。雙極（BJT）用基極電流控制；場效（FET/MOSFET）用閘極電壓控制。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像水龍頭——用很小的力（基極/閘極）就能控制很大的水流（集極/汲極電流）。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>用做「開關」→工作在飽和區與截止區；MOSFET 閘極與通道隔著「薄絕緣層」，特性最像真空管。</div>
+        <div class="tagrow"><span class="ctag adv">電源</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="power">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="lightbulb"></i></span><div><div class="title">真空管</div><div class="en">Vacuum Tube</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">老式放大元件，屏極（陽極）電流由「控制柵」電壓控制。高功率發射級至今仍會用到。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像用一道閘門控制水流——控制柵就是那道閘門，微調就能控制很大的電流。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>屏柵（Screen Grid）的作用：減少柵極與屏極間的電容。FET 的特性最接近真空管。</div>
+        <div class="tagrow"><span class="ctag adv">電源</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 干擾相容 EMC -->
+  <div class="cat-title"><i data-lucide="zap-off"></i>干擾相容（EMC）：找出干擾、把它擋掉</div>
+  <div class="concept-grid">
+
+    <div class="concept" data-tags="emc">
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="zap"></i></span><div><div class="title">QRM / QRN 人為·自然干擾</div><div class="en">Man-made / Natural Interference</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">QRM＝別的電臺造成的「人為」干擾；QRN＝雷雨、大氣靜電的「自然」干擾。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>QRM 像鄰桌有人大聲講話（人為）；QRN 像窗外打雷的劈啪聲（自然）。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>記 M = Man-made（人為）、N = Nature（自然）。兩者考試最愛混淆。</div>
+        <div class="tagrow"><span class="ctag scen">干擾</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="emc">
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="arrow-left-right"></i></span><div><div class="title">共模 / 差模電流</div><div class="en">Common / Differential Mode</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">差模＝有用訊號，在兩條線上方向相反；共模＝干擾，在所有線上「同向」流動。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>差模像兩人抬轎一前一後（正常）；共模像大家被同一陣風吹著一起跑（干擾）。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>鐵氧扼流圈專門擋「共模電流」，不影響差模的有用訊號。</div>
+        <div class="tagrow"><span class="ctag scen">干擾</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="emc">
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="circle-dot"></i></span><div><div class="title">鐵氧扼流圈</div><div class="en">Ferrite Choke</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">套在電纜上的磁環，阻擋沿電纜外皮亂跑的共模 RF 電流，減少干擾。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像水管上的「止逆閥」，擋住不該回流的東西。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>套音頻線→擋 RF 進音響；套電源線→擋開關電源雜訊；套饋線→共模扼流圈/巴倫。</div>
+        <div class="tagrow"><span class="ctag scen">干擾</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="emc">
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="git-fork"></i></span><div><div class="title">旁路電容器</div><div class="en">Bypass Capacitor</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">對 RF 呈「低阻抗」，把跑進設備的 RF 能量「導到地」旁路掉，減少音頻設備被干擾。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像排水溝——把不要的雨水（RF）直接引到地下，不讓它淹進屋裡。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>減少音頻設備 RF 干擾要用「旁路電容器」，不是電感器（電感是串聯擋 RF）。</div>
+        <div class="tagrow"><span class="ctag scen">干擾</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="emc">
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="repeat"></i></span><div><div class="title">接地迴路</div><div class="en">Ground Loop</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">兩個設備接地電位不同，電流在接地線上循環流動，產生持續的嗡嗡聲（常是 50/60Hz）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像兩個水池水位不同，水會沿著連通管一直流——電流也沿接地線一直繞。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>症狀：別人回報你的訊號有「嗡嗡聲」。解法：星形接地、所有設備接同一點，「不要串聯」接地線。</div>
+        <div class="tagrow"><span class="ctag scen">干擾</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="emc">
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="signal-high"></i></span><div><div class="title">諧波 / 混附發射</div><div class="en">Harmonics / Spurious Emission</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">發射機會產生工作頻率「整數倍」的諧波（14MHz→28MHz…），可能干擾其他頻段或服務。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像唱歌時的「泛音」——主音之外還帶出高八度的雜音。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>輸出端加「低通濾波器」濾諧波。混附發射規定：30–235MHz 至少低於主波 60dB 且不超過 1mW。</div>
+        <div class="tagrow"><span class="ctag scen">干擾</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="emc">
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="square-activity"></i></span><div><div class="title">過調變 / ALC</div><div class="en">Over-modulation / ALC</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">SSB 麥克風增益太高或 ALC 沒設好，訊號被「削頂（flat-topping）」，頻寬變大、干擾鄰頻。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像喇叭開太大聲「破音」——超過上限就失真，還吵到隔壁。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>SSB「平頂」= 過度驅動造成的失真。調 ALC 要調整「傳輸音訊或麥克風增益」。</div>
+        <div class="tagrow"><span class="ctag scen">干擾</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 安全防護 -->
+  <div class="cat-title"><i data-lucide="shield-check"></i>安全防護：人身與設備安全</div>
+  <div class="concept-grid">
+
+    <div class="concept" data-tags="safety">
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="radiation"></i></span><div><div class="title">最大允許曝露（MPE）</div><div class="en">Maximum Permissible Exposure</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">人體可安全承受的 RF 電磁場上限。超過就要採取措施（降功率、加距離、改天線方向）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像曬太陽有「安全時數」——超過就會曬傷。RF 也有安全曝露上限。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>評估是否超過 MPE，工作週期、頻率、功率密度「以上皆是」都要考慮。</div>
+        <div class="tagrow"><span class="ctag basic">安全</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="safety">
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="percent"></i></span><div><div class="title">工作週期</div><div class="en">Duty Cycle</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">發射機實際「在發射」的時間比例。FM=100%（持續）、CW≈40%、SSB≈20%（語音有停頓）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像水龍頭開開關關——一直開（FM 100%）和開一下停一下（SSB），平均用水量差很多。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>工作週期「低」→ 平均曝露低 → 允許更大的「短期」曝露量。但不代表可以免於評估。</div>
+        <div class="tagrow"><span class="ctag basic">安全</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="safety">
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="timer"></i></span><div><div class="title">時間平均</div><div class="en">Time Averaging</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">RF 曝露量是用「一段時間的平均值」算，不是看瞬間最大值。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像算月平均開銷——某天花很多沒關係，看的是整段時間的平均。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>時間平均 = 一定時間內「總射頻曝露量的平均值」。這就是低工作週期較寬鬆的原因。</div>
+        <div class="tagrow"><span class="ctag basic">安全</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="safety">
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="users"></i></span><div><div class="title">管制 / 非管制環境</div><div class="en">Controlled / Uncontrolled</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">管制環境＝操作員及家屬（知道有 RF、能控制）；非管制環境＝一般民眾（標準更嚴格）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像工地：受過訓的員工（管制）和路過的民眾（非管制），安全標準本來就不同。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>非管制（民眾）的安全距離比管制（操作員）更遠、限制更嚴。</div>
+        <div class="tagrow"><span class="ctag basic">安全</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="safety">
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="cable"></i></span><div><div class="title">AWG 電線規格</div><div class="en">American Wire Gauge</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">電線粗細的編號。號越大＝線越細＝能承受的電流越小。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像水管口徑——管子越粗（號越小）能過越多水（電流）。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>20A 電路最小用 AWG 12；AWG 14 號線配 15A 保險絲。「號大、線細、電流小」。</div>
+        <div class="tagrow"><span class="ctag basic">安全</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="safety">
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="plug-zap"></i></span><div><div class="title">GFCI 接地故障斷路器</div><div class="en">Ground-Fault Circuit Interrupter</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">偵測到電流從帶電線「直接漏到地線」（漏電）時，立刻切斷電源，防止觸電。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像「漏水自動關閥」——一發現水漏到不該去的地方，就馬上把總閥關掉。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>GFCI 在「電流從電壓線直接流到地線」時跳脫。</div>
+        <div class="tagrow"><span class="ctag basic">安全</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="safety">
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="flame"></i></span><div><div class="title">接地共振 / RF 灼傷</div><div class="en">Ground Resonance / RF Burn</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">接地線長度剛好是工作頻率的 1/4 波長時會「共振」，反而讓機殼帶高 RF 電壓，觸碰會 RF 灼傷。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像盪鞦韆推在「對的節奏」會越盪越高——接地線長度對上頻率就共振放大。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>已接地卻仍 RF 灼傷 → 接地線在該頻率「共振」（呈高阻抗）。換不同長度接地線或加扼流圈。</div>
+        <div class="tagrow"><span class="ctag basic">安全</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 調變方式 -->
+  <div class="cat-title"><i data-lucide="audio-waveform"></i>調變方式：把聲音放上電波的方法</div>
+  <div class="concept-grid">
+
+    <div class="concept" data-tags="modulation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="audio-lines"></i></span><div><div class="title">AM 調幅</div><div class="en">Amplitude Modulation</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">用聲音改變載波的「振幅（高低）」。含載波＋上下兩個邊帶，效率最低（載波就佔一半功率）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像用「音量大小」傳訊息——忽大忽小代表不同資訊。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>AM 效率最低；過調變（m&gt;1）會削頂失真。頻寬約 6kHz。</div>
+        <div class="tagrow"><span class="ctag adv">調變</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="modulation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="audio-waveform"></i></span><div><div class="title">SSB 單邊帶</div><div class="en">Single Sideband</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">把 AM 的載波和一個邊帶都去掉，只留一個邊帶。功率全用在傳訊、頻寬只剩一半（3kHz）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像寄信只寄「重點那一頁」，不寄重複的封面和副本——省力又省頻寬。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>HF 14MHz 以上用 USB、以下用 LSB（慣例）。VHF/UHF 單邊帶語音一律 USB。</div>
+        <div class="tagrow"><span class="ctag adv">調變</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="modulation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="volume-2"></i></span><div><div class="title">FM 調頻</div><div class="en">Frequency Modulation</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">用聲音改變載波的「頻率」，振幅固定。對振幅型雜訊（靜電）免疫，抗雜訊能力最強。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像用「車速快慢」傳訊息——不管路面顛簸（振幅雜訊）都不影響，因為資訊藏在速度裡。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>振幅固定→限幅器削掉振幅雜訊→FM 抗 QRN 強。VHF/UHF 中繼台廣泛使用。</div>
+        <div class="tagrow"><span class="ctag adv">調變</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="modulation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="minus"></i></span><div><div class="title">CW 等幅電報</div><div class="en">Continuous Wave</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">載波做開/關鍵控（摩斯碼），頻寬極窄（&lt;500Hz）。相同功率下傳得最遠，弱訊號首選。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像手電筒打信號燈——只有「亮/暗」，最簡單卻能傳很遠。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>頻寬最窄→相同功率距離最遠。接收 CW 需要 BFO 還原成可聽的音調。</div>
+        <div class="tagrow"><span class="ctag adv">調變</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="modulation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="binary"></i></span><div><div class="title">FSK / PSK 數位調變</div><div class="en">Frequency / Phase Shift Keying</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">數位調變：FSK 用「兩個頻率」代表 0/1；PSK 用「相位反轉（0°/180°）」代表 0/1。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>FSK 像用兩個哨音（高/低）發摩斯；PSK 像用「拍手正/反」傳訊號。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FSK 用於 RTTY/封包/APRS；BPSK 每位元相位反轉 180°，同頻寬下資料率比 FSK 高。</div>
+        <div class="tagrow"><span class="ctag adv">調變</span></div>
       </div>
     </div>
 
