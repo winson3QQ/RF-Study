@@ -45,4 +45,22 @@
   document.body.appendChild(foot);
 
   if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+
+  /* Home scroll memory: remember where the user was on the home page so that
+     "回首頁" returns them to that spot instead of jumping to the top. */
+  var file = path.split('/').pop();
+  var isHome = !inSub && (file === '' || file === 'index.html');
+  if (isHome) {
+    var KEY = 'rf-home-scroll';
+    try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+    var saved = sessionStorage.getItem(KEY);
+    if (saved !== null) {
+      var y = parseInt(saved, 10) || 0;
+      window.scrollTo(0, y);
+      window.addEventListener('load', function () { window.scrollTo(0, y); });
+    }
+    var save = function () { sessionStorage.setItem(KEY, String(window.scrollY || window.pageYOffset || 0)); };
+    window.addEventListener('pagehide', save);
+    window.addEventListener('beforeunload', save);
+  }
 })();
