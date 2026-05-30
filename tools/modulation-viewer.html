@@ -4,119 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>調變方式深度視覺化 — 二等業餘無線電</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
 <style>
+/* legacy var aliases → warm palette (keeps inline-styled bits readable) */
 :root {
-  --bg:#0b0a12;--s1:#13111e;--s2:#1a1728;--border:#2a2440;
-  --acc:#cc99ff;--g:#44ffaa;--amb:#ffcc44;--red:#ff5566;--blu:#44aaff;--pnk:#ff88cc;--org:#ff9944;
-  --txt:#ccc0e0;--dim:#5a5080;
-  --mono:'Share Tech Mono',monospace;--sans:'Noto Sans TC',sans-serif;
+  --s1: var(--surface); --s2: var(--surface-soft);
+  --txt: var(--ink-2); --dim: var(--ink-3);
+  --g: var(--leaf-ink); --amb: var(--honey-ink);
+  --red: var(--rose-ink); --pnk: var(--primary-ink);
+  --mono: var(--font-mono);
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh;}
-.wrap{max-width:1020px;margin:0 auto;padding:16px;}
 
-header{text-align:center;padding:24px 0 18px;border-bottom:1px solid var(--border);margin-bottom:20px;}
-.badge{font-family:var(--mono);font-size:10px;letter-spacing:4px;color:var(--acc);border:1px solid var(--acc);display:inline-block;padding:3px 12px;margin-bottom:8px;}
-header h1{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
-header p{color:var(--dim);font-size:12px;}
+/* ── mode selector ── */
+.mode-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+.mb { display:inline-flex; align-items:center; gap:7px; font-family:var(--font-sans); font-weight:700; font-size:13px; padding:9px 15px; border-radius:var(--r-pill); border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink-2); cursor:pointer; transition:all var(--dur) var(--ease); }
+.mb:hover { border-color:var(--primary); color:var(--primary-ink); }
+.mb.on { background:var(--ink); border-color:var(--ink); color:#fff; }
+.mb .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
-/* MODE SELECTOR */
-.mode-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
-.mb{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:9px 14px;border:1px solid var(--border);background:var(--s1);color:var(--dim);cursor:pointer;transition:all .2s;text-transform:uppercase;line-height:1.4;}
-.mb:hover{border-color:var(--acc);color:var(--acc);}
-.mb.on{background:rgba(204,153,255,.1);color:#fff;}
-.mb .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+/* ── main grid ── */
+.main-grid { display:grid; grid-template-columns:1fr 330px; gap:14px; margin-bottom:14px; }
+@media(max-width:780px){ .main-grid{ grid-template-columns:1fr; } }
 
-/* MAIN GRID */
-.main-grid{display:grid;grid-template-columns:1fr 340px;gap:12px;margin-bottom:12px;}
-@media(max-width:700px){.main-grid{grid-template-columns:1fr;}}
+/* ── scope screens (warm-dark) ── */
+.canvases { display:flex; flex-direction:column; gap:12px; }
+.cv-card { background:#26211b; border:1px solid #3a322a; border-radius:var(--r-md); padding:12px 14px; box-shadow:var(--shadow-sm); }
+.cv-label { font-family:var(--font-mono); font-size:11px; letter-spacing:1px; color:#c9bda9; margin-bottom:8px; display:flex; justify-content:space-between; gap:8px; }
+.cv-label .hint { color:#8a7d6a; font-size:10px; font-weight:400; }
+.cv-card canvas { width:100%; display:block; cursor:crosshair; border-radius:6px; }
+.cursor-readout { font-family:var(--font-mono); font-size:11px; color:#8a7d6a; text-align:right; margin-top:5px; min-height:15px; }
 
-/* CANVAS STACK */
-.canvases{display:flex;flex-direction:column;gap:10px;}
-.cv-card{background:var(--s1);border:1px solid var(--border);padding:12px;}
-.cv-label{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;}
-.cv-label .hint{color:rgba(90,80,128,.5);font-size:8px;}
-canvas{width:100%;display:block;cursor:crosshair;}
+/* ── side panel ── */
+.side { display:flex; flex-direction:column; gap:12px; }
+.info-card { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--primary); border-radius:var(--r-md); padding:16px; box-shadow:var(--shadow-sm); }
+.ic-row { display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; }
+.ic-key { font-family:var(--font-mono); font-size:11px; color:var(--ink-3); letter-spacing:.5px; }
+.ic-val { font-family:var(--font-mono); font-size:14px; color:var(--ink); font-weight:700; text-align:right; }
+.ic-val.g { color:var(--leaf-ink); }
+.ic-val.r { color:var(--rose-ink); }
+.ic-val.a { color:var(--honey-ink); }
+.ic-desc { font-size:13.5px; color:var(--ink-2); line-height:1.75; border-top:1px solid var(--border); padding-top:11px; margin-top:9px; }
+.ic-desc strong { color:var(--primary-ink); }
+.ic-desc .exam { display:block; margin-top:10px; font-family:var(--font-mono); font-size:11.5px; background:var(--honey-soft); border-left:3px solid var(--honey); border-radius:6px; padding:8px 11px; color:#5b4a2a; line-height:1.6; }
 
-/* SIDE PANEL */
-.side{display:flex;flex-direction:column;gap:10px;}
-.info-card{background:var(--s2);border:1px solid var(--border);border-left:3px solid var(--acc);padding:14px;}
-.ic-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;font-family:var(--mono);font-size:11px;}
-.ic-key{color:var(--dim);letter-spacing:1px;text-transform:uppercase;font-size:9px;}
-.ic-val{color:var(--acc);font-size:13px;}
-.ic-val.g{color:var(--g);}
-.ic-val.r{color:var(--red);}
-.ic-val.a{color:var(--amb);}
-.ic-desc{font-size:12px;color:var(--txt);line-height:1.7;border-top:1px solid var(--border);padding-top:10px;margin-top:8px;}
-.ic-desc strong{color:var(--pnk);}
-.ic-desc .exam{display:block;margin-top:8px;font-family:var(--mono);font-size:11px;background:rgba(255,136,204,.07);border-left:2px solid var(--pnk);padding:6px 10px;color:var(--pnk);}
+/* ── controls ── */
+.ctrl-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md); padding:16px; box-shadow:var(--shadow-sm); }
+.ctrl-title { font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--ink); margin-bottom:12px; }
+.sr { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.sr label { font-family:var(--font-sans); font-weight:600; font-size:12px; color:var(--ink-2); min-width:110px; }
+.sr input[type=range] { flex:1; -webkit-appearance:none; appearance:none; height:4px; border-radius:3px; background:var(--border); outline:none; cursor:pointer; }
+.sr input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:16px; height:16px; border-radius:50%; background:var(--primary); cursor:pointer; box-shadow:var(--shadow-sm); }
+.sr input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; border-radius:50%; background:var(--primary); cursor:pointer; }
+.sr .sv { font-family:var(--font-mono); font-size:13px; color:var(--primary-ink); font-weight:700; min-width:54px; text-align:right; }
+.sr select { flex:1; background:var(--surface); border:1.5px solid var(--border-strong); border-radius:var(--r-sm); color:var(--ink); font-family:var(--font-mono); font-size:14px; padding:9px; outline:none; }
 
-/* CONTROLS */
-.ctrl-card{background:var(--s1);border:1px solid var(--border);padding:12px;}
-.ctrl-title{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:10px;}
-.sr{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.sr label{font-family:var(--mono);font-size:10px;color:var(--dim);min-width:110px;}
-.sr input[type=range]{flex:1;-webkit-appearance:none;height:2px;background:var(--border);outline:none;cursor:pointer;}
-.sr input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--acc);border-radius:0;cursor:pointer;}
-.sr .sv{font-family:var(--mono);font-size:12px;color:var(--acc);min-width:60px;text-align:right;}
+.warn-box { font-family:var(--font-sans); font-weight:700; font-size:12.5px; padding:9px 13px; border-radius:var(--r-sm); border:1px solid #f3c9c5; background:var(--rose-soft); color:var(--rose-ink); margin-top:8px; display:none; }
+.warn-box.show { display:block; }
 
-/* WARNING BOX */
-.warn-box{font-family:var(--mono);font-size:11px;padding:8px 12px;border:1px solid var(--red);background:rgba(255,85,102,.07);color:var(--red);margin-top:8px;display:none;}
-.warn-box.show{display:block;}
+/* ── section title ── */
+.st { font-family:var(--font-display); font-weight:700; font-size:16px; color:var(--ink); margin:26px 0 14px; display:flex; align-items:center; gap:10px; }
+.st::before { content:''; width:5px; height:20px; background:var(--primary); border-radius:3px; flex-shrink:0; }
 
-/* OVERLAY */
-.overlay-label{position:absolute;pointer-events:none;}
+/* ── compare table (warm) ── */
+.cmp-table { width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:12.5px; margin-bottom:16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md); overflow:hidden; box-shadow:var(--shadow-sm); }
+.cmp-table th { padding:10px 12px; text-align:left; border-bottom:1px solid var(--border); font-family:var(--font-display); font-size:12px; color:var(--teal-ink); background:var(--teal-soft); font-weight:700; }
+.cmp-table td { padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:middle; color:var(--ink-2); }
+.cmp-table tr:last-child td { border-bottom:none; }
+.cmp-table tbody tr:hover td { background:var(--surface-soft); cursor:pointer; }
+.cmp-table tr.on td { background:var(--primary-soft); }
+.bw { color:var(--honey-ink); }
+.eff-g { color:var(--leaf-ink); }
+.eff-r { color:var(--rose-ink); }
 
-/* TABS */
-.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-.tab{font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:5px 12px;border:1px solid var(--border);background:var(--s1);color:var(--dim);cursor:pointer;transition:all .2s;text-transform:uppercase;}
-.tab:hover,.tab.on{border-color:var(--g);color:var(--g);background:rgba(68,255,170,.06);}
-
-/* TABLE */
-.cmp-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;margin-bottom:16px;}
-.cmp-table th{padding:8px 10px;text-align:left;border-bottom:2px solid var(--border);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);background:var(--s2);}
-.cmp-table td{padding:8px 10px;border-bottom:1px solid rgba(42,36,64,.5);vertical-align:middle;}
-.cmp-table tr:hover td{background:rgba(204,153,255,.04);cursor:pointer;}
-.cmp-table tr.on td{background:rgba(204,153,255,.08);border-left:2px solid var(--acc);}
-.bw{color:var(--amb);}
-.eff-g{color:var(--g);}
-.eff-r{color:var(--red);}
-
-/* SSB demo */
-.ssb-demo{background:var(--s1);border:1px solid var(--border);padding:12px;margin-bottom:10px;}
-.ssb-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-family:var(--mono);font-size:11px;}
-.ssb-key{color:var(--dim);min-width:90px;font-size:9px;text-transform:uppercase;letter-spacing:1px;}
-.ssb-bar{flex:1;height:18px;background:var(--border);position:relative;overflow:hidden;}
-.ssb-fill{height:100%;position:absolute;left:0;top:0;transition:width .3s;}
-.ssb-val{min-width:55px;text-align:right;color:var(--acc);}
-
-/* Power compare */
-.pw-vis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
-.pw-col{text-align:center;}
-.pw-col .pw-bar-wrap{height:80px;display:flex;align-items:flex-end;justify-content:center;}
-.pw-col .pw-bar{width:28px;background:var(--acc);transition:height .4s;}
-.pw-col .pw-label{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:4px;text-transform:uppercase;}
-.pw-col .pw-num{font-family:var(--mono);font-size:11px;color:var(--acc);}
-
-/* Cursor crosshair display */
-.cursor-readout{font-family:var(--mono);font-size:10px;color:var(--dim);text-align:right;margin-top:4px;min-height:14px;}
-
-/* Section title */
-.st{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--g);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.st::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
-
-/* Animated wire */
-@keyframes signal-flow{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+/* ── ssb power bars ── */
+.ssb-row { display:flex; align-items:center; gap:8px; margin-bottom:9px; font-family:var(--font-mono); font-size:11.5px; }
+.ssb-key { color:var(--ink-3); min-width:90px; font-size:11px; }
+.ssb-bar { flex:1; height:18px; background:var(--bg-tint); border-radius:var(--r-pill); position:relative; overflow:hidden; }
+.ssb-fill { height:100%; position:absolute; left:0; top:0; border-radius:var(--r-pill); transition:width .3s var(--ease); }
+.ssb-val { min-width:50px; text-align:right; font-weight:700; }
 </style>
 </head>
 <body>
+<script>window.SITE_SECTION='tools';</script>
 <div class="wrap">
-<header>
-  <div class="badge">二等業餘無線電 輔助學習</div>
-  <h1>調變方式深度視覺化</h1>
-  <p>AM · DSB · USB · LSB · FM · CW — 時域 · 頻域 · 功率分配 · 考試重點</p>
-</header>
+
+<div class="read-top"><a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a></div>
+
+<h1 class="tool-title">調變方式深度視覺化</h1>
+<p class="tool-sub">AM · DSB · USB · LSB · FM · CW —— 同時看時域波形、頻域頻譜、功率分配與考試重點。拖動下方滑桿，畫面會即時跟著變。</p>
 
 <!-- MODE BAR -->
 <div class="mode-bar" id="mode-bar"></div>
@@ -138,10 +114,6 @@ canvas{width:100%;display:block;cursor:crosshair;}
     <div class="cv-card" id="pep-card">
       <div class="cv-label">功率分配圖 <span class="hint">各成分佔總輸出功率比例</span></div>
       <canvas id="c-power" height="90"></canvas>
-    </div>
-    <!-- Controls here on mobile, moved to side on desktop -->
-    <div class="ctrl-card" id="ctrl-mobile" style="display:none">
-      <!-- filled by JS -->
     </div>
   </div>
 
@@ -166,9 +138,9 @@ canvas{width:100%;display:block;cursor:crosshair;}
       <div class="warn-box" id="overmod-warn">⚠ 過調變！m &gt; 1 → 嚴重失真</div>
     </div>
 
-    <!-- SSB power demo (shown for SSB modes) -->
+    <!-- SSB power demo -->
     <div class="info-card" id="ssb-breakdown" style="display:none">
-      <div class="st">SSB 功率分配分析</div>
+      <div class="st" style="margin-top:0">SSB 功率分配分析</div>
       <div id="ssb-bars"></div>
     </div>
   </div>
@@ -176,9 +148,9 @@ canvas{width:100%;display:block;cursor:crosshair;}
 
 <!-- TABS for bottom section -->
 <div class="tabs">
-  <div class="tab on" onclick="switchTab('compare')">各模式比較</div>
-  <div class="tab" onclick="switchTab('exam')">考試重點速查</div>
-  <div class="tab" onclick="switchTab('nfm')">NFM 頻偏計算</div>
+  <button class="tab active" onclick="switchTab('compare')"><i data-lucide="table"></i> 各模式比較</button>
+  <button class="tab" onclick="switchTab('exam')"><i data-lucide="graduation-cap"></i> 考試重點速查</button>
+  <button class="tab" onclick="switchTab('nfm')"><i data-lucide="calculator"></i> NFM 頻偏計算</button>
 </div>
 
 <!-- COMPARE TABLE -->
@@ -196,53 +168,55 @@ canvas{width:100%;display:block;cursor:crosshair;}
 <!-- EXAM NOTES -->
 <div id="tab-exam" style="display:none">
   <div class="st">考試重點速查</div>
-  <div id="exam-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+  <div id="exam-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;"></div>
 </div>
 
 <!-- NFM CALC -->
 <div id="tab-nfm" style="display:none">
   <div class="st">NFM 頻率偏差計算機</div>
-  <div style="background:var(--s1);border:1px solid var(--border);padding:16px;margin-bottom:10px;">
-    <div style="font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:12px;letter-spacing:1px;">
+  <div class="panel">
+    <div style="font-family:var(--font-mono);font-size:12px;color:var(--ink-3);margin-bottom:14px;">
       公式：最大頻偏 = 頻道間隔 × 20%（規定值）
     </div>
-    <div class="sr" style="margin-bottom:14px;">
+    <div class="sr" style="margin-bottom:16px;">
       <label>頻道間隔</label>
-      <select id="nfm-sel" onchange="calcNfm()" style="flex:1;background:var(--s2);border:1px solid var(--border);color:var(--txt);font-family:var(--mono);font-size:13px;padding:8px;outline:none;">
+      <select id="nfm-sel" onchange="calcNfm()">
         <option value="12.5">12.5 kHz</option>
         <option value="20">20.0 kHz</option>
         <option value="25" selected>25.0 kHz</option>
       </select>
     </div>
-    <div id="nfm-result" style="background:var(--s2);border:1px solid var(--border);border-left:3px solid var(--g);padding:14px;font-family:var(--mono);">
+    <div id="nfm-result" style="background:var(--surface-soft);border:1px solid var(--border);border-left:4px solid var(--leaf);border-radius:var(--r-md);padding:16px;font-family:var(--font-mono);">
     </div>
-    <div style="margin-top:12px;">
+    <div style="margin-top:14px;">
       <table class="cmp-table">
         <thead><tr><th>頻道間隔</th><th>最大頻偏</th><th>考試答案</th></tr></thead>
         <tbody>
-          <tr><td class="bw">12.5 kHz</td><td style="color:var(--g)">±2.5 kHz</td><td style="color:var(--pnk)">須介於 ±2.5 千赫</td></tr>
-          <tr><td class="bw">20.0 kHz</td><td style="color:var(--g)">±4.0 kHz</td><td style="color:var(--pnk)">須介於 ±4.0 千赫</td></tr>
-          <tr><td class="bw">25.0 kHz</td><td style="color:var(--g)">±5.0 kHz</td><td style="color:var(--pnk)">須介於 ±5.0 千赫</td></tr>
+          <tr><td class="bw">12.5 kHz</td><td class="eff-g">±2.5 kHz</td><td style="color:var(--primary-ink)">須介於 ±2.5 千赫</td></tr>
+          <tr><td class="bw">20.0 kHz</td><td class="eff-g">±4.0 kHz</td><td style="color:var(--primary-ink)">須介於 ±4.0 千赫</td></tr>
+          <tr><td class="bw">25.0 kHz</td><td class="eff-g">±5.0 kHz</td><td style="color:var(--primary-ink)">須介於 ±5.0 千赫</td></tr>
         </tbody>
       </table>
     </div>
   </div>
   <!-- Visual -->
-  <div style="background:var(--s1);border:1px solid var(--border);padding:14px;">
+  <div class="cv-card">
     <div class="cv-label">FM 頻偏視覺化</div>
-    <canvas id="c-nfm" height="120" style="width:100%;display:block;background:#080612;border:1px solid rgba(42,36,64,.5);"></canvas>
+    <canvas id="c-nfm" height="120"></canvas>
   </div>
 </div>
 
 </div><!-- /wrap -->
 
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js"></script>
 <script>
 // ══════════════════════════════════════════════
 // DATA
 // ══════════════════════════════════════════════
 const MODES = {
   AM:{
-    label:'AM 調幅',color:'#ffcc44',
+    label:'AM 調幅',color:'#CC8A1E',
     bw:'6 kHz',carrier:'有（強）',eff:'~25%',effCls:'r',
     hf:'AM廣播，業餘少用',vhf:'AM廣播',noise:'弱',
     modLbl:'調變深度 m',
@@ -253,10 +227,10 @@ const MODES = {
       {k:'調變效率',v:'最高 50%',c:'r'},
     ],
     desc:'<strong>AM（調幅）</strong>：用訊號調整載波<strong>振幅</strong>，包含三部分：載波 + 上邊帶（USB）+ 下邊帶（LSB）。<br><br>載波本身不攜帶訊息，卻消耗 50% 功率，兩個邊帶各 25%，實際傳遞訊息的效率極低。<span class="exam">📝 過調變 m &gt; 1 → 波形削頂 → 嚴重諧波失真。考試常考「AM 效率最低」</span>',
-    power:{labels:['載波','上邊帶','下邊帶'],colors:['#ffcc44','#bb88ff','#ff88cc']},
+    power:{labels:['載波','上邊帶','下邊帶'],colors:['#CC8A1E','#8A5CC4','#C44C86']},
   },
   DSB:{
-    label:'DSB 雙邊帶',color:'#ff9944',
+    label:'DSB 雙邊帶',color:'#D2691E',
     bw:'6 kHz',carrier:'抑制',eff:'100%',effCls:'g',
     hf:'業餘少用',vhf:'業餘少用',noise:'中',
     modLbl:'訊號強度',
@@ -267,10 +241,10 @@ const MODES = {
       {k:'功率效率',v:'100%（無載波浪費）',c:'g'},
     ],
     desc:'<strong>DSB（遏制載波雙邊帶）</strong>：去掉 AM 的載波，只保留兩個邊帶。頻寬與 AM 相同（6kHz），但所有功率用於傳送訊號。<br><br>接收端需重新插入載波才能解調（BFO 拍音振盪器）。<span class="exam">📝 「遏制載波單邊帶發射」vs「減載波單邊帶發射」是考試常混淆的定義</span>',
-    power:{labels:['上邊帶','下邊帶'],colors:['#bb88ff','#ff88cc']},
+    power:{labels:['上邊帶','下邊帶'],colors:['#8A5CC4','#C44C86']},
   },
   USB:{
-    label:'USB 上邊帶',color:'#bb88ff',
+    label:'USB 上邊帶',color:'#8A5CC4',
     bw:'3 kHz',carrier:'抑制',eff:'100%',effCls:'g',
     hf:'14MHz以上標準',vhf:'VHF/UHF標準',noise:'中',
     modLbl:'訊號強度',
@@ -281,10 +255,10 @@ const MODES = {
       {k:'HF使用場合',v:'20m/17m/15m/12m/10m',c:'a'},
     ],
     desc:'<strong>USB（上邊帶）</strong>：只保留上方邊帶，載波和下邊帶均被抑制。頻寬只有 AM 的一半（3kHz），功率 100% 用於傳訊。<span class="exam">📝 考試必背：HF <strong>14MHz 以上</strong>（20m及更高頻段）使用 USB。VHF/UHF 單邊帶語音一律用 USB</span>',
-    power:{labels:['上邊帶'],colors:['#bb88ff']},
+    power:{labels:['上邊帶'],colors:['#8A5CC4']},
   },
   LSB:{
-    label:'LSB 下邊帶',color:'#ff88cc',
+    label:'LSB 下邊帶',color:'#C44C86',
     bw:'3 kHz',carrier:'抑制',eff:'100%',effCls:'g',
     hf:'40m/80m/160m標準',vhf:'不使用',noise:'中',
     modLbl:'訊號強度',
@@ -295,10 +269,10 @@ const MODES = {
       {k:'HF使用場合',v:'40m / 80m / 160m',c:'a'},
     ],
     desc:'<strong>LSB（下邊帶）</strong>：只保留下方邊帶，原理與 USB 完全相同，差別只在保留的方向。<br><br>記憶口訣：<strong>L低L下</strong>（Low frequency → LSB）。<span class="exam">📝 HF <strong>14MHz 以下</strong>（40m、80m、160m）用 LSB——這是慣例，非法律規定。LSB 效率與 USB 完全相同</span>',
-    power:{labels:['下邊帶'],colors:['#ff88cc']},
+    power:{labels:['下邊帶'],colors:['#C44C86']},
   },
   FM:{
-    label:'FM 調頻',color:'#44ffaa',
+    label:'FM 調頻',color:'#1F9E96',
     bw:'10~15 kHz(NFM)',carrier:'有（固定振幅）',eff:'≈100%',effCls:'g',
     hf:'不適合（頻寬大）',vhf:'VHF/UHF主流',noise:'強',
     modLbl:'頻率偏移量',
@@ -309,10 +283,10 @@ const MODES = {
       {k:'VHF頻道',v:'12.5 / 25 kHz 間隔',c:'a'},
     ],
     desc:'<strong>FM（調頻）</strong>：訊號改變載波的<strong>頻率</strong>，振幅完全固定。因振幅固定，對振幅型雜訊（大氣靜電等）免疫，抗雜訊能力最強。<br><br>頻寬比 SSB 大，不適合 HF，但 VHF/UHF 中繼台廣泛使用。<span class="exam">📝 NFM 頻偏：25kHz 間隔→±5kHz，12.5kHz 間隔→±2.5kHz，20kHz→±4kHz</span>',
-    power:{labels:['FM載波+邊帶'],colors:['#44ffaa']},
+    power:{labels:['FM載波+邊帶'],colors:['#1F9E96']},
   },
   CW:{
-    label:'CW 等幅電報',color:'#44aaff',
+    label:'CW 等幅電報',color:'#3B86C9',
     bw:'< 500 Hz',carrier:'開/關鍵控',eff:'100%',effCls:'g',
     hf:'最窄，穿透力最強',vhf:'可用，少見',noise:'極強（窄濾波）',
     modLbl:'鍵速（相對）',
@@ -323,7 +297,7 @@ const MODES = {
       {k:'最小間隔',v:'相鄰CW電臺 100Hz',c:''},
     ],
     desc:'<strong>CW（等幅電報 / 摩斯碼）</strong>：載波做開/關（On-Off Keying），頻寬極窄（< 500Hz）。相同功率下通信距離最遠，弱訊號通信首選。<br><br>接收 CW 可使用「反向邊帶」（選 USB/LSB 反向）來減少鄰頻干擾。<span class="exam">📝 頻寬最窄 → 相同功率通信距離最遠。RST 中 T=Tone 只用於 CW 評估。零拍差 = 兩台發射頻率完全相同</span>',
-    power:{labels:['CW載波'],colors:['#44aaff']},
+    power:{labels:['CW載波'],colors:['#3B86C9']},
   },
 };
 
@@ -337,17 +311,17 @@ const TABLE_DATA = [
 ];
 
 const EXAM_DATA = [
-  {title:'USB vs LSB 使用場合',color:'#bb88ff',
+  {title:'USB vs LSB 使用場合',color:'#8A5CC4',
    items:['HF 14MHz（20m）以上 → USB','HF 14MHz（40m）以下 → LSB','VHF/UHF 單邊帶 → 一律 USB','LSB 用於 160m/80m/40m（慣例非法規）']},
-  {title:'AM 效率與過調變',color:'#ffcc44',
+  {title:'AM 效率與過調變',color:'#CC8A1E',
    items:['載波佔 50% 功率（不攜帶訊息）','每邊帶各 25%，總信號效率 ≤50%','m > 1 = 過調變 → 嚴重失真','m = 調變深度，正常值 0 < m ≤ 1']},
-  {title:'SSB 優點（考試常考）',color:'#ff88cc',
+  {title:'SSB 優點（考試常考）',color:'#C44C86',
    items:['頻寬 3kHz = AM 的一半','無載波浪費，效率 100%','相同功率下通信距離比AM遠','抑制載波 + 抑制一個邊帶']},
-  {title:'FM NFM 頻偏規定',color:'#44ffaa',
+  {title:'FM NFM 頻偏規定',color:'#1F9E96',
    items:['12.5 kHz 間隔 → ±2.5 kHz','20.0 kHz 間隔 → ±4.0 kHz','25.0 kHz 間隔 → ±5.0 kHz','FM 振幅固定（抗振幅雜訊）']},
-  {title:'CW 特性',color:'#44aaff',
+  {title:'CW 特性',color:'#3B86C9',
    items:['頻寬最窄：< 500 Hz','OOK = On-Off Keying（開關鍵控）','相同功率通信距離最遠','RST 中 T=Tone，CW 專用評分','零拍差：兩台頻率完全重合']},
-  {title:'PEP 峰值波封功率',color:'#ff9944',
+  {title:'PEP 峰值波封功率',color:'#D2691E',
    items:['PEP = Vpeak² / (2R)','Vpp=示波器峰對峰，Vpeak=Vpp/2','50Ω假負載：PEP = Vpp²/200','SSB/CW/FM 功率標準皆用 PEP']},
 ];
 
@@ -357,6 +331,9 @@ const EXAM_DATA = [
 let cur = 'AM';
 let animId = null;
 let phase = 0;
+
+const SCREEN_BG = '#26211b';
+const GRID_COL = 'rgba(255,246,236,.08)';
 
 // ══════════════════════════════════════════════
 // INIT
@@ -382,18 +359,18 @@ function init(){
     tr.onclick=()=>setMode(mode);
     tr.innerHTML = `<td style="color:${MODES[mode].color};font-weight:bold">${mode}</td>`
       +`<td class="bw">${cols[0]}</td>`
-      +`<td style="font-size:10px">${cols[1]}</td>`
+      +`<td style="font-size:11px">${cols[1]}</td>`
       +`<td class="${cols[2].includes('25%')||cols[2].includes('差')?'eff-r':'eff-g'}">${cols[2]}</td>`
-      +cols.slice(3).map(c=>`<td style="font-size:10px">${c}</td>`).join('');
+      +cols.slice(3).map(c=>`<td style="font-size:11px">${c}</td>`).join('');
     tbody.appendChild(tr);
   });
   // Exam cards
   const ec = document.getElementById('exam-cards');
   EXAM_DATA.forEach(d=>{
     const card = document.createElement('div');
-    card.style.cssText='background:var(--s1);border:1px solid var(--border);padding:12px;';
-    card.innerHTML = `<div style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:${d.color};margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:6px">${d.title}</div>`
-      + d.items.map(i=>`<div style="font-family:var(--mono);font-size:11px;color:var(--txt);margin-bottom:5px;padding-left:8px;border-left:1px solid ${d.color}40">• ${i}</div>`).join('');
+    card.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 15px;box-shadow:var(--shadow-sm);';
+    card.innerHTML = `<div style="font-family:var(--font-display);font-weight:700;font-size:13px;color:${d.color};margin-bottom:9px;border-bottom:1px solid var(--border);padding-bottom:7px">${d.title}</div>`
+      + d.items.map(i=>`<div style="font-family:var(--font-mono);font-size:11.5px;color:var(--ink-2);margin-bottom:6px;padding-left:9px;border-left:2px solid ${d.color}55;line-height:1.5">• ${i}</div>`).join('');
     ec.appendChild(card);
   });
   // Canvas mouse
@@ -433,21 +410,21 @@ function buildSsbBars(m){
   if(m==='AM'){
     const carrierPct = 50;
     const sbPct = (mod*mod/(2+mod*mod)*50);
-    bars.push({k:'載波',v:carrierPct,c:'#ffcc44'});
-    bars.push({k:'上邊帶',v:Math.min(25,sbPct),c:'#bb88ff'});
-    bars.push({k:'下邊帶',v:Math.min(25,sbPct),c:'#ff88cc'});
-    bars.push({k:'效率',v:Math.min(50,sbPct*2),c:'#44ffaa'});
+    bars.push({k:'載波',v:carrierPct,c:'#CC8A1E'});
+    bars.push({k:'上邊帶',v:Math.min(25,sbPct),c:'#8A5CC4'});
+    bars.push({k:'下邊帶',v:Math.min(25,sbPct),c:'#C44C86'});
+    bars.push({k:'效率',v:Math.min(50,sbPct*2),c:'#1F9E96'});
   } else if(m==='DSB'){
-    bars.push({k:'上邊帶',v:50,c:'#bb88ff'});
-    bars.push({k:'下邊帶',v:50,c:'#ff88cc'});
+    bars.push({k:'上邊帶',v:50,c:'#8A5CC4'});
+    bars.push({k:'下邊帶',v:50,c:'#C44C86'});
   } else if(m==='USB'){
-    bars.push({k:'上邊帶（有效）',v:100,c:'#bb88ff'});
-    bars.push({k:'下邊帶（抑制）',v:0,c:'#333'});
-    bars.push({k:'載波（抑制）',v:0,c:'#333'});
+    bars.push({k:'上邊帶（有效）',v:100,c:'#8A5CC4'});
+    bars.push({k:'下邊帶（抑制）',v:0,c:'#c9bda9'});
+    bars.push({k:'載波（抑制）',v:0,c:'#c9bda9'});
   } else if(m==='LSB'){
-    bars.push({k:'下邊帶（有效）',v:100,c:'#ff88cc'});
-    bars.push({k:'上邊帶（抑制）',v:0,c:'#333'});
-    bars.push({k:'載波（抑制）',v:0,c:'#333'});
+    bars.push({k:'下邊帶（有效）',v:100,c:'#C44C86'});
+    bars.push({k:'上邊帶（抑制）',v:0,c:'#c9bda9'});
+    bars.push({k:'載波（抑制）',v:0,c:'#c9bda9'});
   }
   container.innerHTML = bars.map(b=>`
     <div class="ssb-row">
@@ -490,7 +467,7 @@ function drawTime(fc,fm,mod){
   const cv = document.getElementById('c-time');
   cv.width = cv.offsetWidth||500;
   const ctx = cv.getContext('2d'), W=cv.width, H=cv.height;
-  ctx.fillStyle='#07060f'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=SCREEN_BG; ctx.fillRect(0,0,W,H);
   grid(ctx,W,H);
 
   const color = MODES[cur].color;
@@ -509,7 +486,7 @@ function drawTime(fc,fm,mod){
 
   // AM envelope
   if(cur==='AM'){
-    ctx.strokeStyle='rgba(255,204,68,.25)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.strokeStyle='rgba(204,138,30,.35)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
     for(let sign of [1,-1]){
       ctx.beginPath();
       for(let i=0;i<=N;i++){
@@ -523,18 +500,18 @@ function drawTime(fc,fm,mod){
     ctx.setLineDash([]);
     // Mark peak
     if(mod>1){
-      ctx.strokeStyle='var(--red)'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+      ctx.strokeStyle='#E5544B'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
       const limit = H*.37;
       ctx.beginPath(); ctx.moveTo(0,H/2-limit); ctx.lineTo(W,H/2-limit); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(0,H/2+limit); ctx.lineTo(W,H/2+limit); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle='var(--red)'; ctx.font='9px Share Tech Mono'; ctx.textAlign='left';
+      ctx.fillStyle='#E5544B'; ctx.font='10px "Space Mono",monospace'; ctx.textAlign='left';
       ctx.fillText('⚠ 過調變削頂', 6, H/2-limit-3);
     }
   }
 
   // mode label
-  ctx.fillStyle=color; ctx.font='bold 12px Share Tech Mono'; ctx.textAlign='left';
+  ctx.fillStyle=color; ctx.font='bold 12px "Space Mono",monospace'; ctx.textAlign='left';
   ctx.fillText(cur, 6, 16);
 }
 
@@ -560,7 +537,7 @@ function drawFreq(fc,fm,mod){
   const cv = document.getElementById('c-freq');
   cv.width = cv.offsetWidth||500;
   const ctx = cv.getContext('2d'), W=cv.width, H=cv.height;
-  ctx.fillStyle='#07060f'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=SCREEN_BG; ctx.fillRect(0,0,W,H);
   grid(ctx,W,H,false);
 
   const color = MODES[cur].color;
@@ -568,11 +545,11 @@ function drawFreq(fc,fm,mod){
   const bw=Math.max(4,fSc*fm*.35);
 
   // Baseline
-  ctx.strokeStyle='rgba(200,180,255,.15)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(255,246,236,.18)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(0,H-18); ctx.lineTo(W,H-18); ctx.stroke();
 
   // Carrier reference
-  ctx.strokeStyle='rgba(200,180,255,.08)'; ctx.setLineDash([2,4]);
+  ctx.strokeStyle='rgba(255,246,236,.1)'; ctx.setLineDash([2,4]);
   ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,H-18); ctx.stroke();
   ctx.setLineDash([]);
 
@@ -581,30 +558,34 @@ function drawFreq(fc,fm,mod){
     const h=amp*(H-28);
     if(x<4||x>W-4) return;
     const bwFinal = bwOverride||bw;
+    const base = col||color;
+    const fade = base[0]==='#'
+      ? base+'33'
+      : base.replace(/rgba?\(([^)]+)\)/, (m,p)=>{ const c=p.split(','); return `rgba(${c[0]},${c[1]},${c[2]},0.2)`; });
     const grad=ctx.createLinearGradient(0,H-18-h,0,H-18);
-    grad.addColorStop(0,(col||color));
-    grad.addColorStop(1,(col||color)+'33');
+    grad.addColorStop(0,base);
+    grad.addColorStop(1,fade);
     ctx.shadowColor=col||color; ctx.shadowBlur=10;
     ctx.fillStyle=grad;
     ctx.fillRect(x-bwFinal/2,H-18-h,bwFinal,h);
     ctx.shadowBlur=0;
     if(label&&amp>.05){
-      ctx.fillStyle=col||color; ctx.font='9px Share Tech Mono'; ctx.textAlign='center';
+      ctx.fillStyle=col||color; ctx.font='9px "Space Mono",monospace'; ctx.textAlign='center';
       ctx.fillText(label,x,H-20-h);
     }
   }
 
   function bwArrow(x1,x2,y,label,col){
-    ctx.strokeStyle=col||'rgba(255,255,255,.15)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.strokeStyle=col||'rgba(255,246,236,.3)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
     ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x2,y); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle=col||'rgba(255,255,255,.4)'; ctx.font='9px Share Tech Mono'; ctx.textAlign='center';
+    ctx.fillStyle=col||'rgba(255,246,236,.55)'; ctx.font='9px "Space Mono",monospace'; ctx.textAlign='center';
     ctx.fillText(label,(x1+x2)/2,y-4);
   }
 
   switch(cur){
     case 'AM':
-      spike(0,1.0,'fc 載波','rgba(255,204,68,.9)');
+      spike(0,1.0,'fc 載波','#CC8A1E');
       spike(+fm,mod*.5,'fc+fm',color);
       spike(-fm,mod*.5,'fc-fm',color);
       bwArrow(cx-fm*fSc,cx+fm*fSc,H-32,'← BW = 2fm →');
@@ -617,21 +598,21 @@ function drawFreq(fc,fm,mod){
     case 'USB':
       spike(+fm,.95,'fc+fm（上邊帶）',color);
       // ghost lower (suppressed)
-      ctx.globalAlpha=.15; spike(-fm,.3,'fc-fm（抑制）','#888'); ctx.globalAlpha=1;
-      ctx.globalAlpha=.15; spike(0,.6,'fc（抑制）','#888'); ctx.globalAlpha=1;
+      ctx.globalAlpha=.18; spike(-fm,.3,'fc-fm（抑制）','#a89c8c'); ctx.globalAlpha=1;
+      ctx.globalAlpha=.18; spike(0,.6,'fc（抑制）','#a89c8c'); ctx.globalAlpha=1;
       bwArrow(cx,cx+fm*fSc,H-32,'← BW = fm →',color);
       break;
     case 'LSB':
       spike(-fm,.95,'fc-fm（下邊帶）',color);
-      ctx.globalAlpha=.15; spike(+fm,.3,'fc+fm（抑制）','#888'); ctx.globalAlpha=1;
-      ctx.globalAlpha=.15; spike(0,.6,'fc（抑制）','#888'); ctx.globalAlpha=1;
+      ctx.globalAlpha=.18; spike(+fm,.3,'fc+fm（抑制）','#a89c8c'); ctx.globalAlpha=1;
+      ctx.globalAlpha=.18; spike(0,.6,'fc（抑制）','#a89c8c'); ctx.globalAlpha=1;
       bwArrow(cx-fm*fSc,cx,H-32,'← BW = fm →',color);
       break;
     case 'FM':{
       spike(0,1.0,'fc',color);
       for(let n=1;n<=5;n++){
         const a=Math.max(0,1-n*.18)*(mod/1.5);
-        const c=`rgba(68,255,170,${.9-n*.12})`;
+        const c=`rgba(31,158,150,${.9-n*.12})`;
         spike(+n*fm,a,n===1?'+fm':'',c);
         spike(-n*fm,a,n===1?'-fm':'',c);
       }
@@ -646,7 +627,7 @@ function drawFreq(fc,fm,mod){
   }
 
   // Mode label
-  ctx.fillStyle=color; ctx.font='bold 12px Share Tech Mono'; ctx.textAlign='left';
+  ctx.fillStyle=color; ctx.font='bold 12px "Space Mono",monospace'; ctx.textAlign='left';
   ctx.fillText('頻譜',6,16);
 }
 
@@ -657,7 +638,7 @@ function drawPower(mod){
   const cv=document.getElementById('c-power');
   cv.width=cv.offsetWidth||500;
   const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
-  ctx.fillStyle='#07060f'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=SCREEN_BG; ctx.fillRect(0,0,W,H);
 
   const d=MODES[cur];
   let segments=[];
@@ -668,17 +649,17 @@ function drawPower(mod){
       const sb=eff/2;
       const carrier=100-eff;
       segments=[
-        {label:'載波（無效）',pct:carrier,col:'rgba(255,204,68,.5)'},
-        {label:'上邊帶',pct:sb,col:'#bb88ff'},
-        {label:'下邊帶',pct:sb,col:'#ff88cc'},
+        {label:'載波（無效）',pct:carrier,col:'rgba(204,138,30,.6)'},
+        {label:'上邊帶',pct:sb,col:'#8A5CC4'},
+        {label:'下邊帶',pct:sb,col:'#C44C86'},
       ];
       break;
     }
-    case 'DSB': segments=[{label:'上邊帶',pct:50,col:'#bb88ff'},{label:'下邊帶',pct:50,col:'#ff88cc'}]; break;
-    case 'USB': segments=[{label:'上邊帶 100%',pct:100,col:'#bb88ff'}]; break;
-    case 'LSB': segments=[{label:'下邊帶 100%',pct:100,col:'#ff88cc'}]; break;
-    case 'FM':  segments=[{label:'FM 全功率有效',pct:100,col:'#44ffaa'}]; break;
-    case 'CW':  segments=[{label:'CW 全功率有效',pct:100,col:'#44aaff'}]; break;
+    case 'DSB': segments=[{label:'上邊帶',pct:50,col:'#8A5CC4'},{label:'下邊帶',pct:50,col:'#C44C86'}]; break;
+    case 'USB': segments=[{label:'上邊帶 100%',pct:100,col:'#8A5CC4'}]; break;
+    case 'LSB': segments=[{label:'下邊帶 100%',pct:100,col:'#C44C86'}]; break;
+    case 'FM':  segments=[{label:'FM 全功率有效',pct:100,col:'#1F9E96'}]; break;
+    case 'CW':  segments=[{label:'CW 全功率有效',pct:100,col:'#3B86C9'}]; break;
   }
 
   let x=10;
@@ -691,14 +672,14 @@ function drawPower(mod){
     ctx.fillRect(x,y,w,bh);
     ctx.shadowBlur=0;
     if(w>30){
-      ctx.fillStyle='rgba(0,0,0,.8)'; ctx.font='9px Share Tech Mono'; ctx.textAlign='center';
+      ctx.fillStyle='rgba(255,255,255,.92)'; ctx.font='9px "Space Mono",monospace'; ctx.textAlign='center';
       ctx.fillText(seg.label.substring(0,12),x+w/2,y+13);
     }
     x+=w;
   });
   // Efficiency label
   let effPct = cur==='AM' ? (mod*mod/(2+mod*mod)*100).toFixed(0) : '100';
-  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='9px Share Tech Mono'; ctx.textAlign='right';
+  ctx.fillStyle='rgba(255,246,236,.6)'; ctx.font='9px "Space Mono",monospace'; ctx.textAlign='right';
   ctx.fillText(`有效率 ${effPct}%`, W-6, H-4);
 }
 
@@ -709,8 +690,8 @@ function calcNfm(){
   const ch=parseFloat(document.getElementById('nfm-sel').value);
   const dev=ch*0.2;
   const rDiv=document.getElementById('nfm-result');
-  rDiv.innerHTML=`<div style="color:var(--g);font-size:18px;margin-bottom:6px">±${dev} kHz</div>`
-    +`<div style="color:var(--dim);font-size:11px">頻道間隔 ${ch} kHz → 最大頻率偏差 = ${ch} × 20% = <span style="color:var(--amb)">±${dev} kHz</span></div>`;
+  rDiv.innerHTML=`<div style="color:var(--leaf-ink);font-size:20px;font-weight:700;margin-bottom:6px">±${dev} kHz</div>`
+    +`<div style="color:var(--ink-2);font-size:12px">頻道間隔 ${ch} kHz → 最大頻率偏差 = ${ch} × 20% = <span style="color:var(--honey-ink);font-weight:700">±${dev} kHz</span></div>`;
   drawNfm(ch,dev);
 }
 
@@ -718,38 +699,38 @@ function drawNfm(ch,dev){
   const cv=document.getElementById('c-nfm');
   cv.width=cv.offsetWidth||500;
   const ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
-  ctx.fillStyle='#07060f'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=SCREEN_BG; ctx.fillRect(0,0,W,H);
 
   const cx=W/2, cy=H/2;
   const scaleHz=W/(ch*2.5*1000);
 
   // Channel boundaries
   const halfCh=ch/2*1000;
-  ctx.strokeStyle='rgba(255,85,102,.3)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.strokeStyle='rgba(229,84,75,.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(cx-halfCh*scaleHz,0); ctx.lineTo(cx-halfCh*scaleHz,H); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx+halfCh*scaleHz,0); ctx.lineTo(cx+halfCh*scaleHz,H); ctx.stroke();
   ctx.setLineDash([]);
 
   // Deviation zone
   const devPx=dev*1000*scaleHz;
-  ctx.fillStyle='rgba(68,255,170,.08)';
+  ctx.fillStyle='rgba(31,158,150,.13)';
   ctx.fillRect(cx-devPx,cy-30,devPx*2,60);
 
   // Carrier line (animated frequency wobble)
   const t=Date.now()/400;
   const wobble=Math.sin(t)*devPx*.9;
-  ctx.strokeStyle='#44ffaa'; ctx.lineWidth=2; ctx.shadowColor='#44ffaa'; ctx.shadowBlur=8;
+  ctx.strokeStyle='#1F9E96'; ctx.lineWidth=2; ctx.shadowColor='#1F9E96'; ctx.shadowBlur=8;
   ctx.beginPath(); ctx.moveTo(cx+wobble,cy-28); ctx.lineTo(cx+wobble,cy+28); ctx.stroke();
   ctx.shadowBlur=0;
 
   // Labels
-  ctx.fillStyle='rgba(68,255,170,.6)'; ctx.font='9px Share Tech Mono'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(31,158,150,.85)'; ctx.font='9px "Space Mono",monospace'; ctx.textAlign='center';
   ctx.fillText(`±${dev} kHz 頻偏範圍`,cx,cy-35);
-  ctx.fillStyle='rgba(255,85,102,.5)';
+  ctx.fillStyle='rgba(229,84,75,.75)';
   ctx.fillText(`←${ch} kHz 頻道→`,cx,H-4);
 
   // Arrow
-  ctx.strokeStyle='rgba(68,255,170,.4)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(31,158,150,.5)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(cx-devPx,cy); ctx.lineTo(cx+devPx,cy); ctx.stroke();
 
   setTimeout(()=>{ if(document.getElementById('tab-nfm').style.display!=='none') drawNfm(ch,dev); },50);
@@ -759,7 +740,7 @@ function drawNfm(ch,dev){
 // UTILS
 // ══════════════════════════════════════════════
 function grid(ctx,W,H,hlines=true){
-  ctx.strokeStyle='rgba(42,36,64,.5)'; ctx.lineWidth=1;
+  ctx.strokeStyle=GRID_COL; ctx.lineWidth=1;
   if(hlines) for(let y=0;y<=H;y+=H/4){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
   for(let x=0;x<=W;x+=W/8){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
 }
@@ -780,8 +761,8 @@ function switchTab(name){
   ['compare','exam','nfm'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===name?'':'none';
   });
-  document.querySelectorAll('.tab').forEach((el,i)=>{
-    el.classList.toggle('on',['compare','exam','nfm'][i]===name);
+  document.querySelectorAll('.tabs .tab').forEach((el,i)=>{
+    el.classList.toggle('active',['compare','exam','nfm'][i]===name);
   });
   if(name==='nfm') calcNfm();
 }
@@ -790,7 +771,6 @@ function switchTab(name){
 // START
 // ══════════════════════════════════════════════
 init();
-startAnim();
 </script>
 </body>
 </html>

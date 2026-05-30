@@ -18,13 +18,23 @@ radio-site/
 │   └── callsign-decoder.html   呼號解碼器
 ├── simulators/             ← 模擬器
 │   └── civil-defense.html  民防無線電參數模擬器
-└── assets/                 ← 共用資源（未來擴充用）
-    └── css/
+└── assets/                 ← 共用資源（設計系統）
+    ├── css/style.css        統一設計 token 與元件樣式（暖色學習風）
+    ├── js/nav.js            依路徑深度自動注入導覽列與頁尾
+    └── logo-mark.svg        網站圖示
 ```
 
 ## 新增內容方式
 
-- 新增課程 → 放入 `courses/`，在 `index.html` 加一個 `<a class="card">` 區塊
+全站共用一份 `assets/css/style.css`（設計 token）與 `assets/js/nav.js`（導覽列）。
+新頁面只需三件事即可融入整站樣式與導覽：
+
+1. `<link rel="stylesheet" href="../assets/css/style.css">`
+2. 在 `<body>` 頂端加 `<script>window.SITE_SECTION='courses|tools|simulators'</script>`
+3. 頁尾載入 `<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>` 與 `<script src="../assets/js/nav.js"></script>`
+
+接著：
+- 新增課程 → 放入 `courses/`，並在 `index.html` 加一張 `.ccard` 卡片
 - 新增工具 → 放入 `tools/`，同上
 - 新增模擬器 → 放入 `simulators/`，同上
 
@@ -49,6 +59,6 @@ radio-site/
 
 ## 技術說明
 
-- 純靜態 HTML/CSS/JS，無後端，無資料庫
-- 所有工具可離線使用（載入後不需網路）
-- 外部依賴只有 Google Fonts（可離線後移除）
+- 純靜態 HTML/CSS/JS，無後端，無資料庫，無建置步驟
+- 統一暖色設計系統：所有頁面共用 `assets/css/style.css` 的 token 與元件
+- 外部依賴：Google Fonts（字型）、Lucide CDN（線條圖示）；移除後即可完全離線

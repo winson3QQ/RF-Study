@@ -4,126 +4,129 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>民防無線電參數模擬器</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Microsoft YaHei","Segoe UI",monospace;background:#0a0e1a;color:#c8d6f0;min-height:100vh;overflow-x:hidden}
+/* ============================================================
+   civil-defense simulator — warm chrome + warm-dark scope screens
+   ============================================================ */
+html, body { overflow: hidden; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--ink); min-height: 100vh; }
+body::before { display: none; }
 
 /* Header */
-header{background:linear-gradient(135deg,#0f1929,#1a2840);border-bottom:1px solid #1e3a5f;padding:10px 18px;display:flex;align-items:center;gap:15px}
-header h1{font-size:1.1em;color:#4fc3f7;font-weight:700;letter-spacing:1px}
-header p{font-size:.75em;color:#7a9bc0;margin-top:1px}
-.hbadge{background:#1e3a5f;border:1px solid #2d5a8e;padding:3px 10px;border-radius:12px;font-size:.72em;color:#4fc3f7}
-.live-dot{width:8px;height:8px;background:#00e676;border-radius:50%;animation:blink 1.2s infinite;margin-left:auto}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.sim-header {
+  background: linear-gradient(135deg, var(--surface), var(--surface-soft));
+  border-bottom: 1px solid var(--border); padding: 9px 18px;
+  display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-sm);
+}
+.sim-header .ico { font-size: 1.4em; line-height: 1; }
+.sim-header h1 { font-family: var(--font-display); font-size: 1.1em; color: var(--ink); font-weight: 800; letter-spacing: .3px; }
+.sim-header p { font-size: .73em; color: var(--ink-2); margin-top: 1px; }
+.hbadge { background: var(--teal-soft); border: 1px solid var(--teal); padding: 3px 11px; border-radius: var(--r-pill); font-size: .72em; color: var(--teal-ink); font-weight: 700; }
+.sim-back { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--r-pill); padding: 6px 14px; font-weight: 700; font-size: .78em; color: var(--ink-2); text-decoration: none; transition: all var(--dur) var(--ease); }
+.sim-back:hover { border-color: var(--primary); color: var(--primary-ink); }
+.live-dot { width: 8px; height: 8px; background: var(--leaf); border-radius: 50%; animation: blink 1.2s infinite; margin-left: auto; }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
 
 /* Main Layout */
-.main{display:grid;grid-template-columns:230px 1fr 250px;gap:0;height:calc(100vh - 46px)}
+.main { display: grid; grid-template-columns: 240px 1fr 260px; gap: 0; height: calc(100vh - 50px); }
 
-/* Left Panel */
-.left-panel{background:#0d1525;border-right:1px solid #1e3a5f;padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
-
-/* Center Panel */
-.center-panel{display:flex;flex-direction:column;background:#080d18}
-
-/* Right Panel */
-.right-panel{background:#0d1525;border-left:1px solid #1e3a5f;padding:10px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+/* Panels */
+.left-panel { background: var(--surface); border-right: 1px solid var(--border); padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.center-panel { display: flex; flex-direction: column; background: var(--bg-tint); }
+.right-panel { background: var(--surface); border-left: 1px solid var(--border); padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
 /* Section headers */
-.section-hdr{font-size:.72em;font-weight:700;color:#4fc3f7;text-transform:uppercase;letter-spacing:1.5px;padding:4px 0 2px;border-bottom:1px solid #1e3a5f;margin-bottom:4px}
+.section-hdr { font-family: var(--font-display); font-size: .8em; font-weight: 700; color: var(--primary-ink); letter-spacing: .5px; padding: 4px 0 5px; border-bottom: 1px solid var(--border); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
 
 /* Controls */
-.ctrl-row{display:flex;align-items:center;justify-content:space-between;margin:3px 0}
-.ctrl-label{font-size:.75em;color:#8aabcc}
-.ctrl-value{font-size:.78em;color:#e0f0ff;font-weight:600;min-width:50px;text-align:right}
+.ctrl-row { display: flex; align-items: center; justify-content: space-between; margin: 4px 0; }
+.ctrl-label { font-size: .76em; color: var(--ink-2); font-weight: 600; }
+.ctrl-value { font-family: var(--font-mono); font-size: .78em; color: var(--primary-ink); font-weight: 700; min-width: 50px; text-align: right; }
 
-input[type=range]{width:100%;height:4px;background:#1e3a5f;outline:none;border-radius:2px;-webkit-appearance:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:#4fc3f7;border-radius:50%;cursor:pointer}
+input[type=range] { width: 100%; height: 5px; background: var(--border-strong); outline: none; border-radius: 3px; -webkit-appearance: none; cursor: pointer; margin: 3px 0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; cursor: pointer; box-shadow: var(--shadow-sm); }
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; background: var(--primary); border: none; border-radius: 50%; cursor: pointer; }
 
-.toggle-row{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}
-.toggle-btn{flex:1;padding:4px 6px;background:#0f1929;border:1px solid #1e3a5f;color:#7a9bc0;border-radius:4px;cursor:pointer;font-size:.72em;text-align:center;transition:all .2s}
-.toggle-btn.active{background:#1a3a5f;border-color:#4fc3f7;color:#4fc3f7}
-.toggle-btn.warn{border-color:#f44336;color:#f44336;background:#1f0a0a}
+.toggle-row { display: flex; gap: 5px; flex-wrap: wrap; margin: 5px 0; }
+.toggle-btn { flex: 1; padding: 6px 7px; background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--ink-2); border-radius: var(--r-sm); cursor: pointer; font-size: .73em; font-weight: 700; text-align: center; transition: all var(--dur) var(--ease); }
+.toggle-btn:hover { border-color: var(--teal); color: var(--teal-ink); }
+.toggle-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.toggle-btn.warn { border-color: var(--rose); color: var(--rose-ink); background: var(--rose-soft); }
+.toggle-btn.warn.active { background: var(--rose); color: #fff; }
 
 /* Team cards */
-.team-card{background:#0f1929;border:1px solid #1e3a5f;border-radius:6px;padding:7px 9px;cursor:pointer;transition:all .2s;margin:3px 0}
-.team-card.active{border-color:#00e676}
-.team-card.talking{animation:talk-pulse .6s infinite alternate}
-@keyframes talk-pulse{from{border-color:#00e676}to{border-color:#00a651;box-shadow:0 0 8px #00e67644}}
-.team-header{display:flex;align-items:center;gap:7px;margin-bottom:4px}
-.team-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.team-name{font-size:.8em;font-weight:700;color:#ddeeff}
-.team-ctcss-label{font-size:.68em;color:#7a9bc0;margin-left:auto}
-.team-ctcss-val{font-size:.7em;color:#ffd54f;font-weight:600}
-.team-controls{display:flex;align-items:center;gap:5px}
-.team-controls select{background:#0a1020;border:1px solid #1e3a5f;color:#c8d6f0;font-size:.68em;padding:2px 4px;border-radius:3px;flex:1}
-.talk-btn{padding:3px 8px;background:#1a3a1a;border:1px solid #00a651;color:#00e676;border-radius:3px;cursor:pointer;font-size:.7em;font-weight:700;white-space:nowrap}
-.talk-btn:hover{background:#00a65133}
-.talk-btn.active{background:#00e67633;animation:talk-pulse .5s infinite alternate}
-
-/* Status indicators */
-.status-bar{display:flex;align-items:center;gap:5px;margin:3px 0}
-.status-icon{font-size:.85em}
-.status-text{font-size:.74em;color:#8aabcc}
-.status-val{margin-left:auto;font-size:.74em;font-weight:600}
-.good{color:#00e676}.warn-color{color:#ffd54f}.bad{color:#f44336}
-
-/* Signal strength bars */
-.sig-bars{display:flex;gap:2px;align-items:flex-end}
-.sig-bar{width:5px;background:#1e3a5f;border-radius:1px;transition:all .3s}
+.team-card { background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: var(--r-md); padding: 9px 11px; transition: all var(--dur) var(--ease); margin: 4px 0; }
+.team-card.talking { border-color: var(--leaf); box-shadow: 0 0 0 3px rgba(61,163,93,.18); }
+.team-header { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+.team-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.team-name { font-size: .82em; font-weight: 800; color: var(--ink); font-family: var(--font-display); }
+.team-ctcss-label { font-size: .66em; color: var(--ink-3); margin-left: auto; font-family: var(--font-mono); }
+.team-ctcss-val { font-family: var(--font-mono); font-size: .72em; color: var(--honey-ink); font-weight: 700; }
+.team-controls { display: flex; align-items: center; gap: 6px; }
+.team-controls select { background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--ink); font-family: var(--font-mono); font-size: .68em; padding: 4px 5px; border-radius: var(--r-sm); flex: 1; }
+.talk-btn { padding: 5px 10px; background: var(--leaf-soft); border: 1.5px solid var(--leaf); color: var(--leaf-ink); border-radius: var(--r-sm); cursor: pointer; font-size: .72em; font-weight: 800; white-space: nowrap; transition: all var(--dur) var(--ease); }
+.talk-btn:hover { background: var(--leaf); color: #fff; }
+.talk-btn.active { background: var(--leaf); color: #fff; }
 
 /* Canvas areas */
-.canvas-section{padding:6px 10px 4px;border-bottom:1px solid #111d2e}
-.canvas-title{font-size:.68em;color:#5a7a9a;margin-bottom:3px;letter-spacing:1px;text-transform:uppercase}
-canvas{display:block;width:100%;border-radius:3px}
+.canvas-section { padding: 8px 12px 5px; border-bottom: 1px solid var(--border); }
+.canvas-title { font-family: var(--font-mono); font-size: .69em; color: var(--ink-3); margin-bottom: 4px; letter-spacing: .5px; }
+canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
-/* Diagnostic log */
-.log-box{background:#070c15;border:1px solid #1e3a5f;border-radius:5px;padding:8px;font-size:.72em;height:110px;overflow-y:auto;font-family:monospace}
-.log-entry{color:#7a9bc0;margin:2px 0;line-height:1.4}
-.log-entry.info{color:#4fc3f7}
-.log-entry.good{color:#00e676}
-.log-entry.warn{color:#ffd54f}
-.log-entry.bad{color:#f44336}
+/* Diagnostic log (warm-dark scope console) */
+.log-box { background: #231d16; border: 1px solid var(--border-strong); border-radius: var(--r-sm); padding: 9px; font-family: var(--font-mono); font-size: .72em; height: 118px; overflow-y: auto; }
+.log-entry { color: #b6a994; margin: 2px 0; line-height: 1.45; }
+.log-entry.info { color: #7fb8d8; }
+.log-entry.good { color: #7cc98e; }
+.log-entry.warn { color: #e3b25e; }
+.log-entry.bad { color: #e88a82; }
 
-/* Bottom info bar */
-.info-chips{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0}
-.chip{padding:2px 8px;border-radius:10px;font-size:.68em;border:1px solid}
-.chip-blue{border-color:#1e5f8e;color:#4fc3f7;background:#0a2030}
-.chip-green{border-color:#1a5f2a;color:#00e676;background:#0a1f0e}
-.chip-orange{border-color:#5f3a1a;color:#ffa726;background:#1f140a}
-.chip-red{border-color:#5f1a1a;color:#f44336;background:#1f0a0a}
+/* Info chips */
+.info-chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0; }
+.chip { padding: 3px 11px; border-radius: var(--r-pill); font-size: .7em; font-weight: 700; border: 1px solid; }
+.chip-blue { border-color: var(--sky); color: var(--sky-ink); background: var(--sky-soft); }
+.chip-green { border-color: var(--leaf); color: var(--leaf-ink); background: var(--leaf-soft); }
+.chip-orange { border-color: var(--honey); color: var(--honey-ink); background: var(--honey-soft); }
+.chip-red { border-color: var(--rose); color: var(--rose-ink); background: var(--rose-soft); }
 
 /* Scrollbar */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:#080d18}
-::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:2px}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 
 /* Receiver CTCSS */
-.rx-box{background:#0f1929;border:1px solid #2d4a6f;border-radius:5px;padding:7px}
-.rx-title{font-size:.7em;color:#ffd54f;margin-bottom:5px;font-weight:600}
-.rx-freq{font-size:1.2em;color:#4fc3f7;font-weight:700;text-align:center;margin:3px 0}
+.rx-box { background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--r-md); padding: 9px; }
+.rx-title { font-size: .72em; color: var(--honey-ink); margin-bottom: 6px; font-weight: 700; }
 
-/* Team hear status */
-.hear-list{display:flex;flex-direction:column;gap:3px}
-.hear-item{display:flex;align-items:center;gap:7px;padding:4px 7px;border-radius:4px;font-size:.75em}
-.hear-item.hearing{background:#0a1f0e;border:1px solid #1a5f2a}
-.hear-item.silent{background:#1a0a0a;border:1px solid #3f1a1a;opacity:.6}
-.hear-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+/* Hear list */
+.hear-list { display: flex; flex-direction: column; gap: 4px; }
+.hear-item { display: flex; align-items: center; gap: 8px; padding: 5px 9px; border-radius: var(--r-sm); font-size: .76em; }
+.hear-item.hearing { background: var(--leaf-soft); border: 1px solid var(--leaf); }
+.hear-item.silent { background: var(--rose-soft); border: 1px solid #f3c9c5; opacity: .75; }
+.hear-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-@media(max-width:900px){
-  .main{grid-template-columns:1fr}
-  .left-panel,.right-panel{display:none}
+.good { color: var(--leaf-ink); } .warn-color { color: var(--honey-ink); } .bad { color: var(--rose-ink); }
+
+@media(max-width:900px) {
+  .main { grid-template-columns: 1fr; height: auto; }
+  html, body { overflow: auto; }
+  .left-panel, .right-panel { display: none; }
 }
 </style>
 </head>
 <body>
-<header>
-  <span style="font-size:1.4em">📻</span>
+<script>window.SITE_SECTION='simulators'</script>
+<header class="sim-header">
+  <span class="ico">📻</span>
   <div>
     <h1>民防無線電參數模擬器</h1>
-    <p>SDR視覺化 · 即時信號模擬 · 所有RF參數整合</p>
+    <p>SDR 視覺化 · 即時信號模擬 · 所有 RF 參數整合</p>
   </div>
   <span class="hbadge">GQRX-SIM</span>
   <span class="hbadge" id="mode-badge">NFM 12.5kHz</span>
+  <a class="sim-back" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
   <div class="live-dot" title="模擬運行中"></div>
 </header>
 
@@ -162,7 +165,7 @@ canvas{display:block;width:100%;border-radius:3px}
       </div>
       <div class="ctrl-row">
         <span class="ctrl-label">SNR預估</span>
-        <span class="ctrl-value" id="snr-display" class="good">-- dB</span>
+        <span class="ctrl-value good" id="snr-display">-- dB</span>
       </div>
     </div>
 
@@ -238,7 +241,7 @@ canvas{display:block;width:100%;border-radius:3px}
     </div>
 
     <!-- Bottom Status Row -->
-    <div style="padding:8px 10px;display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid #111d2e;flex:1;align-content:flex-start">
+    <div style="padding:10px 12px;display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--border);flex:1;align-content:flex-start">
       <div class="info-chips" style="width:100%">
         <span class="chip chip-blue" id="chip-freq">145.500 MHz</span>
         <span class="chip chip-blue" id="chip-bw">NFM 12.5kHz</span>
@@ -250,11 +253,11 @@ canvas{display:block;width:100%;border-radius:3px}
       </div>
 
       <!-- 說明文字 -->
-      <div style="font-size:.73em;color:#5a7a9a;line-height:1.6;width:100%">
-        <strong style="color:#4fc3f7">操作說明：</strong>
-        點擊右側隊伍的「發話」按鈕 → 模擬對講機發話 → 觀察FFT峰值和瀑布圖變化。
-        調整RF增益 → 觀察SNR和底噪變化。切換頻寬 → 觀察峰值寬度。
-        開啟干擾源 → 觀察干擾峰值。設定接收CTCSS → 只聽到特定隊伍。
+      <div style="font-size:.74em;color:var(--ink-2);line-height:1.7;width:100%">
+        <strong style="color:var(--primary-ink)">操作說明：</strong>
+        點擊右側隊伍的「發話」按鈕 → 模擬對講機發話 → 觀察 FFT 峰值和瀑布圖變化。
+        調整 RF 增益 → 觀察 SNR 和底噪變化。切換頻寬 → 觀察峰值寬度。
+        開啟干擾源 → 觀察干擾峰值。設定接收 CTCSS → 只聽到特定隊伍。
       </div>
     </div>
   </div>
@@ -267,7 +270,7 @@ canvas{display:block;width:100%;border-radius:3px}
       <div class="section-hdr">🔑 接收機設定</div>
       <div class="rx-box">
         <div class="rx-title">我的CTCSS設定（靜噪鑰匙）</div>
-        <select id="rx-ctcss" onchange="setRxCtcss(this.value)" style="width:100%;background:#0a1020;border:1px solid #2d4a6f;color:#c8d6f0;padding:5px;border-radius:4px;font-size:.8em;margin-top:3px">
+        <select id="rx-ctcss" onchange="setRxCtcss(this.value)" style="width:100%;background:var(--surface);border:1.5px solid var(--border-strong);color:var(--ink);padding:6px;border-radius:var(--r-sm);font-size:.8em;margin-top:3px">
           <option value="0">🔓 無CTCSS（收所有隊伍）</option>
           <option value="67.0">67.0 Hz — 隊伍1</option>
           <option value="88.5">88.5 Hz — 隊伍2</option>
@@ -305,20 +308,27 @@ canvas{display:block;width:100%;border-radius:3px}
     <!-- Quick Guide -->
     <div>
       <div class="section-hdr">💡 快速指南</div>
-      <div style="font-size:.7em;color:#5a7a9a;line-height:1.7">
-        <div>📊 <span style="color:#c8d6f0">FFT峰高</span> = 信號強度</div>
-        <div>📊 <span style="color:#c8d6f0">峰值寬度</span> = 頻寬設定</div>
-        <div>🎚️ <span style="color:#c8d6f0">增益↑太多</span> = 底噪也升高</div>
-        <div>🔑 <span style="color:#c8d6f0">CTCSS不符</span> = 喇叭不開</div>
-        <div>⚡ <span style="color:#c8d6f0">干擾強於信號</span> = 被壓制</div>
-        <div>🔁 <span style="color:#c8d6f0">中繼台</span> = 克服地形</div>
+      <div style="font-size:.72em;color:var(--ink-2);line-height:1.8">
+        <div>📊 <span style="color:var(--ink);font-weight:700">FFT峰高</span> = 信號強度</div>
+        <div>📊 <span style="color:var(--ink);font-weight:700">峰值寬度</span> = 頻寬設定</div>
+        <div>🎚️ <span style="color:var(--ink);font-weight:700">增益↑太多</span> = 底噪也升高</div>
+        <div>🔑 <span style="color:var(--ink);font-weight:700">CTCSS不符</span> = 喇叭不開</div>
+        <div>⚡ <span style="color:var(--ink);font-weight:700">干擾強於信號</span> = 被壓制</div>
+        <div>🔁 <span style="color:var(--ink);font-weight:700">中繼台</span> = 克服地形</div>
       </div>
     </div>
 
   </div>
 </div>
 
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
+// warm-dark scope screen palette
+const SCOPE_BG0 = '#231d16', SCOPE_BG1 = '#1b1610';
+const SCOPE_GRID = 'rgba(255,246,236,0.06)';
+const SCOPE_LABEL = '#8a7d6a';
+const COL_PRIMARY = '#F2643C', COL_LEAF = '#3DA35D', COL_HONEY = '#E89A1C', COL_SKY = '#3B86C9', COL_ROSE = '#E5544B';
+
 // =====================
 // State
 // =====================
@@ -333,11 +343,11 @@ const state = {
   repeaterEnabled: false,
   rxCtcss: 0,
   teams: [
-    { id:1, name:'文山隊', ctcss:67.0,  color:'#4fc3f7', talking:false, freqOffset:0 },
-    { id:2, name:'信義隊', ctcss:88.5,  color:'#81c784', talking:false, freqOffset:0 },
-    { id:3, name:'大安隊', ctcss:110.9, color:'#ffb74d', talking:false, freqOffset:0 },
-    { id:4, name:'中山隊', ctcss:131.8, color:'#f48fb1', talking:false, freqOffset:0 },
-    { id:5, name:'松山隊', ctcss:151.4, color:'#ce93d8', talking:false, freqOffset:0 },
+    { id:1, name:'文山隊', ctcss:67.0,  color:'#1F9E96', talking:false, freqOffset:0 },
+    { id:2, name:'信義隊', ctcss:88.5,  color:'#3DA35D', talking:false, freqOffset:0 },
+    { id:3, name:'大安隊', ctcss:110.9, color:'#E89A1C', talking:false, freqOffset:0 },
+    { id:4, name:'中山隊', ctcss:131.8, color:'#C44C86', talking:false, freqOffset:0 },
+    { id:5, name:'松山隊', ctcss:151.4, color:'#8A5CC4', talking:false, freqOffset:0 },
   ],
   time: 0,
 };
@@ -387,7 +397,7 @@ function initCanvases() {
 
   // Set pixel dimensions
   function resize() {
-    const cw = fftCanvas.parentElement.clientWidth - 20;
+    const cw = fftCanvas.parentElement.clientWidth - 24;
     fftCanvas.width = cw; fftCanvas.height = 160;
     waterfallCanvas.width = cw; waterfallCanvas.height = 130;
     audioCanvas.width = cw; audioCanvas.height = 100;
@@ -407,8 +417,8 @@ function drawFFT() {
 
   // Background gradient
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#050a14');
-  bg.addColorStop(1, '#080f1e');
+  bg.addColorStop(0, SCOPE_BG0);
+  bg.addColorStop(1, SCOPE_BG1);
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
@@ -424,7 +434,7 @@ function drawFFT() {
   function dbToY(db) { return H - (db - dbMin) / (dbMax - dbMin) * H; }
 
   // Grid
-  ctx.strokeStyle = '#0d2035';
+  ctx.strokeStyle = SCOPE_GRID;
   ctx.lineWidth = 1;
   for (let f = Math.ceil(freqMin * 10) / 10; f <= freqMax; f += 0.1) {
     const x = freqToX(Math.round(f * 10) / 10);
@@ -436,7 +446,7 @@ function drawFFT() {
   }
 
   // Grid labels
-  ctx.fillStyle = '#2a4a6a';
+  ctx.fillStyle = SCOPE_LABEL;
   ctx.font = '10px monospace';
   for (let f = Math.ceil(freqMin * 10) / 10; f <= freqMax; f += 0.2) {
     const x = freqToX(Math.round(f * 10) / 10);
@@ -461,25 +471,25 @@ function drawFFT() {
   ctx.moveTo(0, noisePoints[0].y);
   for (const p of noisePoints) ctx.lineTo(p.x, p.y);
   ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
-  ctx.fillStyle = 'rgba(30, 58, 95, 0.25)';
+  ctx.fillStyle = 'rgba(168,156,140,0.15)';
   ctx.fill();
   ctx.beginPath();
   ctx.moveTo(0, noisePoints[0].y);
   for (const p of noisePoints) ctx.lineTo(p.x, p.y);
-  ctx.strokeStyle = '#0d2d4a';
+  ctx.strokeStyle = '#5a5142';
   ctx.lineWidth = 1;
   ctx.stroke();
 
   // Noise floor reference line
   ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = '#1e4a7a';
+  ctx.strokeStyle = '#7a6e5a';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(0, dbToY(noiseFloor));
   ctx.lineTo(W, dbToY(noiseFloor));
   ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = '#2a5a9a';
+  ctx.fillStyle = '#a89c8c';
   ctx.font = '9px monospace';
   ctx.fillText('底噪 ' + Math.round(noiseFloor) + 'dBm', 5, dbToY(noiseFloor) - 3);
 
@@ -533,7 +543,7 @@ function drawFFT() {
 
     // SNR indicator
     const snr = getSNR(sigDb, noiseFloor);
-    const snrColor = snr > 20 ? '#00e676' : snr > 10 ? '#ffd54f' : '#f44336';
+    const snrColor = snr > 20 ? COL_LEAF : snr > 10 ? COL_HONEY : COL_ROSE;
     document.getElementById('snr-display').textContent = Math.round(snr) + ' dB';
     document.getElementById('snr-display').style.color = snrColor;
   });
@@ -556,8 +566,8 @@ function drawFFT() {
 
     if (pts.length >= 2) {
       const grad = ctx.createLinearGradient(cx, dbToY(intDb), cx, H);
-      grad.addColorStop(0, 'rgba(244,67,54,0.7)');
-      grad.addColorStop(1, 'rgba(244,67,54,0.05)');
+      grad.addColorStop(0, 'rgba(229,84,75,0.7)');
+      grad.addColorStop(1, 'rgba(229,84,75,0.05)');
       ctx.beginPath();
       ctx.moveTo(pts[0].x, pts[0].y);
       for (const p of pts) ctx.lineTo(p.x, p.y);
@@ -569,26 +579,26 @@ function drawFFT() {
       ctx.beginPath();
       ctx.moveTo(pts[0].x, pts[0].y);
       for (const p of pts) ctx.lineTo(p.x, p.y);
-      ctx.strokeStyle = '#f44336';
+      ctx.strokeStyle = COL_ROSE;
       ctx.lineWidth = 2;
       ctx.setLineDash([3, 3]);
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = '#f44336';
+      ctx.fillStyle = COL_ROSE;
       ctx.font = 'bold 10px monospace';
       ctx.fillText('⚡干擾', cx - 15, dbToY(intDb) - 5);
     }
   }
 
   // Center frequency marker
-  ctx.strokeStyle = '#4fc3f7';
+  ctx.strokeStyle = COL_PRIMARY;
   ctx.setLineDash([2, 4]);
   ctx.lineWidth = 1;
   ctx.beginPath();
   const cx0 = freqToX(state.centerFreq);
   ctx.moveTo(cx0, 0); ctx.lineTo(cx0, H); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = '#4fc3f7';
+  ctx.fillStyle = COL_PRIMARY;
   ctx.font = 'bold 10px monospace';
   ctx.fillText(state.centerFreq.toFixed(3) + ' MHz', cx0 + 3, 13);
 
@@ -596,13 +606,13 @@ function drawFFT() {
   if (state.repeaterEnabled) {
     const rxCx = freqToX(146.100);
     if (rxCx > 0 && rxCx < W) {
-      ctx.strokeStyle = '#00e676';
+      ctx.strokeStyle = COL_LEAF;
       ctx.setLineDash([2, 4]);
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(rxCx, 0); ctx.lineTo(rxCx, H); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = '#00e676';
+      ctx.fillStyle = COL_LEAF;
       ctx.font = '9px monospace';
       ctx.fillText('中繼↑146.100', rxCx + 3, 13);
     }
@@ -670,7 +680,7 @@ function drawWaterfall() {
   }
 
   // Frequency labels
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillStyle = 'rgba(255,246,236,0.4)';
   ctx.font = '9px monospace';
   for (let f = Math.ceil(freqMin * 10) / 10; f <= freqMax; f += 0.2) {
     const x = (Math.round(f * 10) / 10 - freqMin) / freqRange * W;
@@ -679,22 +689,19 @@ function drawWaterfall() {
 }
 
 function dbToColor(norm) {
-  // Black → Blue → Cyan → Green → Yellow → Red
-  if (norm < 0.2) {
-    const t = norm / 0.2;
-    return `rgb(0,0,${Math.round(t * 180)})`;
-  } else if (norm < 0.4) {
-    const t = (norm - 0.2) / 0.2;
-    return `rgb(0,${Math.round(t * 200)},${Math.round(180 + t * 75)})`;
-  } else if (norm < 0.6) {
-    const t = (norm - 0.4) / 0.2;
-    return `rgb(0,${Math.round(200 + t * 55)},${Math.round(255 - t * 255)})`;
-  } else if (norm < 0.8) {
-    const t = (norm - 0.6) / 0.2;
-    return `rgb(${Math.round(t * 255)},255,0)`;
+  // warm waterfall: deep brown → amber → coral → bright
+  if (norm < 0.25) {
+    const t = norm / 0.25;
+    return `rgb(${Math.round(27 + t*60)},${Math.round(22 + t*30)},${Math.round(16 + t*10)})`;
+  } else if (norm < 0.5) {
+    const t = (norm - 0.25) / 0.25;
+    return `rgb(${Math.round(87 + t*145)},${Math.round(52 + t*102)},${Math.round(26 + t*2)})`;
+  } else if (norm < 0.75) {
+    const t = (norm - 0.5) / 0.25;
+    return `rgb(${Math.round(232 + t*10)},${Math.round(154 - t*54)},${Math.round(28 + t*32)})`;
   } else {
-    const t = (norm - 0.8) / 0.2;
-    return `rgb(255,${Math.round(255 - t * 255)},0)`;
+    const t = (norm - 0.75) / 0.25;
+    return `rgb(${Math.round(242)},${Math.round(100 + t*120)},${Math.round(60 + t*120)})`;
   }
 }
 
@@ -707,18 +714,18 @@ function drawAudio() {
   ctx.clearRect(0, 0, W, H);
 
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#050a14'); bg.addColorStop(1, '#080f1e');
+  bg.addColorStop(0, SCOPE_BG0); bg.addColorStop(1, SCOPE_BG1);
   ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
 
   const audioMin = 0, audioMax = 3500;
   function freqToX(f) { return (f - audioMin) / (audioMax - audioMin) * W; }
 
   // Grid
-  ctx.strokeStyle = '#0d2035'; ctx.lineWidth = 1;
+  ctx.strokeStyle = SCOPE_GRID; ctx.lineWidth = 1;
   [300, 500, 1000, 1500, 2000, 2500, 3000].forEach(f => {
     const x = freqToX(f);
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    ctx.fillStyle = '#2a4a6a'; ctx.font = '9px monospace';
+    ctx.fillStyle = SCOPE_LABEL; ctx.font = '9px monospace';
     ctx.fillText(f >= 1000 ? (f/1000).toFixed(1)+'k' : f, x + 2, H - 3);
   });
 
@@ -726,7 +733,7 @@ function drawAudio() {
   const noiseBase = H * 0.85;
   for (let x = 0; x < W; x++) {
     const n = noiseBase + (Math.random() * 4 - 2);
-    ctx.fillStyle = '#0d2035'; ctx.fillRect(x, n, 1, H - n);
+    ctx.fillStyle = 'rgba(168,156,140,0.18)'; ctx.fillRect(x, n, 1, H - n);
   }
 
   // Any team talking?
@@ -779,12 +786,12 @@ function drawAudio() {
     });
 
     // Label regions
-    ctx.fillStyle = '#ffd54f'; ctx.font = '9px monospace';
+    ctx.fillStyle = COL_HONEY; ctx.font = '9px monospace';
     ctx.fillText('← CTCSS 亞音頻 →', freqToX(40), 12);
-    ctx.fillStyle = '#4fc3f7';
+    ctx.fillStyle = COL_SKY;
     ctx.fillText('←────── 語音頻率 300-3000Hz ──────→', freqToX(400), 12);
   } else {
-    ctx.fillStyle = '#2a4a6a'; ctx.font = '11px monospace';
+    ctx.fillStyle = SCOPE_LABEL; ctx.font = '11px monospace';
     ctx.fillText('（無隊伍發話 — 無語音信號）', W/2 - 95, H/2 + 4);
   }
 
@@ -792,7 +799,7 @@ function drawAudio() {
   if (talkingTeams.length > 0) {
     const silenced = talkingTeams.filter(t => !canHear(t.ctcss, state.rxCtcss));
     if (silenced.length > 0 && state.rxCtcss > 0) {
-      ctx.fillStyle = '#f44336'; ctx.font = 'bold 10px monospace';
+      ctx.fillStyle = COL_ROSE; ctx.font = 'bold 10px monospace';
       ctx.fillText('🔇 CTCSS不符 — 靜噪關閉', W - 175, 12);
     }
   }
@@ -821,8 +828,7 @@ function buildTeams() {
         <span class="team-ctcss-val" id="ctcss-val-${team.id}">${team.ctcss}Hz</span>
       </div>
       <div class="team-controls">
-        <select onchange="setTeamCtcss(${team.id}, parseFloat(this.value))"
-                style="background:#0a1020;border:1px solid #1e3a5f;color:#c8d6f0;font-size:.67em;padding:2px 3px;border-radius:3px;flex:1">
+        <select onchange="setTeamCtcss(${team.id}, parseFloat(this.value))">
           ${ctcssOptions}
         </select>
         <button class="talk-btn ${team.talking ? 'active' : ''}"
@@ -840,7 +846,7 @@ function updateHearList() {
   list.innerHTML = '';
   const talkingTeams = state.teams.filter(t => t.talking);
   if (talkingTeams.length === 0) {
-    list.innerHTML = '<div style="font-size:.73em;color:#2a4a6a;padding:5px">（無隊伍發話）</div>';
+    list.innerHTML = '<div style="font-size:.73em;color:var(--ink-3);padding:5px">（無隊伍發話）</div>';
     return;
   }
   talkingTeams.forEach(team => {
@@ -848,14 +854,14 @@ function updateHearList() {
     const div = document.createElement('div');
     div.className = 'hear-item ' + (hear ? 'hearing' : 'silent');
     div.innerHTML = `
-      <div class="hear-dot" style="background:${hear ? team.color : '#f44336'}"></div>
+      <div class="hear-dot" style="background:${hear ? team.color : '#E5544B'}"></div>
       <span style="flex:1;font-size:.75em">${team.name}（${team.ctcss}Hz）</span>
-      <span style="font-size:.73em;font-weight:700;color:${hear ? '#00e676' : '#f44336'}">${hear ? '✓ 聽得到' : '✗ 靜音'}</span>`;
+      <span style="font-size:.73em;font-weight:700;color:${hear ? 'var(--leaf-ink)' : 'var(--rose-ink)'}">${hear ? '✓ 聽得到' : '✗ 靜音'}</span>`;
     list.appendChild(div);
   });
   if (state.rxCtcss === 0) {
     const note = document.createElement('div');
-    note.style = 'font-size:.68em;color:#5a7a9a;padding:4px 0';
+    note.style = 'font-size:.68em;color:var(--ink-3);padding:4px 0';
     note.textContent = '（無CTCSS設定 → 所有隊伍皆可聽）';
     list.appendChild(note);
   }
@@ -939,7 +945,7 @@ function setAntenna(type, btn) {
 function toggleInterference(btn, forceOn) {
   state.interferenceEnabled = forceOn !== undefined ? forceOn : !state.interferenceEnabled;
   document.getElementById('interference-btn').className =
-    'toggle-btn' + (state.interferenceEnabled ? ' warn' : '');
+    'toggle-btn' + (state.interferenceEnabled ? ' warn active' : '');
   document.getElementById('interference-btn').textContent =
     state.interferenceEnabled ? '⚡ 干擾中' : '❌ 關閉';
   const chip = document.getElementById('chip-int');
@@ -1048,6 +1054,7 @@ window.onload = () => {
   setGain(30);
   requestAnimationFrame(animate);
   addLog('✓ 模擬器就緒，請點擊「發話」按鈕開始', 'good');
+  if (window.lucide) lucide.createIcons();
 };
 </script>
 </body>

@@ -4,695 +4,440 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電路計算互動工具 — 二等業餘無線電</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
 <style>
-  :root {
-    --bg: #0a0e14;
-    --surface: #111820;
-    --surface2: #162030;
-    --border: #1e3048;
-    --accent: #00d4ff;
-    --accent2: #00ff9f;
-    --accent3: #ff6b35;
-    --text: #c8d8e8;
-    --text-dim: #5a7a9a;
-    --mono: 'Share Tech Mono', monospace;
-    --sans: 'Noto Sans TC', sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  /* Grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── tab content panes (renamed from .panel to avoid clash with shared card) ── */
+.cpanel { display:none; }
+.cpanel.active { display:block; }
 
-  .container { max-width: 960px; margin: 0 auto; padding: 24px 16px; position: relative; z-index: 1; }
+.panel-title { font-family:var(--font-display); font-weight:700; font-size:16px; color:var(--ink); margin:0 0 18px; display:flex; align-items:center; gap:10px; }
+.panel-title::before { content:''; width:5px; height:20px; background:var(--primary); border-radius:3px; flex-shrink:0; }
 
-  header {
-    text-align: center;
-    padding: 32px 0 24px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-  }
-  header .badge {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    padding: 3px 10px;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-  }
-  header h1 {
-    font-size: 26px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: -0.5px;
-    margin-bottom: 6px;
-  }
-  header p { color: var(--text-dim); font-size: 13px; }
+/* ── formula display ── */
+.formula-box { background:var(--honey-soft); border:1px solid #f0dcae; border-left:4px solid var(--honey); border-radius:var(--r-md); padding:14px 18px; margin-bottom:20px; }
+.formula-box .formula-label { font-family:var(--font-mono); font-size:10px; color:var(--honey-ink); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; font-weight:700; }
+.formula-box .formula { font-family:var(--font-mono); font-size:15.5px; color:#5b4a2a; line-height:1.6; }
+.formula-box .formula-desc { font-family:var(--font-mono); font-size:12px; color:#7a6638; margin-top:7px; line-height:1.5; }
 
-  /* Tab nav */
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 24px;
-  }
-  .tab {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 1px;
-    padding: 7px 14px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
-  .tab:hover { border-color: var(--accent); color: var(--accent); }
-  .tab.active { border-color: var(--accent); background: rgba(0,212,255,0.08); color: var(--accent); }
+/* ── calculator inputs ── */
+.calc-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+@media(max-width:600px){ .calc-grid{ grid-template-columns:1fr; } }
+.input-group label { display:block; font-family:var(--font-sans); font-weight:700; font-size:12px; color:var(--ink-2); margin-bottom:7px; }
+.input-group label span { color:var(--primary-ink); }
+.input-row { display:flex; align-items:center; background:var(--surface); border:1.5px solid var(--border-strong); border-radius:var(--r-md); transition:all var(--dur) var(--ease); }
+.input-row:focus-within { border-color:var(--primary); box-shadow:var(--ring); }
+.input-row input { flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--ink); font-family:var(--font-mono); font-size:16px; padding:11px 13px; }
+.input-row .unit { padding:11px 13px; font-family:var(--font-mono); font-size:12px; color:var(--ink-3); border-left:1px solid var(--border); min-width:48px; text-align:center; }
+.input-row select { background:transparent; border:none; outline:none; color:var(--ink-2); font-family:var(--font-mono); font-size:12px; padding:11px 8px; cursor:pointer; border-left:1px solid var(--border); }
+.input-row select option { background:var(--surface); }
 
-  /* Panel */
-  .panel { display: none; }
-  .panel.active { display: block; }
+/* ── solve button ── */
+.solve-btn { width:100%; padding:13px; background:var(--primary); border:none; border-radius:var(--r-md); color:#fff; font-family:var(--font-sans); font-weight:800; font-size:14px; letter-spacing:1px; cursor:pointer; transition:all var(--dur) var(--ease); margin-bottom:20px; box-shadow:var(--shadow-sm); }
+.solve-btn:hover { background:var(--primary-strong); box-shadow:var(--shadow-md); }
+.solve-btn:active { transform:scale(.99); }
 
-  .panel-title {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--accent2);
-    letter-spacing: 2px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .panel-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
+/* ── result box ── */
+.result-box { background:var(--surface-soft); border:1px solid var(--border); border-left:4px solid var(--teal); border-radius:var(--r-md); padding:18px 20px; display:none; }
+.result-box.show { display:block; animation:pop .26s var(--ease-bounce); }
+.result-box .result-label { font-family:var(--font-mono); font-size:10px; letter-spacing:1px; color:var(--ink-3); text-transform:uppercase; margin-bottom:8px; }
+.result-box .result-value { font-family:var(--font-mono); font-size:24px; color:var(--teal-ink); font-weight:700; margin-bottom:12px; line-height:1.3; }
+.result-box .result-steps { border-top:1px solid var(--border); padding-top:12px; font-family:var(--font-mono); font-size:12.5px; color:var(--ink-2); line-height:1.9; }
+.result-box .result-steps span { color:var(--primary-ink); font-weight:700; }
+.result-box .error { color:var(--rose-ink); font-family:var(--font-sans); font-weight:700; font-size:13px; }
 
-  /* Formula display */
-  .formula-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    padding: 14px 18px;
-    margin-bottom: 20px;
-    font-family: var(--mono);
-  }
-  .formula-box .formula-label { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-  .formula-box .formula { font-size: 17px; color: var(--accent); }
-  .formula-box .formula-desc { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+/* ── reference table ── */
+.ref-table { width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:12.5px; margin-top:16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md); overflow:hidden; box-shadow:var(--shadow-sm); }
+.ref-table th { text-align:left; padding:10px 12px; color:var(--teal-ink); background:var(--teal-soft); border-bottom:1px solid var(--border); font-family:var(--font-display); font-size:12px; font-weight:700; }
+.ref-table td { padding:9px 12px; border-bottom:1px solid var(--border); color:var(--ink-2); }
+.ref-table tr:last-child td { border-bottom:none; }
+.ref-table tr:hover td { background:var(--surface-soft); }
+.ref-table .highlight { color:var(--primary-ink); font-weight:700; }
 
-  /* Calculator layout */
-  .calc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  @media (max-width: 600px) { .calc-grid { grid-template-columns: 1fr; } }
+/* ── note ── */
+.note { font-size:13px; color:#5e3633; padding:11px 14px; border-left:4px solid var(--rose); background:var(--rose-soft); border-radius:var(--r-sm); margin-bottom:18px; line-height:1.6; }
+.note strong { color:var(--rose-ink); }
 
-  .input-group label {
-    display: block;
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    font-family: var(--mono);
-  }
-  .input-group label span { color: var(--accent3); }
+.divider { border:none; border-top:1px solid var(--border); margin:26px 0; }
 
-  .input-row {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    transition: border-color 0.2s;
-  }
-  .input-row:focus-within { border-color: var(--accent); }
-  .input-row input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #fff;
-    font-family: var(--mono);
-    font-size: 15px;
-    padding: 10px 12px;
-  }
-  .input-row .unit {
-    padding: 10px 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-dim);
-    border-left: 1px solid var(--border);
-    min-width: 50px;
-    text-align: center;
-  }
-  .input-row select {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text-dim);
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 10px 8px;
-    cursor: pointer;
-  }
-  .input-row select option { background: var(--surface2); }
+/* ── slider ── */
+.slider-section { margin-bottom:20px; }
+.slider-section label { font-family:var(--font-sans); font-weight:700; font-size:13px; color:var(--ink-2); display:flex; justify-content:space-between; margin-bottom:10px; }
+.slider-section label span { color:var(--primary-ink); font-family:var(--font-mono); font-size:15px; }
+input[type=range] { width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:3px; background:var(--border); outline:none; cursor:pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:16px; height:16px; border-radius:50%; background:var(--primary); cursor:pointer; box-shadow:var(--shadow-sm); }
+input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; border-radius:50%; background:var(--primary); cursor:pointer; }
 
-  /* Solve button */
-  .solve-btn {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: var(--mono);
-    font-size: 13px;
-    letter-spacing: 3px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.2s;
-    margin-bottom: 20px;
-  }
-  .solve-btn:hover { background: rgba(0,212,255,0.1); }
+/* ── dB cards ── */
+.db-display { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+.db-card { background:var(--surface-soft); border:1px solid var(--border); border-radius:var(--r-md); padding:14px; text-align:center; }
+.db-card .db-label { font-family:var(--font-mono); font-size:10px; color:var(--ink-3); letter-spacing:1px; margin-bottom:7px; }
+.db-card .db-val { font-family:var(--font-mono); font-size:18px; color:var(--teal-ink); font-weight:700; }
 
-  /* Result display */
-  .result-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 20px;
-    display: none;
-  }
-  .result-box.show { display: block; }
-  .result-box .result-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .result-box .result-value {
-    font-family: var(--mono);
-    font-size: 28px;
-    color: var(--accent2);
-    margin-bottom: 12px;
-  }
-  .result-box .result-steps {
-    border-top: 1px solid var(--border);
-    padding-top: 12px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 2;
-  }
-  .result-box .result-steps span { color: var(--accent); }
-  .result-box .error { color: var(--accent3); font-family: var(--mono); font-size: 13px; }
-
-  /* dB table */
-  .ref-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: var(--mono);
-    font-size: 12px;
-    margin-top: 16px;
-  }
-  .ref-table th {
-    text-align: left;
-    padding: 8px 12px;
-    color: var(--text-dim);
-    border-bottom: 1px solid var(--border);
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-  .ref-table td {
-    padding: 8px 12px;
-    border-bottom: 1px solid rgba(30,48,72,0.5);
-    color: var(--text);
-  }
-  .ref-table tr:hover td { background: rgba(0,212,255,0.04); }
-  .ref-table .highlight { color: var(--accent2); }
-
-  /* Divider */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-
-  /* Inline note */
-  .note {
-    font-size: 12px;
-    color: var(--text-dim);
-    padding: 10px 14px;
-    border-left: 2px solid var(--accent3);
-    background: rgba(255,107,53,0.05);
-    margin-bottom: 16px;
-  }
-  .note strong { color: var(--accent3); }
-
-  /* Animated highlight */
-  @keyframes pulse-border {
-    0% { border-color: var(--accent); }
-    50% { border-color: var(--accent2); }
-    100% { border-color: var(--accent); }
-  }
-  .result-box.show { animation: pulse-border 2s ease-in-out 1; }
-
-  /* slider section */
-  .slider-section { margin-bottom: 20px; }
-  .slider-section label {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-  .slider-section label span { color: var(--accent); font-size: 14px; }
-  input[type=range] {
-    width: 100%;
-    -webkit-appearance: none;
-    height: 3px;
-    background: var(--border);
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px; height: 16px;
-    background: var(--accent);
-    border-radius: 0;
-    cursor: pointer;
-  }
-  .db-display {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 16px;
-  }
-  .db-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 14px;
-    text-align: center;
-  }
-  .db-card .db-label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 6px; }
-  .db-card .db-val { font-family: var(--mono); font-size: 18px; color: var(--accent2); }
-
-  /* Antenna calc */
-  .ant-visual {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  canvas { max-width: 100%; }
+/* ── antenna visual (warm-dark screen) ── */
+.ant-visual { background:#26211b; border:1px solid #3a322a; border-radius:var(--r-md); padding:18px; text-align:center; margin-bottom:16px; overflow:hidden; }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div class="badge">二等業餘無線電 輔助學習</div>
-    <h1>電路計算互動工具</h1>
-    <p>對應「無線電系統原理」題庫 · 理解公式，不只是背答案</p>
-  </header>
+<script>window.SITE_SECTION='tools';</script>
+<div class="wrap">
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('ohm')">歐姆定律 / 功率</div>
-    <div class="tab" onclick="switchTab('db')">dB 換算</div>
-    <div class="tab" onclick="switchTab('rlc')">R / L / C 電路</div>
-    <div class="tab" onclick="switchTab('transformer')">變壓器</div>
-    <div class="tab" onclick="switchTab('antenna')">天線長度</div>
-    <div class="tab" onclick="switchTab('pep')">PEP / RMS</div>
+<div class="read-top"><a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a></div>
+
+<h1 class="tool-title">電路計算互動工具</h1>
+<p class="tool-sub">對應「無線電系統原理」題庫 —— 歐姆定律、dB、R/L/C、變壓器、天線長度、PEP。每一步都列出算式，理解公式而不只是背答案。</p>
+
+<div class="tabs" id="main-tabs">
+  <button class="tab active" onclick="switchTab('ohm')"><i data-lucide="zap"></i> 歐姆定律 / 功率</button>
+  <button class="tab" onclick="switchTab('db')"><i data-lucide="activity"></i> dB 換算</button>
+  <button class="tab" onclick="switchTab('rlc')"><i data-lucide="cpu"></i> R / L / C 電路</button>
+  <button class="tab" onclick="switchTab('transformer')"><i data-lucide="git-compare"></i> 變壓器</button>
+  <button class="tab" onclick="switchTab('antenna')"><i data-lucide="radio"></i> 天線長度</button>
+  <button class="tab" onclick="switchTab('pep')"><i data-lucide="gauge"></i> PEP / RMS</button>
+</div>
+
+<!-- ═══ OHM / POWER ═══ -->
+<div class="cpanel active" id="panel-ohm">
+  <div class="panel-title">歐姆定律與功率計算</div>
+
+  <div class="formula-box">
+    <div class="formula-label">核心公式</div>
+    <div class="formula">V = I × R &nbsp;|&nbsp; P = V × I &nbsp;|&nbsp; P = I² × R &nbsp;|&nbsp; P = V² / R</div>
+    <div class="formula-desc">任意給兩個已知值，求其餘兩個</div>
   </div>
 
-  <!-- ═══ OHM / POWER ═══ -->
-  <div class="panel active" id="panel-ohm">
-    <div class="panel-title">歐姆定律與功率計算</div>
+  <div class="note"><strong>考試常見：</strong> 給 V 和 R 求 P，給 I 和 R 求 V，給 P 和 R 求 I。注意單位換算（mA → A, kΩ → Ω）</div>
 
-    <div class="formula-box">
-      <div class="formula-label">核心公式</div>
-      <div class="formula">V = I × R &nbsp;|&nbsp; P = V × I &nbsp;|&nbsp; P = I² × R &nbsp;|&nbsp; P = V² / R</div>
-      <div class="formula-desc">任意給兩個已知值，求其餘兩個</div>
-    </div>
-
-    <div class="note"><strong>考試常見：</strong> 給 V 和 R 求 P，給 I 和 R 求 V，給 P 和 R 求 I。注意單位換算（mA → A, kΩ → Ω）</div>
-
-    <div class="calc-grid">
-      <div class="input-group">
-        <label>電壓 <span>V</span></label>
-        <div class="input-row">
-          <input type="number" id="ohm-v" placeholder="空白=求解" step="any">
-          <div class="unit">V</div>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>電流 <span>I</span></label>
-        <div class="input-row">
-          <input type="number" id="ohm-i" placeholder="空白=求解" step="any">
-          <select id="ohm-i-unit">
-            <option value="1">A</option>
-            <option value="0.001" selected>mA</option>
-          </select>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>電阻 <span>R</span></label>
-        <div class="input-row">
-          <input type="number" id="ohm-r" placeholder="空白=求解" step="any">
-          <select id="ohm-r-unit">
-            <option value="1">Ω</option>
-            <option value="1000">kΩ</option>
-          </select>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>功率 <span>P</span></label>
-        <div class="input-row">
-          <input type="number" id="ohm-p" placeholder="空白=求解" step="any">
-          <select id="ohm-p-unit">
-            <option value="1">W</option>
-            <option value="0.001">mW</option>
-          </select>
-        </div>
+  <div class="calc-grid">
+    <div class="input-group">
+      <label>電壓 <span>V</span></label>
+      <div class="input-row">
+        <input type="number" id="ohm-v" placeholder="空白=求解" step="any">
+        <div class="unit">V</div>
       </div>
     </div>
-    <button class="solve-btn" onclick="solveOhm()">⟶ 計算求解</button>
-    <div class="result-box" id="ohm-result">
-      <div class="result-label">計算結果</div>
-      <div class="result-value" id="ohm-result-val"></div>
-      <div class="result-steps" id="ohm-result-steps"></div>
+    <div class="input-group">
+      <label>電流 <span>I</span></label>
+      <div class="input-row">
+        <input type="number" id="ohm-i" placeholder="空白=求解" step="any">
+        <select id="ohm-i-unit">
+          <option value="1">A</option>
+          <option value="0.001" selected>mA</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-group">
+      <label>電阻 <span>R</span></label>
+      <div class="input-row">
+        <input type="number" id="ohm-r" placeholder="空白=求解" step="any">
+        <select id="ohm-r-unit">
+          <option value="1">Ω</option>
+          <option value="1000">kΩ</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-group">
+      <label>功率 <span>P</span></label>
+      <div class="input-row">
+        <input type="number" id="ohm-p" placeholder="空白=求解" step="any">
+        <select id="ohm-p-unit">
+          <option value="1">W</option>
+          <option value="0.001">mW</option>
+        </select>
+      </div>
     </div>
   </div>
+  <button class="solve-btn" onclick="solveOhm()">⟶ 計算求解</button>
+  <div class="result-box" id="ohm-result">
+    <div class="result-label">計算結果</div>
+    <div class="result-value" id="ohm-result-val"></div>
+    <div class="result-steps" id="ohm-result-steps"></div>
+  </div>
+</div>
 
-  <!-- ═══ dB ═══ -->
-  <div class="panel" id="panel-db">
-    <div class="panel-title">分貝 dB 換算</div>
+<!-- ═══ dB ═══ -->
+<div class="cpanel" id="panel-db">
+  <div class="panel-title">分貝 dB 換算</div>
 
-    <div class="formula-box">
-      <div class="formula-label">功率分貝公式</div>
-      <div class="formula">dB = 10 × log₁₀(P₂ / P₁)</div>
-      <div class="formula-desc">電壓/電流分貝：dB = 20 × log₁₀(V₂/V₁) &nbsp;|&nbsp; S表：S9 = 50μV，每格S = 6dB</div>
+  <div class="formula-box">
+    <div class="formula-label">功率分貝公式</div>
+    <div class="formula">dB = 10 × log₁₀(P₂ / P₁)</div>
+    <div class="formula-desc">電壓/電流分貝：dB = 20 × log₁₀(V₂/V₁) &nbsp;|&nbsp; S表：S9 = 50μV，每格S = 6dB</div>
+  </div>
+
+  <div class="slider-section">
+    <label>dB 值 <span id="db-slider-val">0 dB</span></label>
+    <input type="range" id="db-slider" min="-30" max="60" value="0" step="1" oninput="updateDbDisplay()">
+  </div>
+
+  <div class="db-display">
+    <div class="db-card">
+      <div class="db-label">功率比</div>
+      <div class="db-val" id="db-power-ratio">1.00×</div>
     </div>
-
-    <div class="slider-section">
-      <label>dB 值 <span id="db-slider-val">0 dB</span></label>
-      <input type="range" id="db-slider" min="-30" max="60" value="0" step="1" oninput="updateDbDisplay()">
+    <div class="db-card">
+      <div class="db-label">電壓比</div>
+      <div class="db-val" id="db-volt-ratio">1.00×</div>
     </div>
-
-    <div class="db-display">
-      <div class="db-card">
-        <div class="db-label">功率比</div>
-        <div class="db-val" id="db-power-ratio">1.00×</div>
-      </div>
-      <div class="db-card">
-        <div class="db-label">電壓比</div>
-        <div class="db-val" id="db-volt-ratio">1.00×</div>
-      </div>
-      <div class="db-card">
-        <div class="db-label">S表讀數</div>
-        <div class="db-val" id="db-s-meter">S9</div>
-      </div>
-    </div>
-
-    <hr class="divider">
-    <div class="panel-title">常用 dB 速查表</div>
-    <table class="ref-table">
-      <tr><th>dB</th><th>功率比</th><th>意義</th><th>S表</th></tr>
-      <tr><td class="highlight">+3 dB</td><td>2×</td><td>功率加倍</td><td>+半格</td></tr>
-      <tr><td class="highlight">+6 dB</td><td>4×</td><td>功率4倍</td><td>+1格 S</td></tr>
-      <tr><td class="highlight">+10 dB</td><td>10×</td><td>功率10倍</td><td>S9→S9+10</td></tr>
-      <tr><td class="highlight">+20 dB</td><td>100×</td><td>功率100倍</td><td>S9→S9+20</td></tr>
-      <tr><td>-3 dB</td><td>0.5×</td><td>功率減半</td><td>-半格</td></tr>
-      <tr><td>-10 dB</td><td>0.1×</td><td>功率降至1/10</td><td>-~1.5格</td></tr>
-      <tr><td>0 dB</td><td>1×</td><td>無增益/損失</td><td>不變</td></tr>
-    </table>
-
-    <hr class="divider">
-    <div class="panel-title">dB 計算機</div>
-    <div class="calc-grid">
-      <div class="input-group">
-        <label>輸入功率 P₁</label>
-        <div class="input-row">
-          <input type="number" id="db-p1" placeholder="例：100" step="any">
-          <div class="unit">W</div>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>輸出功率 P₂</label>
-        <div class="input-row">
-          <input type="number" id="db-p2" placeholder="例：200" step="any">
-          <div class="unit">W</div>
-        </div>
-      </div>
-    </div>
-    <button class="solve-btn" onclick="solveDb()">⟶ 計算 dB 值</button>
-    <div class="result-box" id="db-result">
-      <div class="result-label">計算結果</div>
-      <div class="result-value" id="db-result-val"></div>
-      <div class="result-steps" id="db-result-steps"></div>
+    <div class="db-card">
+      <div class="db-label">S表讀數</div>
+      <div class="db-val" id="db-s-meter">S9</div>
     </div>
   </div>
 
-  <!-- ═══ RLC ═══ -->
-  <div class="panel" id="panel-rlc">
-    <div class="panel-title">R / L / C 串並聯計算</div>
+  <hr class="divider">
+  <div class="panel-title">常用 dB 速查表</div>
+  <table class="ref-table">
+    <tr><th>dB</th><th>功率比</th><th>意義</th><th>S表</th></tr>
+    <tr><td class="highlight">+3 dB</td><td>2×</td><td>功率加倍</td><td>+半格</td></tr>
+    <tr><td class="highlight">+6 dB</td><td>4×</td><td>功率4倍</td><td>+1格 S</td></tr>
+    <tr><td class="highlight">+10 dB</td><td>10×</td><td>功率10倍</td><td>S9→S9+10</td></tr>
+    <tr><td class="highlight">+20 dB</td><td>100×</td><td>功率100倍</td><td>S9→S9+20</td></tr>
+    <tr><td>-3 dB</td><td>0.5×</td><td>功率減半</td><td>-半格</td></tr>
+    <tr><td>-10 dB</td><td>0.1×</td><td>功率降至1/10</td><td>-~1.5格</td></tr>
+    <tr><td>0 dB</td><td>1×</td><td>無增益/損失</td><td>不變</td></tr>
+  </table>
 
-    <div class="formula-box">
-      <div class="formula-label">公式</div>
-      <div class="formula">串聯R: Rtotal = R1+R2+…&nbsp;&nbsp;並聯R: 1/Rtotal = 1/R1+1/R2+…</div>
-      <div class="formula-desc">電容：串聯同電阻並聯公式，並聯同電阻串聯公式（正好相反！）&nbsp;|&nbsp;電感：與電阻同</div>
-    </div>
-
-    <div class="note"><strong>常見陷阱：</strong> 電容的串並聯規則與電阻<strong>相反</strong>。並聯電容 = 值相加；串聯電容 = 倒數相加後取倒數</div>
-
-    <div class="tabs" style="margin-bottom:16px">
-      <div class="tab active" onclick="switchRlcType('R')" id="rlc-tab-R">電阻 R</div>
-      <div class="tab" onclick="switchRlcType('C')" id="rlc-tab-C">電容 C</div>
-      <div class="tab" onclick="switchRlcType('L')" id="rlc-tab-L">電感 L</div>
-    </div>
-
-    <div class="tabs" style="margin-bottom:16px">
-      <div class="tab active" onclick="switchRlcMode('series')" id="rlc-mode-series">串聯</div>
-      <div class="tab" onclick="switchRlcMode('parallel')" id="rlc-mode-parallel">並聯</div>
-    </div>
-
-    <div id="rlc-inputs">
-      <div class="calc-grid">
-        <div class="input-group">
-          <label>元件 1 值</label>
-          <div class="input-row">
-            <input type="number" id="rlc-v1" placeholder="例：100" step="any">
-            <div class="unit" id="rlc-unit1">Ω</div>
-          </div>
-        </div>
-        <div class="input-group">
-          <label>元件 2 值</label>
-          <div class="input-row">
-            <input type="number" id="rlc-v2" placeholder="例：200" step="any">
-            <div class="unit" id="rlc-unit2">Ω</div>
-          </div>
-        </div>
-        <div class="input-group">
-          <label>元件 3 值（可選）</label>
-          <div class="input-row">
-            <input type="number" id="rlc-v3" placeholder="留空則僅計算2個" step="any">
-            <div class="unit" id="rlc-unit3">Ω</div>
-          </div>
-        </div>
+  <hr class="divider">
+  <div class="panel-title">dB 計算機</div>
+  <div class="calc-grid">
+    <div class="input-group">
+      <label>輸入功率 P₁</label>
+      <div class="input-row">
+        <input type="number" id="db-p1" placeholder="例：100" step="any">
+        <div class="unit">W</div>
       </div>
     </div>
-    <button class="solve-btn" onclick="solveRlc()">⟶ 計算等效值</button>
-    <div class="result-box" id="rlc-result">
-      <div class="result-label">等效值</div>
-      <div class="result-value" id="rlc-result-val"></div>
-      <div class="result-steps" id="rlc-result-steps"></div>
+    <div class="input-group">
+      <label>輸出功率 P₂</label>
+      <div class="input-row">
+        <input type="number" id="db-p2" placeholder="例：200" step="any">
+        <div class="unit">W</div>
+      </div>
     </div>
   </div>
+  <button class="solve-btn" onclick="solveDb()">⟶ 計算 dB 值</button>
+  <div class="result-box" id="db-result">
+    <div class="result-label">計算結果</div>
+    <div class="result-value" id="db-result-val"></div>
+    <div class="result-steps" id="db-result-steps"></div>
+  </div>
+</div>
 
-  <!-- ═══ TRANSFORMER ═══ -->
-  <div class="panel" id="panel-transformer">
-    <div class="panel-title">變壓器計算</div>
+<!-- ═══ RLC ═══ -->
+<div class="cpanel" id="panel-rlc">
+  <div class="panel-title">R / L / C 串並聯計算</div>
 
-    <div class="formula-box">
-      <div class="formula-label">變壓器公式</div>
-      <div class="formula">V₁/V₂ = N₁/N₂ &nbsp;|&nbsp; 阻抗匹配比 = (N₁/N₂)²</div>
-      <div class="formula-desc">N=圈數, V=電壓, Z=阻抗 &nbsp;|&nbsp; 理想變壓器：P₁ = P₂（功率不變）</div>
-    </div>
-
-    <div class="note"><strong>考試重點：</strong> 計算升壓/降壓比，以及阻抗匹配時的圈數比 = √(Z₁/Z₂)</div>
-
-    <div class="calc-grid">
-      <div class="input-group">
-        <label>初級圈數 N₁</label>
-        <div class="input-row"><input type="number" id="tr-n1" placeholder="例：2250" step="any"><div class="unit">圈</div></div>
-      </div>
-      <div class="input-group">
-        <label>次級圈數 N₂</label>
-        <div class="input-row"><input type="number" id="tr-n2" placeholder="例：500" step="any"><div class="unit">圈</div></div>
-      </div>
-      <div class="input-group">
-        <label>初級電壓 V₁</label>
-        <div class="input-row"><input type="number" id="tr-v1" placeholder="例：120" step="any"><div class="unit">V</div></div>
-      </div>
-      <div class="input-group">
-        <label>次級電壓 V₂（求解）</label>
-        <div class="input-row"><input type="number" id="tr-v2" placeholder="空白=自動求解" step="any"><div class="unit">V</div></div>
-      </div>
-    </div>
-    <button class="solve-btn" onclick="solveTransformer()">⟶ 計算變壓器</button>
-    <div class="result-box" id="tr-result">
-      <div class="result-label">計算結果</div>
-      <div class="result-value" id="tr-result-val"></div>
-      <div class="result-steps" id="tr-result-steps"></div>
-    </div>
-
-    <hr class="divider">
-    <div class="panel-title">阻抗匹配圈數比計算</div>
-    <div class="calc-grid">
-      <div class="input-group">
-        <label>來源阻抗 Z₁</label>
-        <div class="input-row"><input type="number" id="zm-z1" placeholder="例：600" step="any"><div class="unit">Ω</div></div>
-      </div>
-      <div class="input-group">
-        <label>負載阻抗 Z₂</label>
-        <div class="input-row"><input type="number" id="zm-z2" placeholder="例：4" step="any"><div class="unit">Ω</div></div>
-      </div>
-    </div>
-    <button class="solve-btn" onclick="solveZmatch()">⟶ 計算匹配圈數比</button>
-    <div class="result-box" id="zm-result">
-      <div class="result-label">匹配圈數比</div>
-      <div class="result-value" id="zm-result-val"></div>
-      <div class="result-steps" id="zm-result-steps"></div>
-    </div>
+  <div class="formula-box">
+    <div class="formula-label">公式</div>
+    <div class="formula">串聯R: Rtotal = R1+R2+…&nbsp;&nbsp;並聯R: 1/Rtotal = 1/R1+1/R2+…</div>
+    <div class="formula-desc">電容：串聯同電阻並聯公式，並聯同電阻串聯公式（正好相反！）&nbsp;|&nbsp;電感：與電阻同</div>
   </div>
 
-  <!-- ═══ ANTENNA ═══ -->
-  <div class="panel" id="panel-antenna">
-    <div class="panel-title">天線長度計算</div>
+  <div class="note"><strong>常見陷阱：</strong> 電容的串並聯規則與電阻<strong>相反</strong>。並聯電容 = 值相加；串聯電容 = 倒數相加後取倒數</div>
 
-    <div class="formula-box">
-      <div class="formula-label">天線長度公式</div>
-      <div class="formula">λ = 300 / f(MHz) &nbsp;|&nbsp; 半波偶極 L = 142.5 / f(MHz) 公尺</div>
-      <div class="formula-desc">λ=波長(公尺), f=頻率(MHz) &nbsp;|&nbsp; 1/4波長單極：L = 71.25/f</div>
-    </div>
+  <div class="tabs" style="margin-bottom:16px">
+    <button class="tab active" onclick="switchRlcType('R')" id="rlc-tab-R">電阻 R</button>
+    <button class="tab" onclick="switchRlcType('C')" id="rlc-tab-C">電容 C</button>
+    <button class="tab" onclick="switchRlcType('L')" id="rlc-tab-L">電感 L</button>
+  </div>
 
+  <div class="tabs" style="margin-bottom:16px">
+    <button class="tab active" onclick="switchRlcMode('series')" id="rlc-mode-series">串聯</button>
+    <button class="tab" onclick="switchRlcMode('parallel')" id="rlc-mode-parallel">並聯</button>
+  </div>
+
+  <div id="rlc-inputs">
     <div class="calc-grid">
       <div class="input-group">
-        <label>操作頻率</label>
+        <label>元件 1 值</label>
         <div class="input-row">
-          <input type="number" id="ant-freq" placeholder="例：14.2" step="any" oninput="solveAntenna()">
-          <div class="unit">MHz</div>
+          <input type="number" id="rlc-v1" placeholder="例：100" step="any">
+          <div class="unit" id="rlc-unit1">Ω</div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>元件 2 值</label>
+        <div class="input-row">
+          <input type="number" id="rlc-v2" placeholder="例：200" step="any">
+          <div class="unit" id="rlc-unit2">Ω</div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>元件 3 值（可選）</label>
+        <div class="input-row">
+          <input type="number" id="rlc-v3" placeholder="留空則僅計算2個" step="any">
+          <div class="unit" id="rlc-unit3">Ω</div>
         </div>
       </div>
     </div>
+  </div>
+  <button class="solve-btn" onclick="solveRlc()">⟶ 計算等效值</button>
+  <div class="result-box" id="rlc-result">
+    <div class="result-label">等效值</div>
+    <div class="result-value" id="rlc-result-val"></div>
+    <div class="result-steps" id="rlc-result-steps"></div>
+  </div>
+</div>
 
-    <div class="ant-visual" id="ant-visual" style="display:none">
-      <canvas id="antCanvas" width="500" height="150"></canvas>
-    </div>
+<!-- ═══ TRANSFORMER ═══ -->
+<div class="cpanel" id="panel-transformer">
+  <div class="panel-title">變壓器計算</div>
 
-    <div class="result-box" id="ant-result">
-      <div class="result-label">天線尺寸</div>
-      <div class="result-value" id="ant-result-val"></div>
-      <div class="result-steps" id="ant-result-steps"></div>
-    </div>
-
-    <hr class="divider">
-    <div class="panel-title">常用業餘頻段天線長度參考</div>
-    <table class="ref-table">
-      <tr><th>頻段</th><th>代表頻率</th><th>波長</th><th>半波偶極</th><th>1/4波長</th></tr>
-      <tr><td class="highlight">80m</td><td>3.55 MHz</td><td>84.5m</td><td>40.1m</td><td>20.1m</td></tr>
-      <tr><td class="highlight">40m</td><td>7.1 MHz</td><td>42.3m</td><td>20.1m</td><td>10.0m</td></tr>
-      <tr><td class="highlight">20m</td><td>14.2 MHz</td><td>21.1m</td><td>10.0m</td><td>5.0m</td></tr>
-      <tr><td class="highlight">15m</td><td>21.2 MHz</td><td>14.2m</td><td>6.7m</td><td>3.4m</td></tr>
-      <tr><td class="highlight">10m</td><td>28.5 MHz</td><td>10.5m</td><td>5.0m</td><td>2.5m</td></tr>
-      <tr><td class="highlight">2m</td><td>145 MHz</td><td>2.07m</td><td>0.98m</td><td>0.49m</td></tr>
-      <tr><td class="highlight">70cm</td><td>433 MHz</td><td>0.69m</td><td>0.33m</td><td>0.16m</td></tr>
-    </table>
+  <div class="formula-box">
+    <div class="formula-label">變壓器公式</div>
+    <div class="formula">V₁/V₂ = N₁/N₂ &nbsp;|&nbsp; 阻抗匹配比 = (N₁/N₂)²</div>
+    <div class="formula-desc">N=圈數, V=電壓, Z=阻抗 &nbsp;|&nbsp; 理想變壓器：P₁ = P₂（功率不變）</div>
   </div>
 
-  <!-- ═══ PEP / RMS ═══ -->
-  <div class="panel" id="panel-pep">
-    <div class="panel-title">PEP 峰值波封功率 / RMS</div>
+  <div class="note"><strong>考試重點：</strong> 計算升壓/降壓比，以及阻抗匹配時的圈數比 = √(Z₁/Z₂)</div>
 
-    <div class="formula-box">
-      <div class="formula-label">關鍵公式</div>
-      <div class="formula">PEP = V_peak² / (2 × R) &nbsp;|&nbsp; V_rms = V_peak / √2 ≈ V_peak × 0.707</div>
-      <div class="formula-desc">示波器測峰對峰值 Vpp → Vpeak = Vpp/2 → PEP = (Vpp/2)² / (2×R)</div>
+  <div class="calc-grid">
+    <div class="input-group">
+      <label>初級圈數 N₁</label>
+      <div class="input-row"><input type="number" id="tr-n1" placeholder="例：2250" step="any"><div class="unit">圈</div></div>
     </div>
+    <div class="input-group">
+      <label>次級圈數 N₂</label>
+      <div class="input-row"><input type="number" id="tr-n2" placeholder="例：500" step="any"><div class="unit">圈</div></div>
+    </div>
+    <div class="input-group">
+      <label>初級電壓 V₁</label>
+      <div class="input-row"><input type="number" id="tr-v1" placeholder="例：120" step="any"><div class="unit">V</div></div>
+    </div>
+    <div class="input-group">
+      <label>次級電壓 V₂（求解）</label>
+      <div class="input-row"><input type="number" id="tr-v2" placeholder="空白=自動求解" step="any"><div class="unit">V</div></div>
+    </div>
+  </div>
+  <button class="solve-btn" onclick="solveTransformer()">⟶ 計算變壓器</button>
+  <div class="result-box" id="tr-result">
+    <div class="result-label">計算結果</div>
+    <div class="result-value" id="tr-result-val"></div>
+    <div class="result-steps" id="tr-result-steps"></div>
+  </div>
 
-    <div class="note"><strong>考試最常考：</strong> 示波器在 50Ω 假負載測得 Vpp，求 PEP。公式：PEP = (Vpp)² / (8 × 50)</div>
+  <hr class="divider">
+  <div class="panel-title">阻抗匹配圈數比計算</div>
+  <div class="calc-grid">
+    <div class="input-group">
+      <label>來源阻抗 Z₁</label>
+      <div class="input-row"><input type="number" id="zm-z1" placeholder="例：600" step="any"><div class="unit">Ω</div></div>
+    </div>
+    <div class="input-group">
+      <label>負載阻抗 Z₂</label>
+      <div class="input-row"><input type="number" id="zm-z2" placeholder="例：4" step="any"><div class="unit">Ω</div></div>
+    </div>
+  </div>
+  <button class="solve-btn" onclick="solveZmatch()">⟶ 計算匹配圈數比</button>
+  <div class="result-box" id="zm-result">
+    <div class="result-label">匹配圈數比</div>
+    <div class="result-value" id="zm-result-val"></div>
+    <div class="result-steps" id="zm-result-steps"></div>
+  </div>
+</div>
 
-    <div class="calc-grid">
-      <div class="input-group">
-        <label>示波器讀值 Vpp（峰對峰）</label>
-        <div class="input-row"><input type="number" id="pep-vpp" placeholder="例：200" step="any"><div class="unit">V</div></div>
-      </div>
-      <div class="input-group">
-        <label>負載阻抗 R</label>
-        <div class="input-row"><input type="number" id="pep-r" placeholder="通常50" value="50" step="any"><div class="unit">Ω</div></div>
-      </div>
-    </div>
-    <button class="solve-btn" onclick="solvePep()">⟶ 計算 PEP</button>
-    <div class="result-box" id="pep-result">
-      <div class="result-label">PEP 峰值波封功率</div>
-      <div class="result-value" id="pep-result-val"></div>
-      <div class="result-steps" id="pep-result-steps"></div>
-    </div>
+<!-- ═══ ANTENNA ═══ -->
+<div class="cpanel" id="panel-antenna">
+  <div class="panel-title">天線長度計算</div>
 
-    <hr class="divider">
-    <div class="panel-title">RMS ↔ 峰值換算</div>
-    <div class="calc-grid">
-      <div class="input-group">
-        <label>峰值電壓 Vpeak</label>
-        <div class="input-row"><input type="number" id="rms-vpeak" placeholder="例：17" step="any" oninput="updateRms('peak')"><div class="unit">V</div></div>
+  <div class="formula-box">
+    <div class="formula-label">天線長度公式</div>
+    <div class="formula">λ = 300 / f(MHz) &nbsp;|&nbsp; 半波偶極 L = 142.5 / f(MHz) 公尺</div>
+    <div class="formula-desc">λ=波長(公尺), f=頻率(MHz) &nbsp;|&nbsp; 1/4波長單極：L = 71.25/f</div>
+  </div>
+
+  <div class="calc-grid">
+    <div class="input-group">
+      <label>操作頻率</label>
+      <div class="input-row">
+        <input type="number" id="ant-freq" placeholder="例：14.2" step="any" oninput="solveAntenna()">
+        <div class="unit">MHz</div>
       </div>
-      <div class="input-group">
-        <label>RMS 電壓</label>
-        <div class="input-row"><input type="number" id="rms-vrms" placeholder="例：12" step="any" oninput="updateRms('rms')"><div class="unit">V</div></div>
-      </div>
-    </div>
-    <div class="result-box show" id="rms-result" style="margin-top:0">
-      <div class="result-steps" id="rms-steps" style="border:none;padding:0">輸入任一值，自動換算另一個</div>
     </div>
   </div>
 
-</div><!-- /container -->
+  <div class="ant-visual" id="ant-visual" style="display:none">
+    <canvas id="antCanvas" width="500" height="150"></canvas>
+  </div>
 
+  <div class="result-box" id="ant-result">
+    <div class="result-label">天線尺寸</div>
+    <div class="result-value" id="ant-result-val"></div>
+    <div class="result-steps" id="ant-result-steps"></div>
+  </div>
+
+  <hr class="divider">
+  <div class="panel-title">常用業餘頻段天線長度參考</div>
+  <table class="ref-table">
+    <tr><th>頻段</th><th>代表頻率</th><th>波長</th><th>半波偶極</th><th>1/4波長</th></tr>
+    <tr><td class="highlight">80m</td><td>3.55 MHz</td><td>84.5m</td><td>40.1m</td><td>20.1m</td></tr>
+    <tr><td class="highlight">40m</td><td>7.1 MHz</td><td>42.3m</td><td>20.1m</td><td>10.0m</td></tr>
+    <tr><td class="highlight">20m</td><td>14.2 MHz</td><td>21.1m</td><td>10.0m</td><td>5.0m</td></tr>
+    <tr><td class="highlight">15m</td><td>21.2 MHz</td><td>14.2m</td><td>6.7m</td><td>3.4m</td></tr>
+    <tr><td class="highlight">10m</td><td>28.5 MHz</td><td>10.5m</td><td>5.0m</td><td>2.5m</td></tr>
+    <tr><td class="highlight">2m</td><td>145 MHz</td><td>2.07m</td><td>0.98m</td><td>0.49m</td></tr>
+    <tr><td class="highlight">70cm</td><td>433 MHz</td><td>0.69m</td><td>0.33m</td><td>0.16m</td></tr>
+  </table>
+</div>
+
+<!-- ═══ PEP / RMS ═══ -->
+<div class="cpanel" id="panel-pep">
+  <div class="panel-title">PEP 峰值波封功率 / RMS</div>
+
+  <div class="formula-box">
+    <div class="formula-label">關鍵公式</div>
+    <div class="formula">PEP = V_peak² / (2 × R) &nbsp;|&nbsp; V_rms = V_peak / √2 ≈ V_peak × 0.707</div>
+    <div class="formula-desc">示波器測峰對峰值 Vpp → Vpeak = Vpp/2 → PEP = (Vpp/2)² / (2×R)</div>
+  </div>
+
+  <div class="note"><strong>考試最常考：</strong> 示波器在 50Ω 假負載測得 Vpp，求 PEP。公式：PEP = (Vpp)² / (8 × 50)</div>
+
+  <div class="calc-grid">
+    <div class="input-group">
+      <label>示波器讀值 Vpp（峰對峰）</label>
+      <div class="input-row"><input type="number" id="pep-vpp" placeholder="例：200" step="any"><div class="unit">V</div></div>
+    </div>
+    <div class="input-group">
+      <label>負載阻抗 R</label>
+      <div class="input-row"><input type="number" id="pep-r" placeholder="通常50" value="50" step="any"><div class="unit">Ω</div></div>
+    </div>
+  </div>
+  <button class="solve-btn" onclick="solvePep()">⟶ 計算 PEP</button>
+  <div class="result-box" id="pep-result">
+    <div class="result-label">PEP 峰值波封功率</div>
+    <div class="result-value" id="pep-result-val"></div>
+    <div class="result-steps" id="pep-result-steps"></div>
+  </div>
+
+  <hr class="divider">
+  <div class="panel-title">RMS ↔ 峰值換算</div>
+  <div class="calc-grid">
+    <div class="input-group">
+      <label>峰值電壓 Vpeak</label>
+      <div class="input-row"><input type="number" id="rms-vpeak" placeholder="例：17" step="any" oninput="updateRms('peak')"><div class="unit">V</div></div>
+    </div>
+    <div class="input-group">
+      <label>RMS 電壓</label>
+      <div class="input-row"><input type="number" id="rms-vrms" placeholder="例：12" step="any" oninput="updateRms('rms')"><div class="unit">V</div></div>
+    </div>
+  </div>
+  <div class="result-box show" id="rms-result" style="margin-top:0">
+    <div class="result-steps" id="rms-steps" style="border:none;padding:0">輸入任一值，自動換算另一個</div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js"></script>
 <script>
 // ═══ TAB SWITCHING ═══
 function switchTab(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#main-tabs .tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  event.target.classList.add('active');
+  event.currentTarget.classList.add('active');
 }
 
 // ═══ OHM / POWER ═══
@@ -911,32 +656,32 @@ function solveAntenna() {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = '#162030';
+  ctx.fillStyle = '#26211b';
   ctx.fillRect(0,0,W,H);
 
   const cx = W/2, cy = H/2;
   const arm = Math.min(180, halfWave * 10);
 
   // Dipole
-  ctx.strokeStyle = '#00d4ff';
+  ctx.strokeStyle = '#F2643C';
   ctx.lineWidth = 3;
   ctx.beginPath(); ctx.moveTo(cx - arm, cy); ctx.lineTo(cx - 4, cy); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx + 4, cy); ctx.lineTo(cx + arm, cy); ctx.stroke();
 
   // Feed point
-  ctx.fillStyle = '#00ff9f';
+  ctx.fillStyle = '#1F9E96';
   ctx.fillRect(cx-4, cy-8, 8, 16);
 
   // Labels
-  ctx.fillStyle = '#5a7a9a';
-  ctx.font = '11px Share Tech Mono';
+  ctx.fillStyle = '#c9bda9';
+  ctx.font = '11px "Space Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText(`← ${fmt(halfWave/2)} m →`, cx - arm/2, cy - 14);
   ctx.fillText(`← ${fmt(halfWave/2)} m →`, cx + arm/2, cy - 14);
-  ctx.fillStyle = '#00ff9f';
+  ctx.fillStyle = '#3BC9B8';
   ctx.fillText('Feed', cx, cy + 24);
-  ctx.fillStyle = '#c8d8e8';
-  ctx.font = '12px Share Tech Mono';
+  ctx.fillStyle = '#fff';
+  ctx.font = '12px "Space Mono", monospace';
   ctx.fillText(`半波偶極 ${fmt(halfWave)} m @ ${fmt(f)} MHz`, cx, 20);
 }
 
@@ -970,14 +715,14 @@ function updateRms(from) {
     if (!isNaN(vp)) {
       const vr = vp / Math.sqrt(2);
       vrms_el.value = fmt(vr);
-      steps.innerHTML = `Vrms = Vpeak / √2 = ${fmt(vp)} / 1.414 = <span style="color:var(--accent2)">${fmt(vr)} V</span>`;
+      steps.innerHTML = `Vrms = Vpeak / √2 = ${fmt(vp)} / 1.414 = <span style="color:var(--teal-ink);font-weight:700">${fmt(vr)} V</span>`;
     }
   } else {
     const vr = parseFloat(vrms_el.value);
     if (!isNaN(vr)) {
       const vp = vr * Math.sqrt(2);
       vpeak_el.value = fmt(vp);
-      steps.innerHTML = `Vpeak = Vrms × √2 = ${fmt(vr)} × 1.414 = <span style="color:var(--accent2)">${fmt(vp)} V</span>`;
+      steps.innerHTML = `Vpeak = Vrms × √2 = ${fmt(vr)} × 1.414 = <span style="color:var(--teal-ink);font-weight:700">${fmt(vp)} V</span>`;
     }
   }
 }
