@@ -21,15 +21,15 @@
       <a class="btn btn-ghost" href="courses/rf-glossary.html"><i data-lucide="book-open"></i> 翻白話手冊</a>
     </div>
     <div class="stats">
-      <div class="stat"><span class="dot" style="background:var(--primary)"></span><span class="num">3</span><span class="lab">套課程</span></div>
-      <div class="stat"><span class="dot" style="background:var(--teal)"></span><span class="num">4</span><span class="lab">個互動工具</span></div>
-      <div class="stat"><span class="dot" style="background:var(--sky)"></span><span class="num">1</span><span class="lab">套模擬器</span></div>
-      <div class="stat"><span class="dot" style="background:var(--honey)"></span><span class="num">30+</span><span class="lab">白話術語</span></div>
+      <a class="stat" href="#courses" onclick="event.preventDefault();document.getElementById('courses').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--primary)"></span><span class="num">3</span><span class="lab">套課程</span></a>
+      <a class="stat" href="#tools" onclick="event.preventDefault();document.getElementById('tools').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--teal)"></span><span class="num">6</span><span class="lab">個互動工具</span></a>
+      <a class="stat" href="#sims" onclick="event.preventDefault();document.getElementById('sims').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--sky)"></span><span class="num">1</span><span class="lab">套模擬器</span></a>
+      <a class="stat" href="courses/rf-glossary.html"><span class="dot" style="background:var(--honey)"></span><span class="num">30+</span><span class="lab">白話術語</span></a>
     </div>
   </section>
 
   <!-- 課程教材 -->
-  <div class="section-label">
+  <div class="section-label" id="courses">
     <span class="ico"><i data-lucide="book-open"></i></span>
     <h2>課程教材</h2>
     <span class="rule"></span>
@@ -64,7 +64,7 @@
   </div>
 
   <!-- 互動工具 -->
-  <div class="section-label">
+  <div class="section-label" id="tools">
     <span class="ico"><i data-lucide="sliders-horizontal"></i></span>
     <h2>互動工具 — 二等業餘無線電</h2>
     <span class="rule"></span>
@@ -123,7 +123,7 @@
   </div>
 
   <!-- 模擬器 -->
-  <div class="section-label">
+  <div class="section-label" id="sims">
     <span class="ico"><i data-lucide="shield"></i></span>
     <h2>模擬器</h2>
     <span class="rule"></span>
