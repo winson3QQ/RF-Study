@@ -128,12 +128,18 @@ FM調制指數：
         <li>對講機A換成 CTCSS = 88.5Hz，重複觀測</li>
         <li>尖峰位置從 67Hz 移到 88.5Hz → 直接驗證 CTCSS 嵌入</li>
       </ul>
-      <p style="margin-top:8px"><strong>步驟3：兩隊同時發話</strong></p>
+      <p style="margin-top:8px"><strong>步驟3：兩隊「輪流」發話（正確用法）</strong></p>
       <ul style="margin:4px 0 0 20px">
-        <li>對講機A：CTCSS 67Hz；對講機B：CTCSS 88.5Hz，同時發話</li>
-        <li>GQRX 頻譜中可見兩個獨立亞音峰值同時存在</li>
-        <li>設接收 CTCSS=67Hz → 只聽到對講機A</li>
-        <li>設接收 CTCSS=88.5Hz → 只聽到對講機B ✓</li>
+        <li>對講機A：CTCSS 67Hz；對講機B：CTCSS 88.5Hz</li>
+        <li>A 先講完、B 再講 → 設接收 CTCSS=67Hz 只聽到 A；設 88.5Hz 只聽到 B ✓</li>
+        <li>這證明 CTCSS 能讓你「選聽其中一隊」，前提是兩隊<strong>不同時</strong>佔用頻率</li>
+      </ul>
+      <p style="margin-top:8px"><strong>步驟3b：兩隊「同時」發話（觀察碰撞）</strong></p>
+      <ul style="margin:4px 0 0 20px">
+        <li>讓 A、B 在 145.500MHz 同一瞬間按下發話鍵</li>
+        <li>FM 捕獲效應：接收機只鎖定<strong>較強的一方</strong>，較弱者被壓掉；功率相近時則是一團亂碼</li>
+        <li>就算把接收 CTCSS 設成弱方的碼，也救不回來——射頻已在空中相撞，CTCSS 只是接收端的篩選</li>
+        <li>結論：CTCSS 不能讓多隊「同時」共存，只能搭配<strong>輪流發話（通訊規程）</strong>分時共用同一頻率</li>
       </ul>
       <p style="margin-top:8px"><strong>步驟4（GNU Radio 進階）：抽出 CTCSS 信號</strong></p>
       <ul style="margin:4px 0 0 20px">
@@ -167,7 +173,8 @@ FM調制指數：
       <tr><td>11+ 支</td><td>考慮分配第二個頻率</td><td>無 CTCSS</td></tr>
     </table>
     <div class="callout warn"><span class="ct">⚠ 注意（事實）</span>CTCSS 不提供通訊保密！只要不設 CTCSS 的接收機都能聽到全部通話。</div>
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>CTCSS 是「靜噪鑰匙」而非「加密鑰匙」。同頻多隊共存的最有效工具。</div>
+    <div class="callout tip"><span class="ct">✓ 記憶方法</span>CTCSS 是「靜噪鑰匙」而非「加密鑰匙」——它決定接收喇叭開不開，不是頻率隔離。</div>
+    <div class="callout warn"><span class="ct">⚠ 容易誤會</span>CTCSS <strong>不能</strong>讓多隊「同時」在同一頻率講話互不干擾。同時發射會因 FM 捕獲效應相撞（強者勝、弱者被吃掉）。它真正的價值是搭配<strong>輪流發話</strong>，讓多隊「分時」共用一個頻率，並各自只聽自己關心的那組。</div>
   </div>
 
   <!-- 情境2 -->
@@ -429,7 +436,7 @@ CTCSS碼選擇建議（避免互調干擾）：
         <li>指揮所發廣播：瀑布圖顯示廣播信號（強）</li>
         <li>各層確認：瀑布圖顯示輕微的回覆信號</li>
       </ul>
-      <p style="margin-top:8px"><strong>步驟3：驗證 CTCSS 隔離效果</strong></p>
+      <p style="margin-top:8px"><strong>步驟3：驗證 CTCSS 選聽效果（各隊輪流報告）</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>對講機設接收 CTCSS=67Hz → 只聽到 1-2 樓的報告</li>
         <li>其他樓層通話時 → 靜噪不開，不干擾</li>
@@ -450,7 +457,7 @@ CTCSS碼選擇建議（避免互調干擾）：
 │1-2樓監聽時：只聽到廣播 + 自己的確認
 │→ 不被其他層的通話干擾</div>
 
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>CTCSS 層級化 = 在同一頻率上創造「虛擬分頻道」，讓大型災害協調成為可能。</div>
+    <div class="callout tip"><span class="ct">✓ 記憶方法</span>CTCSS 層級化 ≈ 在同一頻率上創造「虛擬分頻道」——但這是「選聽」上的虛擬分頻，物理上仍是<strong>一個頻率、同時只能一人講</strong>。必須搭配輪流發話的通訊規程才成立，不是讓各層可以同時開講。</div>
   </div>
 
   <!-- 情境5 -->
