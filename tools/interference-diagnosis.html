@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>干擾診斷互動流程圖 — 二等業餘無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+:root {
+  --mono: var(--font-mono); --txt: var(--ink-2); --dim: var(--ink-3);
+  --s1: var(--surface); --s2: var(--surface-soft);
+  --acc: var(--leaf-ink); --red: var(--rose-ink); --amb: var(--honey-ink); --blu: var(--sky-ink); --pur: #6D3FC0; --org: #C2620E;
+}
+.tab.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.tab.on:hover { color: #fff; }
+
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+
+/* diagnosis tree */
+.diag-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.question-card { background: var(--surface-soft); border: 1px solid var(--border); border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 16px; margin-bottom: 12px; }
+.qc-step { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: 1px; margin-bottom: 7px; }
+.qc-text { font-size: 15px; color: var(--ink); font-weight: 700; line-height: 1.6; margin-bottom: 14px; }
+.choices-grid { display: flex; flex-direction: column; gap: 8px; }
+.choice-btn { font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1.5px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface); color: var(--ink-2); cursor: pointer; text-align: left; transition: all var(--dur) var(--ease); display: flex; align-items: center; gap: 11px; }
+.choice-btn:hover { border-color: var(--teal); color: var(--teal-ink); background: var(--teal-soft); }
+.choice-btn .arrow { color: var(--ink-3); transition: color var(--dur) var(--ease); }
+.choice-btn:hover .arrow { color: var(--teal); }
+.choice-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.result-card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--leaf); border-radius: var(--r-lg); padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.rc-title { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: 2px; margin-bottom: 9px; }
+.rc-diag { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--leaf-ink); margin-bottom: 10px; }
+.rc-diag svg { width: 20px; height: 20px; }
+.rc-body { font-size: 13.5px; color: var(--ink-2); line-height: 1.8; margin-bottom: 11px; white-space: pre-line; }
+.rc-fix { background: var(--leaf-soft); border-left: 3px solid var(--leaf); border-radius: var(--r-sm); padding: 10px 13px; font-size: 12.5px; color: var(--ink-2); margin-bottom: 9px; line-height: 1.9; }
+.rc-exam { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; color: var(--honey-ink); background: var(--honey-soft); border-left: 3px solid var(--honey); border-radius: var(--r-sm); padding: 8px 11px; line-height: 1.7; }
+.rc-exam svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
+
+.breadcrumb { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); align-items: center; }
+.bc-item { padding: 3px 9px; background: var(--teal-soft); color: var(--teal-ink); border-radius: var(--r-pill); }
+.bc-arrow { color: var(--ink-3); }
+
+.restart-btn { font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 9px 18px; border: 1.5px solid var(--border-strong); border-radius: var(--r-md); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.restart-btn:hover { border-color: var(--teal); color: var(--teal-ink); }
+
+/* quick ref */
+.ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+@media (max-width: 600px) { .ref-grid { grid-template-columns: 1fr; } }
+.rcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); }
+.rcard-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin-bottom: 9px; border-bottom: 1px solid var(--border); padding-bottom: 7px; }
+.rcard-body { font-size: 12.5px; line-height: 1.85; color: var(--ink-2); }
+.rcard-body strong { color: var(--leaf-ink); }
+.rcard-body .kw { color: var(--honey-ink); font-family: var(--font-mono); font-weight: 700; }
+
+/* sound matcher */
+.sound-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+@media (max-width: 500px) { .sound-cards { grid-template-columns: 1fr 1fr; } }
+.sc-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-md); padding: 14px 10px; text-align: center; cursor: pointer; transition: all var(--dur) var(--ease); box-shadow: var(--shadow-sm); }
+.sc-card:hover, .sc-card.picked { border-color: var(--teal); }
+.sc-card.picked { background: var(--teal-soft); }
+.sc-icon { display: flex; justify-content: center; margin-bottom: 8px; color: var(--ink-2); }
+.sc-icon svg { width: 26px; height: 26px; stroke-width: 2; }
+.sc-card.picked .sc-icon { color: var(--teal-ink); }
+.sc-sound { font-family: var(--font-mono); font-size: 12px; color: var(--honey-ink); font-weight: 700; margin-bottom: 4px; }
+.sc-src { font-size: 11px; color: var(--ink-3); }
+.sc-card.picked .sc-src { color: var(--teal-ink); }
+.sound-detail { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 14px 16px; font-size: 13px; line-height: 1.85; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.sound-detail svg { width: 16px; height: 16px; vertical-align: -3px; }
+
+/* exam table */
+.ex-table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.ex-table th { padding: 9px 11px; text-align: left; font-family: var(--font-display); font-size: 12px; color: var(--teal-ink); background: var(--teal-soft); font-weight: 700; border-bottom: 1px solid var(--border); }
+.ex-table td { padding: 9px 11px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--ink-2); }
+.ex-table tr:last-child td { border-bottom: none; }
+.ex-table tbody tr:hover td { background: var(--surface-soft); }
+.ex-table .q { color: var(--ink); font-weight: 600; }
+.ex-table .a { color: var(--leaf-ink); font-weight: 600; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">干擾診斷互動流程圖</div>
+  <p class="tool-sub">對應「電磁相容」與「射頻干擾」題庫 · 從症狀出發，一步步找到原因與解法。</p>
+
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('diag')"><i data-lucide="search"></i> 診斷流程</button>
+    <button class="tab" onclick="switchTab('sounds')"><i data-lucide="volume-2"></i> 聲音辨識</button>
+    <button class="tab" onclick="switchTab('ref')"><i data-lucide="book-open"></i> 概念速查</button>
+    <button class="tab" onclick="switchTab('exam')"><i data-lucide="graduation-cap"></i> 考試速查</button>
+  </div>
+
+  <!-- ═══ DIAGNOSIS TAB ═══ -->
+  <div id="tab-diag">
+    <div class="diag-wrap">
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div id="diag-content"></div>
+      <button class="restart-btn" onclick="restartDiag()" style="margin-top:10px">↺ 重新開始</button>
+    </div>
+  </div>
+
+  <!-- ═══ SOUNDS TAB ═══ -->
+  <div id="tab-sounds" style="display:none">
+    <div class="st">干擾聲音辨識 — 點擊查看來源</div>
+    <div class="sound-cards" id="sound-cards"></div>
+    <div class="sound-detail" id="sound-detail">點擊上方任一聲音類型，查看可能的干擾來源與解決方法。</div>
+  </div>
+
+  <!-- ═══ REF TAB ═══ -->
+  <div id="tab-ref" style="display:none">
+    <div class="ref-grid" id="ref-grid"></div>
+  </div>
+
+  <!-- ═══ EXAM TAB ═══ -->
+  <div id="tab-exam" style="display:none">
+    <div class="st">EMC + 射頻干擾 考試題速查</div>
+    <table class="ex-table">
+      <thead><tr><th>考題重點</th><th class="q">題目方向</th><th class="a">答案</th></tr></thead>
+      <tbody id="exam-tbody"></tbody>
+    </table>
+  </div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+function icons(){ if (window.lucide) lucide.createIcons(); }
+
+// ═══ DIAGNOSIS TREE ═══
+const TREE = {
+  root: {
+    text: '你觀察到什麼類型的問題？',
+    choices: [
+      { icon:'radio',       label: '接收時有雜訊或干擾', next: 'rx_noise' },
+      { icon:'volume-2',    label: '音訊設備（喇叭/電話）聽到奇怪聲音', next: 'audio_noise' },
+      { icon:'radio-tower', label: '發射時出現問題', next: 'tx_issue' },
+      { icon:'zap',         label: '接地/電源相關問題', next: 'ground_issue' },
+    ]
+  },
+  rx_noise: {
+    text: '接收干擾的特性是？',
+    choices: [
+      { label: '固定頻率的穩定干擾（人為電臺）', next: 'rx_qrm' },
+      { label: '隨機爆裂聲、靜電聲（自然）', next: 'rx_qrn' },
+      { label: '訊號忽強忽弱衰落', next: 'rx_qsb' },
+      { label: '聽到訊號但頻率偏移（鏡像）', next: 'rx_image' },
+    ]
+  },
+  rx_qrm: { result:true, diag:'人為干擾 QRM',
+    body:'其他電臺訊號蓋過你的頻率，屬於人為干擾（QRM）。這是最常見的接收干擾。',
+    fix:'• 使用 QRL? 確認頻率使用狀況再操作\n• 換頻率（發 QSY）\n• 使用方向性天線降低干擾方向\n• 啟用 DSP 陷波濾波器（可自動陷波載波干擾）',
+    exam:'DSP 濾波器可執行載波干擾的自動陷波（考試題20）' },
+  rx_qrn: { result:true, diag:'大氣靜電干擾 QRN',
+    body:'雷雨、大氣放電等自然現象產生的寬頻雜訊，在低頻段（HF）最明顯。',
+    fix:'• 使用雜訊限制器（Noise Limiter）或雜訊抑制器\n• 改換較高頻段（雜訊隨頻率增加而減少）\n• 等待天氣改善',
+    exam:'QRN = 靜電/大氣雜訊，QRM = 人為干擾，兩者容易混淆' },
+  rx_qsb: { result:true, diag:'電離層衰落 QSB',
+    body:'訊號經過電離層傳播時，因多路徑干涉或電離層不穩定造成訊號忽強忽弱。HF遠距通訊常見。',
+    fix:'• 這是自然現象，無法完全消除\n• 使用AGC（自動增益控制）緩解音量起伏\n• 改換傳播條件較穩定的頻段',
+    exam:'HF 散射訊號特性：有顫抖的聲音（多路徑散射）' },
+  rx_image: { result:true, diag:'鏡像頻率干擾（Image Response）',
+    body:'超外差接收機中，與接收頻率相差兩倍IF的訊號也能混頻到IF，造成干擾。\n鏡像頻率 = 接收頻率 + 2 × IF',
+    fix:'• 在混波器前加入帶通濾波器（預選器），濾除鏡像頻率\n• 使用高IF設計（IF越高，鏡像頻率離接收頻率越遠，越容易濾除）',
+    exam:'考試：接收機13.800MHz VFO與14.255MHz信號混頻產生455kHz IF，13.345MHz信號會產生「圖像響應」（Image Response）' },
+
+  audio_noise: {
+    text: '音頻設備聽到的聲音是？',
+    choices: [
+      { label: '開/關的嗡嗡聲或點擊聲', next: 'audio_cw' },
+      { label: '失真的人聲（說話聲但失真）', next: 'audio_ssb' },
+      { label: '持續穩定的嗡嗡聲', next: 'audio_loop' },
+      { label: '寬頻雜音（涵蓋多個頻率）', next: 'audio_broad' },
+    ]
+  },
+  audio_cw: { result:true, diag:'CW 發射機 RF 進入音頻設備',
+    body:'CW（開關鍵控）訊號耦合進入音頻設備，造成與CW節奏一致的開/關嗡嗡聲或點擊聲。',
+    fix:'• 在音頻電纜上安裝旁路電容器（旁路RF能量）\n• 在音頻電纜上安裝鐵氧扼流圈（阻止共模電流）\n• 縮短音頻電纜，避免成為RF天線',
+    exam:'考試：附近CW發射機干擾音頻設備→聽到開/關的嗡嗡聲或點擊聲' },
+  audio_ssb: { result:true, diag:'SSB 發射機 RF 進入音頻設備',
+    body:'SSB語音訊號耦合進音頻設備，因SSB本身是語音調變，所以解調出來的聲音是失真的語音。',
+    fix:'• 在音頻電纜上安裝旁路電容器\n• 確保所有設備良好接地\n• 減少RF進入音頻系統的路徑（改善接地、縮短電纜）',
+    exam:'考試：附近SSB發射機干擾音頻設備→聽到失真的聲音' },
+  audio_loop: { result:true, diag:'接地迴路（Ground Loop）',
+    body:'兩個設備之間有不同的接地電位，造成電流在接地線上流動，產生持續的嗡嗡聲（通常是50/60Hz電源頻率或諧波）。',
+    fix:'• 確保所有設備使用同一個接地點（星形接地）\n• 使用隔離變壓器切斷接地迴路\n• 避免串聯接地導體',
+    exam:'考試：接地迴路現象 = 收到關於電臺傳輸信號的「嗡嗡聲」報告（題19）\n如何避免接地迴路？→ 不要串聯接地導體，使用星形接地' },
+  audio_broad: { result:true, diag:'寬頻干擾（Broadband RFI）',
+    body:'涵蓋寬頻率範圍的干擾，通常來自數位設備、開關電源、電腦、馬達等。',
+    fix:'• 在干擾設備的電源線上加鐵氧扼流圈\n• 使用屏蔽電纜\n• 對音頻電纜加旁路電容器',
+    exam:'造成涵蓋寬頻頻率的干擾原因 → 常見為開關電源、數位設備' },
+
+  tx_issue: {
+    text: '發射時遇到什麼問題？',
+    choices: [
+      { label: '其他設備受到干擾（鄰居TV等）', next: 'tx_harmonic' },
+      { label: 'AFSK/數位傳輸失敗，超時或失真', next: 'tx_afsk' },
+      { label: '發射機功率不穩或失真', next: 'tx_overmod' },
+    ]
+  },
+  tx_harmonic: { result:true, diag:'諧波干擾 / 混附發射',
+    body:'發射機產生的諧波（工作頻率的整數倍）干擾其他頻段，例如14MHz的2次諧波28MHz可能干擾其他服務。',
+    fix:'• 在發射機輸出端加低通濾波器（截止頻率略高於工作頻率）\n• 使用方向性天線減少諧波輻射\n• 確保發射機工作在額定功率以內',
+    exam:'混附發射功率規定：30~235MHz，至少低於主波60dB且不超過1mW' },
+  tx_afsk: { result:true, diag:'RF回授干擾 AFSK 數位信號',
+    body:'發射的RF訊號透過電纜（USB、音頻線等）回授到電腦或介面，干擾AFSK數位信號傳輸。常見症狀：頻繁連接超時、VOX無法解鎖。',
+    fix:'• 在所有進出電腦的電纜上加鐵氧扼流圈\n• 確保電腦和收發機共地\n• 縮短USB電纜',
+    exam:'發射RF信號干擾AFSK音頻電纜 → VOX不解鎖、發射機失真、頻繁連接超時（以上皆是）' },
+  tx_overmod: { result:true, diag:'過調變（Flat-topping）',
+    body:'SSB發射機過度驅動（麥克風增益太高或ALC設定錯誤），造成訊號削頂（Flat-topping），頻寬過大，干擾鄰近頻率。',
+    fix:'• 降低麥克風增益\n• 正確設定ALC（自動位準控制）→調整傳輸音訊或麥克風增益\n• 用功率表監測PEP輸出',
+    exam:'SSB「平頂」(flat-topping) = 過度驅動引起的信號失真（非ALC調整正確）\n調整ALC應調整→傳輸音訊或麥克風增益' },
+
+  ground_issue: {
+    text: '接地/電源問題的症狀是？',
+    choices: [
+      { label: '觸碰設備外殼時有RF灼傷', next: 'ground_rf' },
+      { label: '共振接地（接地線共振）', next: 'ground_resonate' },
+      { label: '避雷接地疑問', next: 'ground_lightning' },
+    ]
+  },
+  ground_rf: { result:true, diag:'共模RF電流流上設備外殼',
+    body:'設備已接地但仍有RF灼傷，表示接地線本身在操作頻率上共振，成為天線，導致外殼有RF電壓。',
+    fix:'• 換用不同長度的接地線，避免共振長度\n• 在接地線上加鐵氧扼流圈\n• 將所有設備接地連接在一起（消除接地迴路的同時解決共模RF）',
+    exam:'考試：接地設備仍有RF灼傷 → 接地棒共振（接地線在工作頻率共振）\n共振接地影響 → 設備外殼上有高射頻電壓' },
+  ground_resonate: { result:true, diag:'接地棒/線路共振',
+    body:'接地線長度等於工作頻率的1/4波長時，接地線本身共振，高阻抗端在設備外殼，造成外殼有高RF電壓。',
+    fix:'• 避免接地線長度為工作頻率的1/4波長\n• 增加接地線長度或改變走向\n• 使用寬扁帶狀接地線而非圓線',
+    exam:'避雷接地不應使接地線有直角彎曲（閃電需要直線路徑）；焊接接頭不用於防雷接地（可能被閃電熱量破壞）' },
+  ground_lightning: { result:true, diag:'避雷接地規範',
+    body:'避雷接地的主要目的是提供閃電電流低阻抗路徑直接入地，保護設備和人員。',
+    fix:'• 所有防雷接地線必須互相黏接（bonding）\n• 接地線應盡量直，避免直角彎曲\n• 焊接接頭不用於防雷接地線（閃電熱量可能破壞焊點）\n• 必須與其他防雷接地線黏接',
+    exam:'考試：為什麼焊接接頭不用於防雷接地？→ 焊接接頭可能被雷擊熱量破壞\n好的防雷接地 → 必須與所有其他防雷接地線黏接在一起' },
+};
+
+let path = [];
+function restartDiag(){ path=[]; renderNode('root'); }
+function navigate(nextId){ path.push(nextId); renderNode(nextId); }
+
+function renderNode(id){
+  const node = TREE[id];
+  if(!node) return;
+
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = path.map((p,i)=>{
+    const n=TREE[p];
+    const label = (n && n.result) ? (n.diag||p) : ((n && n.text) ? n.text.substring(0,12)+'…' : p);
+    return `<span class="bc-item">${label}</span>${i<path.length-1?'<span class="bc-arrow">›</span>':''}`;
+  }).join('');
+
+  const cont = document.getElementById('diag-content');
+  cont.innerHTML='';
+
+  if(node.result){
+    const div=document.createElement('div'); div.className='result-card';
+    div.innerHTML=`<div class="rc-title">診斷結果</div>
+      <div class="rc-diag"><i data-lucide="stethoscope"></i>${node.diag}</div>
+      <div class="rc-body">${node.body}</div>
+      <div class="rc-fix">${node.fix.replace(/\n/g,'<br>')}</div>
+      ${node.exam?`<div class="rc-exam"><i data-lucide="pencil"></i><span>${node.exam.replace(/\n/g,'<br>')}</span></div>`:''}`;
+    cont.appendChild(div);
+  } else {
+    const div=document.createElement('div'); div.className='question-card';
+    const stepLabel = path.length>0?`步驟 ${path.length}`:'起點';
+    div.innerHTML=`<div class="qc-step">${stepLabel}</div><div class="qc-text">${node.text}</div>`;
+    const cg=document.createElement('div'); cg.className='choices-grid';
+    node.choices.forEach(c=>{
+      const btn=document.createElement('button'); btn.className='choice-btn';
+      btn.innerHTML=`<span class="arrow">›</span>${c.icon?'<i data-lucide="'+c.icon+'"></i>':''}<span>${c.label}</span>`;
+      btn.onclick=()=>navigate(c.next);
+      cg.appendChild(btn);
+    });
+    div.appendChild(cg);
+    cont.appendChild(div);
+  }
+  icons();
+}
+
+// ═══ SOUND MATCHER ═══
+const SOUNDS=[
+  {icon:'radio',       sound:'嗡嗡嗡（持續）',     src:'CW 發射機耦合',     color:'#9A6510', desc:'CW（等幅電報）訊號耦合進音頻系統，節奏與CW鍵控一致，是開/關的嗡嗡聲或點擊聲。\n解法：音頻電纜加旁路電容器或鐵氧扼流圈'},
+  {icon:'speech',      sound:'失真語音',           src:'SSB 發射機耦合',    color:'#6D3FC0', desc:'SSB語音訊號直接進入音頻系統，解調出失真的人聲。\n解法：音頻電纜加旁路電容器，確保設備接地'},
+  {icon:'zap',         sound:'爆裂靜電聲',         src:'大氣靜電 QRN',      color:'#225F95', desc:'雷雨、大氣放電產生的自然寬頻雜訊，在低頻段（HF）最嚴重。\n解法：使用雜訊限制器，等待天氣改善'},
+  {icon:'repeat',      sound:'固定嗡嗡聲（50Hz）', src:'接地迴路',          color:'#1F8F4A', desc:'兩設備間存在電位差，電流在接地線上循環流動，產生與電源頻率（50Hz）相關的嗡嗡聲。\n解法：星形接地，不串聯接地線'},
+  {icon:'radio-tower', sound:'顫抖/起伏音',        src:'電離層散射 QSB',    color:'#C2620E', desc:'多路徑傳播造成的相位差，讓多個訊號版本抵達時相互干涉，聲音有顫抖感或週期性強弱。\n解法：自然現象，使用AGC緩解'},
+  {icon:'monitor',     sound:'寬頻雜音',           src:'數位設備 / 開關電源', color:'#B5342C', desc:'電腦、路由器、LED燈、開關電源等數位設備產生寬頻諧波雜訊，涵蓋多個頻率。\n解法：電源線加鐵氧扼流圈，屏蔽電纜'},
+];
+
+function buildSounds(){
+  const grid=document.getElementById('sound-cards');
+  SOUNDS.forEach(s=>{
+    const card=document.createElement('div'); card.className='sc-card';
+    card.innerHTML=`<div class="sc-icon"><i data-lucide="${s.icon}"></i></div><div class="sc-sound">${s.sound}</div><div class="sc-src">${s.src}</div>`;
+    card.onclick=()=>{
+      document.querySelectorAll('.sc-card').forEach(c=>c.classList.remove('picked'));
+      card.classList.add('picked');
+      const dt=document.getElementById('sound-detail');
+      dt.innerHTML=`<strong style="color:${s.color};font-family:var(--font-mono)"><i data-lucide="${s.icon}"></i> ${s.src}</strong><br><br>${s.desc.replace(/\n/g,'<br>')}`;
+      dt.style.borderLeftColor=s.color;
+      icons();
+    };
+    grid.appendChild(card);
+  });
+  icons();
+}
+
+// ═══ REF DATA ═══
+const REFS=[
+  {title:'QRM vs QRN',color:'#9A6510',body:'<strong>QRM</strong> = <span class="kw">人為干擾</span>（Man-made，其他電臺）<br><strong>QRN</strong> = <span class="kw">自然干擾</span>（Nature，大氣靜電、雷雨）<br><br>記憶：M = Man人為，N = Nature自然'},
+  {title:'共模電流 vs 差模電流',color:'#1F8F4A',body:'<strong>差模</strong>：有用信號，在兩導體上方向相反<br><strong>共模</strong>：RF干擾路徑，在所有導體上同向流動<br><br>鐵氧扼流圈阻止<span class="kw">共模電流</span>，不影響差模信號'},
+  {title:'鐵氧扼流圈應用',color:'#225F95',body:'安裝在音頻電纜上→阻止共模RF電流<br>安裝在電源線上→減少開關電源雜訊進入<br>安裝在饋線上→防止RF沿外皮流回電臺（共模扼流圈/巴倫）'},
+  {title:'旁路電容器 vs 旁路電感器',color:'#6D3FC0',body:'<strong>旁路電容器</strong>：對RF呈低阻抗，讓RF旁路到地，<span class="kw">減少音頻設備的RF干擾</span><br><strong>旁路電感器</strong>：對RF呈高阻抗，阻止RF通過（串聯扼流）<br><br>音頻設備RF干擾 → 用旁路電容器'},
+  {title:'接地迴路診斷',color:'#C2620E',body:'症狀：收到自己電臺的<span class="kw">「嗡嗡聲」報告</span><br>原因：設備間不同接地電位，電流循環<br>預防：所有設備接地<span class="kw">連接在一起</span>（不要串聯）<br>解決：使用星形接地，所有設備回到同一接地點'},
+  {title:'DSP 濾波器優勢',color:'#B5342C',body:'<strong>自動陷波</strong>：可自動偵測並消除載波干擾<br>vs 類比濾波器：可產生<span class="kw">大範圍的濾波器頻寬和形狀</span>（類比難以做到）<br><br>考試常問DSP優點 → 頻寬和形狀可大範圍調整'},
+  {title:'鏡像頻率（Image Response）',color:'#B5347C',body:'超外差接收機特有問題<br><strong>鏡像頻率 = 接收頻率 + 2×IF</strong><br>例：接收14.255MHz，IF=455kHz<br>→ LO = 14.710MHz，鏡像 = 15.165MHz<br><br>解決：在混波器前加預選器（帶通濾波器）'},
+  {title:'避雷接地規範',color:'#1F8F4A',body:'• 所有防雷接地線必須<span class="kw">黏接（bonding）在一起</span><br>• 接地線避免直角彎曲<br>• 不用焊接接頭（閃電熱量可破壞焊點）<br>• 焊料中的鉛：接觸後手未洗淨可污染食物'},
+];
+
+function buildRef(){
+  const g=document.getElementById('ref-grid');
+  REFS.forEach(r=>{
+    const div=document.createElement('div'); div.className='rcard';
+    div.style.borderLeft='3px solid '+r.color;
+    div.innerHTML=`<div class="rcard-title" style="color:${r.color}">${r.title}</div><div class="rcard-body">${r.body}</div>`;
+    g.appendChild(div);
+  });
+}
+
+// ═══ EXAM DATA ═══
+const EXAM_DATA=[
+  ['接地迴路','接地迴路的症狀是？','收到關於電臺傳輸信號的「嗡嗡聲」報告'],
+  ['接地迴路','如何避免接地迴路？','不串聯接地導體；將所有設備接地連接在一起'],
+  ['音頻干擾','附近CW發射機干擾音頻設備的聲音？','開/關的嗡嗡聲或點擊聲'],
+  ['音頻干擾','附近SSB發射機干擾音頻設備的聲音？','失真的聲音（語音失真）'],
+  ['旁路元件','減少音頻設備RF干擾用什麼元件？','旁路電容器（不是電感器）'],
+  ['鐵氧扼流','減少音訊電纜共模電流引起的RF干擾？','在音訊電纜上安裝鐵氧扼流圈'],
+  ['DSP','DSP濾波器可執行什麼自動功能？','載波干擾的自動陷波'],
+  ['RF灼傷','接地設備觸碰時仍有RF灼傷，可能原因？','接地棒共振（接地線在工作頻率共振）'],
+  ['共振接地','共振接地會產生什麼影響？','設備外殼上出現高射頻電壓'],
+  ['鏡像響應','超外差接收機中鏡像響應是什麼？','與接收頻率相差兩倍IF的頻率也被接收（圖像響應）'],
+  ['AFSK干擾','RF干擾AFSK數位信號的症狀？','VOX不解鎖、發射機失真、頻繁連接超時（以上皆是）'],
+  ['避雷接地','為何焊接接頭不用於防雷接地？','焊接接頭可能被雷擊熱量破壞'],
+  ['避雷接地','好的防雷接地做法？','必須與所有其他防雷接地線黏接在一起'],
+  ['過調變','SSB「平頂」(flat-topping)意思是？','由過度驅動引起的信號失真（頻寬過大）'],
+  ['ALC設定','調整SSB的ALC應調整什麼控制？','傳輸音訊或麥克風增益'],
+  ['寬頻干擾','涵蓋寬頻的干擾來源通常是？','數位設備、開關電源（需找寬頻干擾源）'],
+];
+
+function buildExam(){
+  const tbody=document.getElementById('exam-tbody');
+  EXAM_DATA.forEach(([cat,q,a])=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-family:var(--font-mono);color:var(--ink-3);font-size:11px">${cat}</td><td class="q">${q}</td><td class="a">${a}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function switchTab(name){
+  ['diag','sounds','ref','exam'].forEach(t=>{ document.getElementById('tab-'+t).style.display=t===name?'':'none'; });
+  document.querySelectorAll('.tabs .tab').forEach((el,i)=>{ el.classList.toggle('on',['diag','sounds','ref','exam'][i]===name); });
+}
+
+// ═══ INIT ═══
+restartDiag();
+buildSounds();
+buildRef();
+buildExam();
+icons();
+</script>
+</body>
+</html>
