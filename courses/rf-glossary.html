@@ -170,16 +170,14 @@
       <div class="concept-bd">
         <div class="explain">傳統無線電的硬體線路（濾波器、解調器）全部改用電腦軟體來做。一個小小的 USB 接收器加上電腦就能接收各種無線電信號。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>以前每種收音機只能收一個波段（AM 或 FM）。SDR 就像一台「萬能收音機」，只要換軟體設定，就能收 AM、FM、對講機、飛機通訊、氣象衛星…什麼都收。硬體只是個「窗口」，軟體決定你聽什麼。</div>
-        <div class="visual">傳統對講機：
-  天線 → 固定硬體電路 → 只能做FM
-
-RTL-SDR：
-  天線 → ADC晶片(把電波變數字) → 電腦
-  電腦軟體決定：要AM？FM？SSB？
-  → 同樣的硬體，無限可能
-
-RTL-SDR：電視棒改裝，約300元台幣
-能接收：25MHz–1750MHz（幾乎涵蓋民用通訊）</div>
+        <table class="tbl">
+          <tr><th></th><th>傳統對講機</th><th>RTL-SDR</th></tr>
+          <tr><td>架構</td><td>固定硬體電路</td><td>天線→ADC→電腦軟體</td></tr>
+          <tr><td>能收</td><td>只能 FM</td><td>AM/FM/SSB…軟體決定</td></tr>
+          <tr><td>頻段</td><td>單一波段</td><td><span class="readout">25–1750 MHz</span></td></tr>
+          <tr><td>成本</td><td>—</td><td>電視棒改裝約 300 元</td></tr>
+        </table>
+        <div class="gnote">硬體只是「窗口」，軟體決定你聽什麼——同樣硬體，無限可能。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>SDR 就是「可程式化的收音機」。硬體不變，軟體改，用途就變了。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
@@ -190,19 +188,17 @@ RTL-SDR：電視棒改裝，約300元台幣
       <div class="concept-bd">
         <div class="explain">把「時間軸上的信號」轉換成「頻率軸上的成分」，讓你一眼看出哪些頻率有信號、強度多少。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>你在演唱會錄了一段音樂，FFT 就像音樂分析師，把這段音樂拆解成：「這裡有鼓（低頻）、這裡有吉他（中頻）、這裡有人聲（高頻）」，告訴你每個成分的「音量」。頻譜就是這個「成分分佈圖」。</div>
-        <div class="visual">GQRX的頻譜圖長這樣：
-
-信號強度
-  ▲
-  │        ⚫ ← 對講機信號（尖峰）
-  │       ╱█╲
-  │      ╱███╲
-  │▀▀▀▀╱─────╲▀▀▀▀▀▀▀▀ ← 底噪
-  └────────────────────→
-  145.0  145.5  146.0 MHz
-
-峰值越高 = 信號越強
-峰值位置 = 信號頻率</div>
+        <figure class="svgfig">
+          <div class="svgfig-cap">頻譜圖：橫軸＝頻率、縱軸＝強度，<b>尖峰</b>＝有信號</div>
+          <svg viewBox="0 0 300 80">
+            <line x1="0" y1="60" x2="300" y2="60" style="stroke:var(--border-strong);stroke-width:1;stroke-dasharray:3 3"/>
+            <path d="M0,58 L30,56 L60,58 L90,56 L115,57 L135,42 L146,18 L150,12 L154,18 L165,42 L185,57 L215,56 L245,57 L275,56 L300,57 L300,80 L0,80 Z" style="fill:var(--teal-soft)"/>
+            <path d="M0,58 L30,56 L60,58 L90,56 L115,57 L135,42 L146,18 L150,12 L154,18 L165,42 L185,57 L215,56 L245,57 L275,56 L300,57" style="fill:none;stroke:var(--teal);stroke-width:1.6"/>
+            <circle cx="150" cy="12" r="3.5" style="fill:var(--primary)"/>
+          </svg>
+          <div class="axis"><span>145.0</span><span>145.5 MHz</span><span>146.0</span></div>
+        </figure>
+        <div class="gnote">尖峰越高＝信號越強；尖峰位置＝信號頻率；底部水平虛線＝底噪。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FFT 把「時間」換成「頻率」來顯示信號，就像把一首歌變成「音樂成份清單」。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
@@ -213,17 +209,26 @@ RTL-SDR：電視棒改裝，約300元台幣
       <div class="concept-bd">
         <div class="explain">把頻譜圖隨時間「往下疊」，就形成瀑布圖。顏色深淺代表信號強度，讓你看到信號在時間上的變化。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>把頻譜圖印成細細的一條，然後一條一條往下疊起來。新的在上面，舊的在下面。你能看出「這個信號是什麼時候出現的」以及「持續多久」。</div>
-        <div class="visual">瀑布圖示意（時間從上往下）：
-
-時間  145.0      145.5      146.0 MHz
- ↓  ─────────────────────────────
-t1  ░░░░░░░░░░░░▓▓▓▓▓░░░░░░  ← 有信號
-t2  ░░░░░░░░░░░░▓▓▓▓▓░░░░░░  ← 繼續
-t3  ░░░░░░░░░░░░░░░░░░░░░░░  ← 停了
-t4  ░░░░░░░░░░░░░░░░░░░░░░░  ← 沒信號
-t5  ░░░░░░░░░░░░▓▓▓░░░░░░░░  ← 又出現
-
-深色=強信號  淺色/空白=沒有信號</div>
+        <figure class="svgfig">
+          <div class="svgfig-cap">瀑布圖：頻譜隨時間往下疊，<b>深色＝強信號</b></div>
+          <svg viewBox="0 0 300 92">
+            <rect x="26" y="2"  width="274" height="14" rx="2" style="fill:var(--bg-tint)"/>
+            <rect x="26" y="20" width="274" height="14" rx="2" style="fill:var(--bg-tint)"/>
+            <rect x="26" y="38" width="274" height="14" rx="2" style="fill:var(--bg-tint)"/>
+            <rect x="26" y="56" width="274" height="14" rx="2" style="fill:var(--bg-tint)"/>
+            <rect x="26" y="74" width="274" height="14" rx="2" style="fill:var(--bg-tint)"/>
+            <rect x="150" y="2"  width="42" height="14" rx="2" style="fill:var(--teal);opacity:.9"/>
+            <rect x="150" y="20" width="42" height="14" rx="2" style="fill:var(--teal);opacity:.9"/>
+            <rect x="150" y="74" width="42" height="14" rx="2" style="fill:var(--teal);opacity:.42"/>
+            <text x="2" y="13" style="fill:var(--ink-3);font:9px var(--font-mono)">t1</text>
+            <text x="2" y="31" style="fill:var(--ink-3);font:9px var(--font-mono)">t2</text>
+            <text x="2" y="49" style="fill:var(--ink-3);font:9px var(--font-mono)">t3</text>
+            <text x="2" y="67" style="fill:var(--ink-3);font:9px var(--font-mono)">t4</text>
+            <text x="2" y="85" style="fill:var(--ink-3);font:9px var(--font-mono)">t5</text>
+          </svg>
+          <div class="axis"><span>145.0</span><span>145.5 MHz</span><span>146.0</span></div>
+        </figure>
+        <div class="gnote">新的在上、舊的在下。看得出信號「何時出現、持續多久」——t1·t2 有信號、t3·t4 停、t5 又出現。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>瀑布圖是「有時間軸的頻譜」，能看出信號的歷史。誰在說話、說了多久，一目瞭然。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
@@ -234,18 +239,16 @@ t5  ░░░░░░░░░░░░▓▓▓░░░░░░░░  ← �
       <div class="concept-bd">
         <div class="explain">即使沒有任何人發話，接收機仍然會「聽到」一些隨機的微弱雜訊，這就是底噪。是接收機能力的下限。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>你在安靜的圖書館裡，即使沒有人說話，你也能聽到空調嗡嗡聲、微弱的環境音。這就是「底噪」。任何聲音要比這個底噪高，你才能「聽到」。無線電也一樣，信號必須比底噪強，才能被接收。</div>
-        <div class="visual">FFT中的底噪與信號：
-
-信號強度
-  ▲
-  │        ⚫ ← 對講機信號（比底噪高就能接收）
-  │       ╱█╲
-  │▀▀▀▀▀╱███╲▀▀▀▀▀▀▀▀▀▀
-  │ ←───底噪───→         底噪越低=越厲害
-  └─────────────────────
-
-RTL-SDR的底噪：約 -90 至 -100 dBm
-專業接收機底噪：約 -110 至 -120 dBm</div>
+        <figure class="svgfig">
+          <div class="svgfig-cap">底噪＝沒人發話時的雜訊底線；信號要<b>比它高</b>才收得到</div>
+          <svg viewBox="0 0 300 80">
+            <path d="M0,58 L30,56 L60,58 L90,56 L115,57 L135,42 L146,18 L150,12 L154,18 L165,42 L185,57 L215,56 L245,57 L275,56 L300,57 L300,80 L0,80 Z" style="fill:var(--teal-soft)"/>
+            <path d="M0,58 L30,56 L60,58 L90,56 L115,57 L135,42 L146,18 L150,12 L154,18 L165,42 L185,57 L215,56 L245,57 L275,56 L300,57" style="fill:none;stroke:var(--teal);stroke-width:1.6"/>
+            <line x1="0" y1="59" x2="300" y2="59" style="stroke:var(--rose);stroke-width:1.4;stroke-dasharray:4 3"/>
+            <text x="6" y="72" style="fill:var(--rose-ink);font:9px var(--font-mono)">底噪</text>
+          </svg>
+        </figure>
+        <div class="gnote">RTL-SDR 底噪約 <span class="readout">−90~−100 dBm</span>、專業機約 <span class="readout">−110~−120 dBm</span>（越低越厲害）。</div>
         <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>RF 增益調太高 → 底噪也升高 → 反而遮蓋了弱信號！這是最常見的錯誤。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span><span class="ctag scen">情境2</span></div>
       </div>
@@ -256,20 +259,15 @@ RTL-SDR的底噪：約 -90 至 -100 dBm
       <div class="concept-bd">
         <div class="explain">信號強度和雜訊強度的「比值」。SNR 越高，信號比雜訊強越多，通話越清晰。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>在吵鬧的派對上，你朋友對你說話：「朋友的聲音」就是信號，「派對噪音」就是雜訊。朋友近在耳邊（SNR 高）＝聽得很清楚。朋友在房間另一頭（SNR 低）＝聽不清楚。</div>
-        <div class="visual">SNR = 信號強度 - 底噪（用dB表示）
-
-SNR 5dB以下：幾乎聽不到
-SNR 10dB：勉強可懂
-SNR 20dB：清晰
-SNR 30dB以上：非常清晰
-
-在GQRX的FFT中：
-  SNR = 峰值高度 - 底噪水平
-           ▲
-           █ ← 峰值 -60dBm
-          ███
-  ──────── ← 底噪 -90dBm
-  SNR = -60 - (-90) = 30dB ← 很清晰</div>
+        <div class="formula">SNR = 信號峰值 − 底噪（dB）</div>
+        <table class="tbl">
+          <tr><th>SNR</th><th>通話品質</th></tr>
+          <tr><td><span class="readout">&lt; 5 dB</span></td><td>幾乎聽不到</td></tr>
+          <tr><td><span class="readout">10 dB</span></td><td>勉強可懂</td></tr>
+          <tr><td><span class="readout">20 dB</span></td><td>清晰</td></tr>
+          <tr><td><span class="readout">30 dB+</span></td><td>非常清晰</td></tr>
+        </table>
+        <div class="gnote">例：峰值 −60dBm、底噪 −90dBm → SNR = 30dB（信號比雜訊響約 1000 倍）。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>SNR 就是「信號相對雜訊有多大聲」。30dB 的 SNR 意思是信號比雜訊響 1000 倍。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span><span class="ctag scen">情境2</span></div>
       </div>
@@ -280,18 +278,13 @@ SNR 30dB以上：非常清晰
       <div class="concept-bd">
         <div class="explain">接收機放大天線信號的倍數。增益越高，弱信號被放大越多，但雜訊也同時被放大。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像麥克風的音量旋鈕。聲音很小時轉大一點，確實能聽得更清楚。但轉太大了，連空氣震動都放大了，變成嗡嗡嗡的噪音。RF 增益也一樣，有個「最佳位置」。</div>
-        <div class="visual">增益與通話品質的關係：
-
-增益 0────────────────────49.6 dB
-
-    低增益          最佳點       高增益
-    ┌─────┐         ┌───┐       ┌─────┐
-    │信號弱│         │清晰│       │噪聲大│
-    │聽不到│         │✓  │       │蓋信號│
-    └─────┘         └───┘       └─────┘
-
-GQRX的RF Gain滑桿就在畫面左側
-目標：讓SNR（差值）最大的那個增益值</div>
+        <table class="tbl">
+          <tr><th>增益</th><th>狀況</th><th>結果</th></tr>
+          <tr><td>太低</td><td>信號被放大不足</td><td>信號弱、聽不到</td></tr>
+          <tr><td><b>最佳</b></td><td>SNR 最大</td><td><b>清晰</b></td></tr>
+          <tr><td>太高</td><td>底噪升高 / 飽和</td><td>噪聲蓋住信號</td></tr>
+        </table>
+        <div class="gnote">目標：找「讓 SNR（峰值−底噪差值）最大」的那個增益，不是越高越好。</div>
         <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>「增益設最高＝接收最好」是最常見的誤解！過高增益會讓接收機「飽和」，反而什麼都聽不到。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span><span class="ctag scen">情境2</span></div>
       </div>
@@ -302,18 +295,13 @@ GQRX的RF Gain滑桿就在畫面左側
       <div class="concept-bd">
         <div class="explain">NFM 是「窄頻 FM」，用於對講機和民防通訊（12.5kHz）。WFM 是「寬頻 FM」，用於廣播電台（200kHz）。在 GQRX 中要正確選擇模式。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>NFM 像普通電話，只傳語音，通道窄，省資源。WFM 像 HiFi 音響，傳高音質音樂，通道寬。接收對講機一定要選 NFM，不能選 WFM，否則聲音會悶或聽不清楚。</div>
-        <div class="visual">GQRX模式選擇：
-  對講機通話 → 選 NFM，設帶寬 12.5kHz
-  FM廣播     → 選 WFM，設帶寬 200kHz
-
-頻道寬度對比：
-WFM: ─────200kHz──────  （廣播電台）
-NFM: ────12.5kHz───     （對講機）
-AM:  ───10kHz──          （中波廣播）
-
-調錯模式的症狀：
-  用WFM收對講機 → 聲音悶、低音重
-  用NFM收廣播   → 音質差、高頻切掉</div>
+        <table class="tbl">
+          <tr><th>模式</th><th>帶寬</th><th>用途</th></tr>
+          <tr><td><b>NFM</b> 窄頻</td><td><span class="readout">12.5 kHz</span></td><td>對講機、民防</td></tr>
+          <tr><td><b>WFM</b> 寬頻</td><td><span class="readout">200 kHz</span></td><td>FM 廣播</td></tr>
+          <tr><td>AM</td><td><span class="readout">10 kHz</span></td><td>中波廣播</td></tr>
+        </table>
+        <div class="gnote">調錯：用 WFM 收對講機→聲音悶；用 NFM 收廣播→高頻被切。收對講機一律 NFM。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>收對講機一律用 NFM（Narrow ＝ 窄），不然就像用望遠鏡看旁邊，焦距永遠不對。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
@@ -324,16 +312,12 @@ AM:  ───10kHz──          （中波廣播）
       <div class="concept-bd">
         <div class="explain">SDR 每秒「拍照」電波狀態的次數。採樣率越高，能同時觀看的頻率範圍越寬。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像電影的「幀率」。24fps 的電影看起來流暢，因為每秒拍了 24 張照片。SDR 的採樣率越高，每秒收集越多「電波快照」，能分析更寬的頻段。</div>
-        <div class="visual">採樣率與可視頻段：
-
-採樣率 1.0 MSPS → 可視1.0MHz（例：145.0–146.0）
-採樣率 2.4 MSPS → 可視2.4MHz（例：144.3–146.7）
-
-在GQRX設定採樣率後，瀑布圖的「寬度」就是你能看到的頻率範圍
-
-建議設定：
-  RTL-SDR：2.0–2.4 MSPS
-  如果CPU不夠：降到1.2 MSPS</div>
+        <table class="tbl">
+          <tr><th>採樣率</th><th>可視頻段</th></tr>
+          <tr><td><span class="readout">1.0 MSPS</span></td><td>1.0 MHz（如 145.0–146.0）</td></tr>
+          <tr><td><span class="readout">2.4 MSPS</span></td><td>2.4 MHz（如 144.3–146.7）</td></tr>
+        </table>
+        <div class="gnote">採樣率＝瀑布圖能看到的頻率寬度。RTL-SDR 建議 2.0–2.4 MSPS；CPU 不夠降到 1.2。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
     </div>
