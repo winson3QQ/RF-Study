@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWR 駐波互動視覺化 — 二等業餘無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+:root {
+  --mono: var(--font-mono); --txt: var(--ink-2); --dim: var(--ink-3);
+  --s1: var(--surface); --s2: var(--surface-soft);
+  --acc: var(--teal-ink); --g: var(--leaf-ink); --amb: var(--honey-ink); --red: var(--rose-ink); --pur: #6D3FC0;
+}
+.tab.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.tab.on:hover { color: #fff; }
+
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+
+/* viz cards — dark canvas screen inside a warm card */
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; display: flex; justify-content: space-between; gap: 8px; }
+canvas { width: 100%; display: block; background: #08080e; border-radius: var(--r-sm); }
+
+/* controls */
+.ctrl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 500px) { .ctrl-grid { grid-template-columns: 1fr; } }
+.cg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); }
+.cg-label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.cg-label span { color: var(--teal-ink); font-family: var(--font-mono); font-size: 13px; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; margin-bottom: 7px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: var(--shadow-sm); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: var(--primary); cursor: pointer; }
+.cg-sublabel { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+
+/* status metrics (renamed from .stat to avoid clash with hero stat chips) */
+.status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+@media (max-width: 500px) { .status-grid { grid-template-columns: 1fr 1fr; } }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 10px; text-align: center; box-shadow: var(--shadow-sm); }
+.metric-label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 5px; }
+.metric-val { font-family: var(--font-mono); font-size: 17px; font-weight: 700; color: var(--ink); }
+
+/* insight */
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.8; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: var(--teal-ink); }
+.exam-note { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; line-height: 1.65; background: var(--honey-soft); border-left: 3px solid var(--honey); border-radius: var(--r-sm); padding: 7px 11px; margin-top: 9px; color: var(--honey-ink); }
+.exam-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
+
+/* scenarios */
+.scenarios { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.sc-btn { font-family: var(--font-sans); font-weight: 700; font-size: 12px; padding: 7px 14px; border: 1.5px solid var(--border-strong); border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.sc-btn:hover, .sc-btn.on { border-color: var(--teal); color: var(--teal-ink); background: var(--teal-soft); }
+
+/* exam table */
+.ex-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.ex-table th { padding: 9px 11px; text-align: left; font-family: var(--font-display); font-size: 12px; color: var(--teal-ink); background: var(--teal-soft); font-weight: 700; border-bottom: 1px solid var(--border); }
+.ex-table td { padding: 9px 11px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--ink-2); }
+.ex-table tr:last-child td { border-bottom: none; }
+.ex-table tbody tr:hover td { background: var(--surface-soft); cursor: pointer; }
+.ex-table .q { color: var(--ink); font-weight: 600; }
+.ex-table .a { color: var(--leaf-ink); font-weight: 600; }
+
+/* calc input */
+.input-row { display: flex; align-items: center; background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--r-md); margin-bottom: 10px; transition: all var(--dur) var(--ease); }
+.input-row:focus-within { border-color: var(--primary); box-shadow: var(--ring); }
+.input-row label { font-family: var(--font-sans); font-weight: 700; font-size: 13px; color: var(--ink-2); padding: 11px 14px; min-width: 110px; border-right: 1px solid var(--border); }
+.input-row input { flex: 1; background: transparent; border: none; outline: none; color: var(--ink); font-family: var(--font-mono); font-size: 16px; padding: 11px 12px; min-width: 0; }
+.input-row .unit { padding: 11px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.calc-result { background: var(--surface-soft); border: 1px solid var(--border); border-left: 4px solid var(--leaf); border-radius: var(--r-md); padding: 14px; font-family: var(--font-mono); }
+.cr-val { font-size: 22px; color: var(--leaf-ink); font-weight: 700; margin-bottom: 7px; }
+.cr-steps { font-size: 12px; color: var(--ink-2); line-height: 2; }
+.cr-steps b { color: var(--teal-ink); }
+
+/* trap */
+.trap { display: flex; align-items: flex-start; gap: 8px; background: var(--rose-soft); border: 1px solid #f3c9c5; border-left: 4px solid var(--rose); border-radius: var(--r-md); padding: 12px 15px; font-size: 12.5px; color: var(--ink-2); line-height: 1.85; }
+.trap svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--rose-ink); }
+.trap b { color: var(--rose-ink); }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">SWR 駐波互動視覺化</div>
+  <p class="tool-sub">對應「無線電系統原理」題庫 · 用動畫理解反射波、駐波與阻抗匹配。</p>
+
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('wave')"><i data-lucide="waves"></i> 動態波形</button>
+    <button class="tab" onclick="switchTab('calc')"><i data-lucide="activity"></i> SWR 計算機</button>
+    <button class="tab" onclick="switchTab('exam')"><i data-lucide="graduation-cap"></i> 考試題</button>
+  </div>
+
+  <!-- ═══ WAVE TAB ═══ -->
+  <div id="tab-wave">
+
+    <div class="st">情境快速套用</div>
+    <div class="scenarios" id="scenarios"></div>
+
+    <div class="ctrl-grid">
+      <div class="cg">
+        <div class="cg-label">饋線阻抗 Z₀ <span id="lbl-z0">50 Ω</span></div>
+        <input type="range" id="sl-z0" min="10" max="300" value="50" step="5" oninput="redraw()">
+        <div class="cg-sublabel">標準同軸電纜通常 50Ω 或 75Ω</div>
+      </div>
+      <div class="cg">
+        <div class="cg-label">天線阻抗 Z_L <span id="lbl-zl">200 Ω</span></div>
+        <input type="range" id="sl-zl" min="5" max="600" value="200" step="5" oninput="redraw()">
+        <div class="cg-sublabel">天線饋點阻抗（半波偶極 ≈ 73Ω）</div>
+      </div>
+    </div>
+
+    <div class="status-grid">
+      <div class="metric"><div class="metric-label">SWR</div><div class="metric-val" id="st-swr" style="color:var(--leaf-ink)">—</div></div>
+      <div class="metric"><div class="metric-label">反射係數 Γ</div><div class="metric-val" id="st-gamma">—</div></div>
+      <div class="metric"><div class="metric-label">反射功率</div><div class="metric-val" id="st-refl" style="color:var(--rose-ink)">—</div></div>
+      <div class="metric"><div class="metric-label">到達天線功率</div><div class="metric-val" id="st-fwd" style="color:var(--teal-ink)">—</div></div>
+    </div>
+
+    <div class="viz-card">
+      <div class="viz-head">
+        <span>饋線中的波 （TX 端 → 天線端）</span>
+        <span id="wave-legend"></span>
+      </div>
+      <canvas id="c-wave" height="180"></canvas>
+    </div>
+
+    <div class="viz-card">
+      <div class="viz-head"><span>功率流向示意</span></div>
+      <canvas id="c-power" height="80"></canvas>
+    </div>
+
+    <div class="insight" id="insight-box">
+      <strong>說明</strong>：調整滑桿，觀察入射波（藍）、反射波（橘）與駐波（白）的變化。
+      <div class="exam-note" id="exam-note"></div>
+    </div>
+
+  </div>
+
+  <!-- ═══ CALC TAB ═══ -->
+  <div id="tab-calc" style="display:none">
+    <div class="st">SWR 精確計算機</div>
+
+    <div class="input-row">
+      <label>饋線 Z₀</label>
+      <input type="number" id="ci-z0" value="50" step="1" oninput="calcSwr()">
+      <div class="unit">Ω</div>
+    </div>
+    <div class="input-row">
+      <label>天線 Z_L</label>
+      <input type="number" id="ci-zl" value="200" step="1" oninput="calcSwr()">
+      <div class="unit">Ω</div>
+    </div>
+
+    <div class="calc-result" id="calc-result">
+      <div class="cr-val" id="cr-val">SWR = —</div>
+      <div class="cr-steps" id="cr-steps"></div>
+    </div>
+
+    <div class="st">常見考試組合（點擊套用）</div>
+    <table class="ex-table" id="calc-examples">
+      <thead><tr><th>Z₀</th><th>Z_L</th><th>SWR</th><th>計算方式</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="trap"><i data-lucide="triangle-alert"></i><span><b>最容易考錯的觀念：</b>在發射機端加天線調諧器（ATU）讓 SWR 表讀數變成 1:1 後，<b>饋線中的駐波比仍然是原來的值（例如 5:1）</b>。天線調諧器只改變發射機「看到的」阻抗，不改變饋線中的物理狀態。</span></div>
+  </div>
+
+  <!-- ═══ EXAM TAB ═══ -->
+  <div id="tab-exam" style="display:none">
+    <div class="st">SWR 相關考試題（系統原理）</div>
+    <table class="ex-table" id="exam-table">
+      <thead><tr><th>#</th><th class="q">題目重點</th><th class="a">答案</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+function icons(){ if (window.lucide) lucide.createIcons(); }
+const CFONT = 'Space Mono';
+
+const SCENARIOS = [
+  { label:'完美匹配 1:1', z0:50, zl:50, note:'天線阻抗與饋線完全匹配，沒有反射波，SWR=1:1，所有功率傳到天線。這是最理想狀態。' },
+  { label:'半波偶極 ≈1.5:1', z0:50, zl:73, note:'標準半波偶極天線饋點阻抗約73Ω，接50Ω饋線SWR≈1.5:1。實際可接受，大部分發射機可承受。' },
+  { label:'50Ω接200Ω 4:1', z0:50, zl:200, note:'50Ω饋線接200Ω負載，SWR=4:1。考試常見題目，計算：200/50=4。' },
+  { label:'50Ω接10Ω 5:1', z0:50, zl:10, note:'50Ω饋線接10Ω負載，SWR=5:1。計算：50/10=5。注意：小值÷大值會得到分數，要反過來。' },
+  { label:'50Ω接300Ω 6:1', z0:50, zl:300, note:'50Ω饋線接300Ω負載，SWR=6:1。例如將50Ω饋線接到折疊偶極（約300Ω），不加巴倫的情況。' },
+  { label:'嚴重不匹配', z0:50, zl:600, note:'嚴重不匹配，大量功率被反射回發射機。可能損壞發射機的最終放大級。' },
+];
+
+const EXAM_QA = [
+  ['130','什麼狀況下會產生反射功率？','導線阻抗與天線饋點阻抗間有差異'],
+  ['133','如何預防饋線上產生駐波？','天線饋點阻抗必須與饋線特性阻抗匹配'],
+  ['134','饋線SWR=5:1，末端加匹配網路調成1:1，饋線SWR是多少？','仍然是5:1（匹配網路不改變饋線中的駐波）'],
+  ['135','50Ω接200Ω，SWR=？','4:1（200÷50=4）'],
+  ['136','50Ω接10Ω，SWR=？','5:1（50÷10=5）'],
+  ['137','50Ω接50Ω，SWR=？','1:1（完美匹配）'],
+  ['138','50Ω接25Ω，SWR=？','2:1（50÷25=2）'],
+  ['139','50Ω接300Ω，SWR=？','6:1（300÷50=6）'],
+  ['140','高SWR對有損失饋線有何影響？','高SWR下傳輸線損失會增加'],
+  ['141','傳輸線損失越高，SWR讀數如何？','SWR讀數越低（損失掩蓋了反射）'],
+  ['10','阻抗匹配重要的原因是？','電源傳送到負載的功率為極大值'],
+  ['15','哪些裝置可用於射頻阻抗匹配？','變壓器、π網路、特定長度的傳輸線（以上皆是）'],
+];
+
+let phase = 0, animId;
+
+function startAnim(){
+  function loop(){
+    phase += 0.025;
+    const z0 = parseFloat(document.getElementById('sl-z0').value);
+    const zl = parseFloat(document.getElementById('sl-zl').value);
+    const { swr, gamma, reflPct, fwdPct } = computeSwr(z0, zl);
+    drawWave(z0, zl, swr, gamma);   // per-frame: canvas only (no DOM/icon rebuild)
+    drawPower(gamma, reflPct, fwdPct);
+    animId = requestAnimationFrame(loop);
+  }
+  animId = requestAnimationFrame(loop);
+}
+
+function computeSwr(z0, zl){
+  const swr = zl >= z0 ? zl/z0 : z0/zl;
+  const gamma = Math.abs((zl - z0) / (zl + z0));
+  const reflPct = (gamma * gamma * 100).toFixed(1);
+  const fwdPct = (100 - gamma * gamma * 100).toFixed(1);
+  return { swr, gamma, reflPct, fwdPct };
+}
+
+function redraw(){
+  const z0 = parseFloat(document.getElementById('sl-z0').value);
+  const zl = parseFloat(document.getElementById('sl-zl').value);
+  document.getElementById('lbl-z0').textContent = z0 + ' Ω';
+  document.getElementById('lbl-zl').textContent = zl + ' Ω';
+
+  const { swr, gamma, reflPct, fwdPct } = computeSwr(z0, zl);
+
+  const swrEl = document.getElementById('st-swr');
+  swrEl.textContent = swr.toFixed(2) + ':1';
+  swrEl.style.color = swr < 1.5 ? 'var(--leaf-ink)' : swr < 3 ? 'var(--honey-ink)' : 'var(--rose-ink)';
+  document.getElementById('st-gamma').textContent = gamma.toFixed(3);
+  document.getElementById('st-refl').textContent = reflPct + '%';
+  document.getElementById('st-fwd').textContent = fwdPct + '%';
+
+  drawWave(z0, zl, swr, gamma);
+  drawPower(gamma, reflPct, fwdPct);
+  updateInsight(z0, zl, swr, gamma, reflPct);
+  updateScenarioHighlight(z0, zl);
+}
+
+function drawWave(z0, zl, swr, gamma){
+  const cv = document.getElementById('c-wave');
+  cv.width = cv.offsetWidth || 800;
+  const W = cv.width, H = cv.height;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#08080e'; ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle = 'rgba(60,60,90,.5)'; ctx.lineWidth = 1;
+  for(let y = 0; y <= H; y += H/4){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  for(let x = 0; x <= W; x += W/8){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+
+  ctx.strokeStyle = 'rgba(90,100,140,.4)'; ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+
+  const txX = 20, antX = W - 20;
+  ctx.fillStyle = 'rgba(0,229,255,.7)'; ctx.font = '10px ' + CFONT; ctx.textAlign = 'center';
+  ctx.fillText('TX', txX, 12);
+  ctx.fillStyle = 'rgba(68,255,136,.7)';
+  ctx.fillText('ANT', antX, 12);
+
+  ctx.fillStyle = 'rgba(0,229,255,.5)'; ctx.font = '9px ' + CFONT; ctx.textAlign = 'left';
+  ctx.fillText('Z₀ = ' + z0 + 'Ω', 30, H - 8);
+  ctx.fillStyle = 'rgba(68,255,136,.5)'; ctx.textAlign = 'right';
+  ctx.fillText('Z_L = ' + zl + 'Ω', W - 10, H - 8);
+
+  if(gamma > 0.01){
+    ctx.strokeStyle = 'rgba(255,68,85,.45)'; ctx.lineWidth = 2; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(antX - 10, 0); ctx.lineTo(antX - 10, H); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(255,68,85,.7)'; ctx.font = '9px ' + CFONT; ctx.textAlign = 'center';
+    ctx.fillText('不匹配點', antX - 10, H/2 - 60);
+  }
+
+  const amp = H * 0.35;
+  const N = W * 2;
+
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0,229,255,0.7)'; ctx.lineWidth = 2;
+  ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 5;
+  for(let i = 0; i <= N; i++){
+    const x = (i/N) * W;
+    const t = (i/N) * Math.PI * 6 - phase;
+    const y = H/2 - Math.sin(t) * amp;
+    i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke(); ctx.shadowBlur = 0;
+
+  if(gamma > 0.01){
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(255,136,68,${0.3 + gamma * 0.5})`; ctx.lineWidth = 2;
+    ctx.shadowColor = '#ff8844'; ctx.shadowBlur = 4;
+    for(let i = 0; i <= N; i++){
+      const x = (i/N) * W;
+      const t = (i/N) * Math.PI * 6 + phase;
+      const y = H/2 - Math.sin(t) * amp * gamma;
+      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke(); ctx.shadowBlur = 0;
+  }
+
+  if(gamma > 0.05){
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 8;
+    for(let i = 0; i <= N; i++){
+      const x = (i/N) * W;
+      const t = (i/N) * Math.PI * 6;
+      const fwd = Math.sin(t - phase);
+      const ref = gamma * Math.sin(t + phase);
+      const y = H/2 - (fwd + ref) * amp;
+      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke(); ctx.shadowBlur = 0;
+  }
+
+  if(swr > 1.1){
+    const nodeSpacing = W / 6;
+    for(let i = 1; i < 6; i++){
+      const nx = i * nodeSpacing;
+      ctx.fillStyle = 'rgba(255,204,0,.13)';
+      ctx.fillRect(nx - 4, H/2 - amp * swr, 8, amp * swr * 2);
+    }
+  }
+
+  const legItems = [
+    { color:'#00e5ff', label:'入射波（前進）' },
+    ...(gamma > 0.01 ? [{ color:'#ff8844', label:'反射波（後退）' }] : []),
+    ...(gamma > 0.05 ? [{ color:'#ffffff', label:'駐波（合成）' }] : []),
+  ];
+  let lx = W/2 - legItems.length * 80;
+  legItems.forEach(li => {
+    ctx.fillStyle = li.color; ctx.font = '10px ' + CFONT; ctx.textAlign = 'left';
+    ctx.fillRect(lx, 8, 20, 3);
+    ctx.fillText(li.label, lx + 24, 14);
+    lx += 145;
+  });
+}
+
+function drawPower(gamma, reflPct, fwdPct){
+  const cv = document.getElementById('c-power');
+  cv.width = cv.offsetWidth || 800;
+  const W = cv.width, H = cv.height;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#0a0a14'; ctx.fillRect(0,0,W,H);
+
+  const cy = H/2, barH = 14;
+  const fwdW = (parseFloat(fwdPct)/100) * (W - 100);
+  const reflW = (parseFloat(reflPct)/100) * (W - 100);
+  const startX = 50;
+
+  ctx.fillStyle = 'rgba(0,229,255,.7)'; ctx.font = '10px ' + CFONT; ctx.textAlign = 'center';
+  ctx.fillText('TX', 25, cy + 4);
+  ctx.fillStyle = 'rgba(68,255,136,.7)';
+  ctx.fillText('ANT', W - 25, cy + 4);
+
+  const fwdGrad = ctx.createLinearGradient(startX, 0, startX + fwdW, 0);
+  fwdGrad.addColorStop(0, 'rgba(0,229,255,0.8)');
+  fwdGrad.addColorStop(1, 'rgba(68,255,136,0.8)');
+  ctx.fillStyle = fwdGrad;
+  ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 6;
+  ctx.fillRect(startX, cy - barH/2, fwdW, barH);
+  ctx.shadowBlur = 0;
+
+  for(let i = 0; i < 5; i++){
+    const t = ((phase * 0.5 + i/5) % 1);
+    const dx = startX + t * fwdW;
+    ctx.fillStyle = '#00ffff';
+    ctx.shadowColor = '#00ffff'; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(dx, cy, 3, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  if(parseFloat(reflPct) > 0.5){
+    ctx.fillStyle = `rgba(255,136,68,${0.3 + gamma * 0.4})`;
+    ctx.fillRect(startX, cy + barH/2 + 4, reflW, barH * 0.7);
+    for(let i = 0; i < 3; i++){
+      const t = 1 - ((phase * 0.5 + i/3) % 1);
+      const dx = startX + t * reflW;
+      ctx.fillStyle = 'rgba(255,136,68,0.8)';
+      ctx.shadowColor = '#ff8844'; ctx.shadowBlur = 6;
+      ctx.beginPath(); ctx.arc(dx, cy + barH/2 + 4 + barH*0.35, 2.5, 0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+    ctx.fillStyle = 'rgba(255,136,68,.8)'; ctx.font = '9px ' + CFONT; ctx.textAlign = 'left';
+    ctx.fillText('← 反射 ' + reflPct + '%', startX + 4, cy + barH + 20);
+  }
+
+  ctx.fillStyle = 'rgba(0,229,255,.8)'; ctx.font = '9px ' + CFONT; ctx.textAlign = 'center';
+  ctx.fillText('→ 前進 ' + fwdPct + '%', startX + fwdW/2, cy - barH/2 - 4);
+}
+
+function updateInsight(z0, zl, swr, gamma, reflPct){
+  const box = document.getElementById('insight-box');
+  let text, note, color;
+
+  if(swr < 1.1){
+    text = '完美匹配：沒有反射波，所有功率傳到天線。這是最理想狀態，饋線中無駐波。';
+    note = '預防駐波的方法：天線饋點阻抗必須與饋線特性阻抗匹配（Z_L = Z₀）';
+    color = 'var(--leaf-ink)';
+  } else if(swr < 2){
+    text = `SWR ${swr.toFixed(2)}:1 — 可接受範圍。反射功率僅 ${reflPct}%，大多數現代發射機可正常工作。半波偶極（73Ω）接50Ω饋線約1.5:1，實際使用沒問題。`;
+    note = '阻抗匹配重要的原因：電源傳送到負載的功率為極大值';
+    color = 'var(--leaf-ink)';
+  } else if(swr < 4){
+    text = `SWR ${swr.toFixed(2)}:1 — 中等不匹配，反射功率 ${reflPct}%。饋線損失增加，發射機保護電路可能降低輸出功率。建議使用天線調諧器（ATU）或改善天線匹配。`;
+    note = '高SWR對有損失饋線的影響：傳輸線損失越高，SWR讀數反而越低（損失掩蓋反射）';
+    color = 'var(--honey-ink)';
+  } else {
+    text = `SWR ${swr.toFixed(2)}:1 — 嚴重不匹配！反射功率高達 ${reflPct}%，可能損壞發射機最終放大級。注意：就算在TX端加ATU讓SWR錶讀數變1:1，饋線中的物理駐波比仍然是 ${swr.toFixed(1)}:1。`;
+    note = '最常考的陷阱：TX端加匹配網路調成SWR 1:1後，饋線的SWR「仍然是原來的值」';
+    color = 'var(--rose-ink)';
+  }
+
+  box.style.borderLeftColor = color;
+  box.innerHTML = `<strong style="color:${color}">SWR ${swr.toFixed(2)}:1 分析</strong>：${text}<div class="exam-note"><i data-lucide="pencil"></i><span>${note}</span></div>`;
+  icons();
+}
+
+function buildScenarios(){
+  const wrap = document.getElementById('scenarios');
+  SCENARIOS.forEach((s,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'sc-btn';
+    btn.id = 'sc-' + i;
+    btn.textContent = s.label;
+    btn.onclick = () => {
+      document.getElementById('sl-z0').value = s.z0;
+      document.getElementById('sl-zl').value = s.zl;
+      redraw();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function updateScenarioHighlight(z0, zl){
+  SCENARIOS.forEach((s,i) => {
+    const btn = document.getElementById('sc-' + i);
+    if(btn) btn.classList.toggle('on', s.z0 === z0 && s.zl === zl);
+  });
+}
+
+function calcSwr(){
+  const z0 = parseFloat(document.getElementById('ci-z0').value) || 50;
+  const zl = parseFloat(document.getElementById('ci-zl').value) || 50;
+  const { swr, gamma, reflPct, fwdPct } = computeSwr(z0, zl);
+  const resEl = document.getElementById('cr-val');
+  resEl.textContent = 'SWR = ' + swr.toFixed(3) + ' : 1';
+  resEl.style.color = swr < 1.5 ? 'var(--leaf-ink)' : swr < 3 ? 'var(--honey-ink)' : 'var(--rose-ink)';
+  document.getElementById('cr-steps').innerHTML =
+    `大值 ÷ 小值 = <b>${Math.max(z0,zl)}</b> ÷ <b>${Math.min(z0,zl)}</b> = <b>${swr.toFixed(3)}</b><br>` +
+    `反射係數 Γ = |（${zl}−${z0}）÷（${zl}+${z0}）| = <b>${gamma.toFixed(4)}</b><br>` +
+    `反射功率 = Γ² = <b>${reflPct}%</b> &nbsp;·&nbsp; 到達天線功率 = <b>${fwdPct}%</b>`;
+}
+
+function buildCalcExamples(){
+  const examples = [[50,200,'4:1','200÷50=4'],[50,10,'5:1','50÷10=5'],[50,50,'1:1','完美匹配'],[50,25,'2:1','50÷25=2'],[50,300,'6:1','300÷50=6'],[50,75,'1.5:1','75÷50=1.5']];
+  const tbody = document.querySelector('#calc-examples tbody');
+  examples.forEach(([z0,zl,swr,note]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:var(--teal-ink)">${z0}Ω</td><td>${zl}Ω</td><td style="color:var(--leaf-ink)">${swr}</td><td style="color:var(--ink-3);font-size:11px">${note}</td>`;
+    tr.onclick = () => { document.getElementById('ci-z0').value=z0; document.getElementById('ci-zl').value=zl; calcSwr(); };
+    tbody.appendChild(tr);
+  });
+}
+
+function buildExam(){
+  const tbody = document.querySelector('#exam-table tbody');
+  EXAM_QA.forEach(([num, q, a]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="font-family:var(--font-mono);color:var(--ink-3);font-size:11px">${num}</td><td class="q">${q}</td><td class="a">${a}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function switchTab(name){
+  ['wave','calc','exam'].forEach(t => { document.getElementById('tab-'+t).style.display = t===name?'':'none'; });
+  document.querySelectorAll('.tabs .tab').forEach((el,i) => { el.classList.toggle('on',['wave','calc','exam'][i]===name); });
+  if(name === 'wave') { if(!animId) startAnim(); }
+  else { cancelAnimationFrame(animId); animId = null; }
+}
+
+// ═══ INIT ═══
+buildScenarios();
+buildCalcExamples();
+buildExam();
+calcSwr();
+redraw();   // populate metrics + insight (icons rendered once) before animation
+icons();
+startAnim();
+</script>
+</body>
+</html>
