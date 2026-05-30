@@ -34,10 +34,10 @@
   --teal-ink:    #126B65;
 
   /* pedagogical / semantic */
-  --honey: #E89A1C; --honey-soft: #FFF3DA; --honey-ink: #9A6510;  /* 💡 生活比喻 */
-  --leaf:  #3DA35D; --leaf-soft:  #E3F4E8; --leaf-ink:  #237A3C;  /* ✓ 記憶方法 */
-  --rose:  #E5544B; --rose-soft:  #FCE7E5; --rose-ink:  #B5342C;  /* ⚠ 常見誤解 */
-  --sky:   #3B86C9; --sky-soft:   #E4F1FB; --sky-ink:   #225F95;  /* ℹ 補充 / SDR */
+  --honey: #E89A1C; --honey-soft: #FFF3DA; --honey-ink: #9A6510;  /* lightbulb 生活比喻 */
+  --leaf:  #3DA35D; --leaf-soft:  #E3F4E8; --leaf-ink:  #237A3C;  /* circle-check 記憶方法 */
+  --rose:  #E5544B; --rose-soft:  #FCE7E5; --rose-ink:  #B5342C;  /* triangle-alert 常見誤解 */
+  --sky:   #3B86C9; --sky-soft:   #E4F1FB; --sky-ink:   #225F95;  /* info 補充 / SDR */
 
   /* RF domain accents */
   --grade-1: var(--honey);
@@ -197,18 +197,21 @@ a:hover { color: var(--primary-strong); }
 .search input::placeholder { color: var(--ink-3); }
 
 .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 26px; }
-.fbtn { font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 8px 16px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.fbtn { font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 8px 16px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); display: inline-flex; align-items: center; gap: 6px; }
+.fbtn svg { width: 15px; height: 15px; stroke-width: 2.25; flex-shrink: 0; }
 .fbtn:hover { border-color: var(--primary); color: var(--primary-ink); }
 .fbtn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 
 .cat-title { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--ink); margin: 28px 0 14px; display: flex; align-items: center; gap: 10px; }
 .cat-title::before { content: ''; width: 5px; height: 22px; background: var(--primary); border-radius: 3px; }
+.cat-title svg { width: 20px; height: 20px; stroke-width: 2.25; color: var(--primary); flex-shrink: 0; }
 
 .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
 .concept { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
 .concept:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .concept-hd { display: flex; align-items: center; gap: 12px; padding: 15px 17px; }
-.concept-hd .ico { font-size: 26px; line-height: 1; }
+.concept-hd .ico { font-size: 26px; line-height: 1; display: flex; }
+.concept-hd .ico svg { width: 24px; height: 24px; stroke-width: 2; color: var(--ink); }
 .concept-hd .title { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--ink); line-height: 1.2; }
 .concept-hd .en { font-size: 12px; font-style: italic; color: var(--ink-3); margin-top: 2px; }
 .concept-bd { padding: 14px 17px 17px; }
@@ -223,6 +226,7 @@ a:hover { color: var(--primary-strong); }
 /* callouts — teaching triad */
 .callout { border-radius: var(--r-md); padding: 12px 15px; margin-top: 12px; font-size: 14px; line-height: 1.7; }
 .callout .ct { font-weight: 800; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.callout .ct svg { width: 15px; height: 15px; stroke-width: 2.25; flex-shrink: 0; }
 .callout.analogy { background: var(--honey-soft); border-left: 4px solid var(--honey); color: #5b4a2a; }
 .callout.analogy .ct { color: var(--honey-ink); }
 .callout.tip { background: var(--leaf-soft); border-left: 4px solid var(--leaf); color: #33503a; }
@@ -255,6 +259,7 @@ a:hover { color: var(--primary-strong); }
 /* section heading for course pages (coral bar + display font) */
 .sec-h { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--ink); margin: 30px 0 14px; display: flex; align-items: center; gap: 10px; }
 .sec-h::before { content: ''; width: 5px; height: 22px; background: var(--primary); border-radius: 3px; flex-shrink: 0; }
+.sec-h svg { width: 20px; height: 20px; stroke-width: 2.25; color: var(--primary); flex-shrink: 0; }
 
 /* data table (course pages) */
 .tbl { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); }

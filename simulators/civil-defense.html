@@ -39,6 +39,10 @@ body::before { display: none; }
 
 /* Section headers */
 .section-hdr { font-family: var(--font-display); font-size: .8em; font-weight: 700; color: var(--primary-ink); letter-spacing: .5px; padding: 4px 0 5px; border-bottom: 1px solid var(--border); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.section-hdr svg { width: 14px; height: 14px; stroke-width: 2.25; flex-shrink: 0; }
+.qg > div { display: flex; align-items: center; gap: 6px; }
+.qg svg { width: 13px; height: 13px; stroke-width: 2.25; color: var(--primary-ink); flex-shrink: 0; }
+.chip svg { width: 12px; height: 12px; stroke-width: 2.5; vertical-align: -2px; }
 
 /* Controls */
 .ctrl-row { display: flex; align-items: center; justify-content: space-between; margin: 4px 0; }
@@ -50,7 +54,8 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px;
 input[type=range]::-moz-range-thumb { width: 14px; height: 14px; background: var(--primary); border: none; border-radius: 50%; cursor: pointer; }
 
 .toggle-row { display: flex; gap: 5px; flex-wrap: wrap; margin: 5px 0; }
-.toggle-btn { flex: 1; padding: 6px 7px; background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--ink-2); border-radius: var(--r-sm); cursor: pointer; font-size: .73em; font-weight: 700; text-align: center; transition: all var(--dur) var(--ease); }
+.toggle-btn { flex: 1; padding: 6px 7px; background: var(--surface); border: 1.5px solid var(--border-strong); color: var(--ink-2); border-radius: var(--r-sm); cursor: pointer; font-size: .73em; font-weight: 700; text-align: center; transition: all var(--dur) var(--ease); display: flex; align-items: center; justify-content: center; gap: 5px; }
+.toggle-btn svg { width: 13px; height: 13px; stroke-width: 2.25; flex-shrink: 0; }
 .toggle-btn:hover { border-color: var(--teal); color: var(--teal-ink); }
 .toggle-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
 .toggle-btn.warn { border-color: var(--rose); color: var(--rose-ink); background: var(--rose-soft); }
@@ -122,7 +127,7 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 <body>
 <script>window.SITE_SECTION='simulators'</script>
 <header class="sim-header">
-  <span class="ico">📻</span>
+  <span class="ico"><i data-lucide="radio"></i></span>
   <div>
     <h1>民防無線電參數模擬器</h1>
     <p>SDR 視覺化 · 即時信號模擬 · 所有 RF 參數整合</p>
@@ -139,7 +144,7 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Frequency -->
     <div>
-      <div class="section-hdr">📡 射頻參數</div>
+      <div class="section-hdr"><i data-lucide="radio-tower"></i>射頻參數</div>
       <div class="ctrl-row">
         <span class="ctrl-label">中心頻率</span>
         <span class="ctrl-value" id="freq-display">145.500 MHz</span>
@@ -156,7 +161,7 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- RF Gain -->
     <div>
-      <div class="section-hdr">🎚️ 接收增益</div>
+      <div class="section-hdr"><i data-lucide="sliders-horizontal"></i>接收增益</div>
       <div class="ctrl-row">
         <span class="ctrl-label">RF增益</span>
         <span class="ctrl-value" id="gain-display">30 dB</span>
@@ -174,7 +179,7 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Power -->
     <div>
-      <div class="section-hdr">🔋 發射功率</div>
+      <div class="section-hdr"><i data-lucide="battery-charging"></i>發射功率</div>
       <div class="toggle-row">
         <div class="toggle-btn" onclick="setPower(1,this)">1W</div>
         <div class="toggle-btn active" onclick="setPower(5,this)">5W</div>
@@ -184,11 +189,11 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Antenna -->
     <div>
-      <div class="section-hdr">📶 天線狀態</div>
+      <div class="section-hdr"><i data-lucide="signal"></i>天線狀態</div>
       <div class="toggle-row">
         <div class="toggle-btn active" onclick="setAntenna('normal',this)">正常λ/4</div>
         <div class="toggle-btn" onclick="setAntenna('yagi',this)">八木天線</div>
-        <div class="toggle-btn warn" onclick="setAntenna('broken',this)">⚠ 損壞</div>
+        <div class="toggle-btn warn" onclick="setAntenna('broken',this)"><i data-lucide="triangle-alert"></i>損壞</div>
       </div>
       <div class="ctrl-row" style="margin-top:4px">
         <span class="ctrl-label">天線增益</span>
@@ -198,10 +203,10 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Interference -->
     <div>
-      <div class="section-hdr">⚡ 干擾源</div>
+      <div class="section-hdr"><i data-lucide="zap"></i>干擾源</div>
       <div class="toggle-row">
-        <div class="toggle-btn" id="interference-btn" onclick="toggleInterference(this)">❌ 關閉</div>
-        <div class="toggle-btn warn" onclick="toggleInterference(document.getElementById('interference-btn'),true)">⚡ 開啟干擾</div>
+        <div class="toggle-btn" id="interference-btn" onclick="toggleInterference(this)"><i data-lucide="circle-x"></i>關閉</div>
+        <div class="toggle-btn warn" onclick="toggleInterference(document.getElementById('interference-btn'),true)"><i data-lucide="zap"></i>開啟干擾</div>
       </div>
       <div class="ctrl-row" style="margin-top:4px">
         <span class="ctrl-label">干擾頻率</span>
@@ -212,7 +217,7 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Repeater -->
     <div>
-      <div class="section-hdr">🔁 中繼台</div>
+      <div class="section-hdr"><i data-lucide="repeat"></i>中繼台</div>
       <div class="toggle-row">
         <div class="toggle-btn" id="repeater-btn" onclick="toggleRepeater(this)">中繼：關閉</div>
       </div>
@@ -252,7 +257,7 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
         <span class="chip chip-green" id="chip-power">5W / 37dBm</span>
         <span class="chip chip-orange" id="chip-ant">天線：正常</span>
         <span class="chip chip-blue" id="chip-rep">中繼：關閉</span>
-        <span class="chip chip-red" id="chip-int" style="display:none">⚡ 干擾開啟</span>
+        <span class="chip chip-red" id="chip-int" style="display:none"><i data-lucide="zap"></i> 干擾開啟</span>
       </div>
 
       <!-- 說明文字 -->
@@ -270,11 +275,11 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Receiver CTCSS -->
     <div>
-      <div class="section-hdr">🔑 接收機設定</div>
+      <div class="section-hdr"><i data-lucide="key-round"></i>接收機設定</div>
       <div class="rx-box">
         <div class="rx-title">我的CTCSS設定（靜噪鑰匙）</div>
         <select id="rx-ctcss" onchange="setRxCtcss(this.value)" style="width:100%;background:var(--surface);border:1.5px solid var(--border-strong);color:var(--ink);padding:6px;border-radius:var(--r-sm);font-size:.8em;margin-top:3px">
-          <option value="0">🔓 無CTCSS（收所有隊伍）</option>
+          <option value="0">無CTCSS（收所有隊伍）</option>
           <option value="67.0">67.0 Hz — 隊伍1</option>
           <option value="88.5">88.5 Hz — 隊伍2</option>
           <option value="110.9">110.9 Hz — 隊伍3</option>
@@ -286,19 +291,19 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Teams -->
     <div>
-      <div class="section-hdr">👥 隊伍通話狀態</div>
+      <div class="section-hdr"><i data-lucide="users"></i>隊伍通話狀態</div>
       <div id="teams-container"></div>
     </div>
 
     <!-- Who can hear who -->
     <div>
-      <div class="section-hdr">👂 誰能聽到誰</div>
+      <div class="section-hdr"><i data-lucide="ear"></i>誰能聽到誰</div>
       <div id="hear-list" class="hear-list"></div>
     </div>
 
     <!-- Diagnostic Log -->
     <div>
-      <div class="section-hdr">🔬 診斷記錄</div>
+      <div class="section-hdr"><i data-lucide="microscope"></i>診斷記錄</div>
       <div class="log-box" id="log-box">
         <div class="log-entry info">▶ 模擬器啟動</div>
         <div class="log-entry">▷ 中心頻率：145.500 MHz</div>
@@ -310,16 +315,16 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
 
     <!-- Quick Guide -->
     <div>
-      <div class="section-hdr">💡 快速指南</div>
-      <div style="font-size:.72em;color:var(--ink-2);line-height:1.8">
-        <div>📊 <span style="color:var(--ink);font-weight:700">FFT峰高</span> = 信號強度</div>
-        <div>📊 <span style="color:var(--ink);font-weight:700">峰值寬度</span> = 頻寬設定</div>
-        <div>🎚️ <span style="color:var(--ink);font-weight:700">增益↑太多</span> = 底噪也升高</div>
-        <div>🔑 <span style="color:var(--ink);font-weight:700">CTCSS不符</span> = 喇叭不開</div>
-        <div>⚡ <span style="color:var(--ink);font-weight:700">干擾強於信號</span> = 被壓制</div>
-        <div>🔁 <span style="color:var(--ink);font-weight:700">中繼台</span> = 克服地形</div>
-        <div>💥 <span style="color:var(--ink);font-weight:700">兩隊同時講</span> = 同頻碰撞（CTCSS 救不了）</div>
-        <div>🗣️ <span style="color:var(--ink);font-weight:700">輪流發話</span> = 唯一解法</div>
+      <div class="section-hdr"><i data-lucide="lightbulb"></i>快速指南</div>
+      <div class="qg" style="font-size:.72em;color:var(--ink-2);line-height:1.8">
+        <div><i data-lucide="chart-column"></i><span style="color:var(--ink);font-weight:700">FFT峰高</span> = 信號強度</div>
+        <div><i data-lucide="chart-column"></i><span style="color:var(--ink);font-weight:700">峰值寬度</span> = 頻寬設定</div>
+        <div><i data-lucide="sliders-horizontal"></i><span style="color:var(--ink);font-weight:700">增益↑太多</span> = 底噪也升高</div>
+        <div><i data-lucide="key-round"></i><span style="color:var(--ink);font-weight:700">CTCSS不符</span> = 喇叭不開</div>
+        <div><i data-lucide="zap"></i><span style="color:var(--ink);font-weight:700">干擾強於信號</span> = 被壓制</div>
+        <div><i data-lucide="repeat"></i><span style="color:var(--ink);font-weight:700">中繼台</span> = 克服地形</div>
+        <div><i data-lucide="zap"></i><span style="color:var(--ink);font-weight:700">兩隊同時講</span> = 同頻碰撞（CTCSS 救不了）</div>
+        <div><i data-lucide="speech"></i><span style="color:var(--ink);font-weight:700">輪流發話</span> = 唯一解法</div>
       </div>
     </div>
 

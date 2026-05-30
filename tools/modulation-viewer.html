@@ -135,7 +135,7 @@
       <div class="sr" id="sr-mod"><label id="mod-lbl">調變深度 m</label>
         <input type="range" id="sl-mod" min="0.05" max="1.5" value="0.8" step="0.05" oninput="redraw()">
         <span class="sv" id="sv-mod">0.80</span></div>
-      <div class="warn-box" id="overmod-warn">⚠ 過調變！m &gt; 1 → 嚴重失真</div>
+      <div class="warn-box" id="overmod-warn"><i data-lucide="triangle-alert" style="width:14px;height:14px;vertical-align:-2px"></i> 過調變！m &gt; 1 → 嚴重失真</div>
     </div>
 
     <!-- SSB power demo -->
@@ -226,7 +226,7 @@ const MODES = {
       {k:'每邊帶功率',v:'各 25% of PEP',c:'r'},
       {k:'調變效率',v:'最高 50%',c:'r'},
     ],
-    desc:'<strong>AM（調幅）</strong>：用訊號調整載波<strong>振幅</strong>，包含三部分：載波 + 上邊帶（USB）+ 下邊帶（LSB）。<br><br>載波本身不攜帶訊息，卻消耗 50% 功率，兩個邊帶各 25%，實際傳遞訊息的效率極低。<span class="exam">📝 過調變 m &gt; 1 → 波形削頂 → 嚴重諧波失真。考試常考「AM 效率最低」</span>',
+    desc:'<strong>AM（調幅）</strong>：用訊號調整載波<strong>振幅</strong>，包含三部分：載波 + 上邊帶（USB）+ 下邊帶（LSB）。<br><br>載波本身不攜帶訊息，卻消耗 50% 功率，兩個邊帶各 25%，實際傳遞訊息的效率極低。<span class="exam"><i data-lucide="pencil"></i>過調變 m &gt; 1 → 波形削頂 → 嚴重諧波失真。考試常考「AM 效率最低」</span>',
     power:{labels:['載波','上邊帶','下邊帶'],colors:['#CC8A1E','#8A5CC4','#C44C86']},
   },
   DSB:{
@@ -240,7 +240,7 @@ const MODES = {
       {k:'邊帶',v:'上下邊帶均保留',c:''},
       {k:'功率效率',v:'100%（無載波浪費）',c:'g'},
     ],
-    desc:'<strong>DSB（遏制載波雙邊帶）</strong>：去掉 AM 的載波，只保留兩個邊帶。頻寬與 AM 相同（6kHz），但所有功率用於傳送訊號。<br><br>接收端需重新插入載波才能解調（BFO 拍音振盪器）。<span class="exam">📝 「遏制載波單邊帶發射」vs「減載波單邊帶發射」是考試常混淆的定義</span>',
+    desc:'<strong>DSB（遏制載波雙邊帶）</strong>：去掉 AM 的載波，只保留兩個邊帶。頻寬與 AM 相同（6kHz），但所有功率用於傳送訊號。<br><br>接收端需重新插入載波才能解調（BFO 拍音振盪器）。<span class="exam"><i data-lucide="pencil"></i>「遏制載波單邊帶發射」vs「減載波單邊帶發射」是考試常混淆的定義</span>',
     power:{labels:['上邊帶','下邊帶'],colors:['#8A5CC4','#C44C86']},
   },
   USB:{
@@ -254,7 +254,7 @@ const MODES = {
       {k:'下邊帶',v:'完全抑制',c:'g'},
       {k:'HF使用場合',v:'20m/17m/15m/12m/10m',c:'a'},
     ],
-    desc:'<strong>USB（上邊帶）</strong>：只保留上方邊帶，載波和下邊帶均被抑制。頻寬只有 AM 的一半（3kHz），功率 100% 用於傳訊。<span class="exam">📝 考試必背：HF <strong>14MHz 以上</strong>（20m及更高頻段）使用 USB。VHF/UHF 單邊帶語音一律用 USB</span>',
+    desc:'<strong>USB（上邊帶）</strong>：只保留上方邊帶，載波和下邊帶均被抑制。頻寬只有 AM 的一半（3kHz），功率 100% 用於傳訊。<span class="exam"><i data-lucide="pencil"></i>考試必背：HF <strong>14MHz 以上</strong>（20m及更高頻段）使用 USB。VHF/UHF 單邊帶語音一律用 USB</span>',
     power:{labels:['上邊帶'],colors:['#8A5CC4']},
   },
   LSB:{
@@ -268,7 +268,7 @@ const MODES = {
       {k:'上邊帶',v:'完全抑制',c:'g'},
       {k:'HF使用場合',v:'40m / 80m / 160m',c:'a'},
     ],
-    desc:'<strong>LSB（下邊帶）</strong>：只保留下方邊帶，原理與 USB 完全相同，差別只在保留的方向。<br><br>記憶口訣：<strong>L低L下</strong>（Low frequency → LSB）。<span class="exam">📝 HF <strong>14MHz 以下</strong>（40m、80m、160m）用 LSB——這是慣例，非法律規定。LSB 效率與 USB 完全相同</span>',
+    desc:'<strong>LSB（下邊帶）</strong>：只保留下方邊帶，原理與 USB 完全相同，差別只在保留的方向。<br><br>記憶口訣：<strong>L低L下</strong>（Low frequency → LSB）。<span class="exam"><i data-lucide="pencil"></i>HF <strong>14MHz 以下</strong>（40m、80m、160m）用 LSB——這是慣例，非法律規定。LSB 效率與 USB 完全相同</span>',
     power:{labels:['下邊帶'],colors:['#C44C86']},
   },
   FM:{
@@ -282,7 +282,7 @@ const MODES = {
       {k:'調變參數',v:'頻率偏差 Δf',c:''},
       {k:'VHF頻道',v:'12.5 / 25 kHz 間隔',c:'a'},
     ],
-    desc:'<strong>FM（調頻）</strong>：訊號改變載波的<strong>頻率</strong>，振幅完全固定。因振幅固定，對振幅型雜訊（大氣靜電等）免疫，抗雜訊能力最強。<br><br>頻寬比 SSB 大，不適合 HF，但 VHF/UHF 中繼台廣泛使用。<span class="exam">📝 NFM 頻偏：25kHz 間隔→±5kHz，12.5kHz 間隔→±2.5kHz，20kHz→±4kHz</span>',
+    desc:'<strong>FM（調頻）</strong>：訊號改變載波的<strong>頻率</strong>，振幅完全固定。因振幅固定，對振幅型雜訊（大氣靜電等）免疫，抗雜訊能力最強。<br><br>頻寬比 SSB 大，不適合 HF，但 VHF/UHF 中繼台廣泛使用。<span class="exam"><i data-lucide="pencil"></i>NFM 頻偏：25kHz 間隔→±5kHz，12.5kHz 間隔→±2.5kHz，20kHz→±4kHz</span>',
     power:{labels:['FM載波+邊帶'],colors:['#1F9E96']},
   },
   CW:{
@@ -296,7 +296,7 @@ const MODES = {
       {k:'RST報告',v:'T=Tone（CW專屬）',c:'a'},
       {k:'最小間隔',v:'相鄰CW電臺 100Hz',c:''},
     ],
-    desc:'<strong>CW（等幅電報 / 摩斯碼）</strong>：載波做開/關（On-Off Keying），頻寬極窄（< 500Hz）。相同功率下通信距離最遠，弱訊號通信首選。<br><br>接收 CW 可使用「反向邊帶」（選 USB/LSB 反向）來減少鄰頻干擾。<span class="exam">📝 頻寬最窄 → 相同功率通信距離最遠。RST 中 T=Tone 只用於 CW 評估。零拍差 = 兩台發射頻率完全相同</span>',
+    desc:'<strong>CW（等幅電報 / 摩斯碼）</strong>：載波做開/關（On-Off Keying），頻寬極窄（< 500Hz）。相同功率下通信距離最遠，弱訊號通信首選。<br><br>接收 CW 可使用「反向邊帶」（選 USB/LSB 反向）來減少鄰頻干擾。<span class="exam"><i data-lucide="pencil"></i>頻寬最窄 → 相同功率通信距離最遠。RST 中 T=Tone 只用於 CW 評估。零拍差 = 兩台發射頻率完全相同</span>',
     power:{labels:['CW載波'],colors:['#3B86C9']},
   },
   FSK:{
@@ -310,7 +310,7 @@ const MODES = {
       {k:'典型應用',v:'RTTY、APRS、AFSK',c:'a'},
       {k:'抗雜訊',v:'數位 → 可糾錯',c:'g'},
     ],
-    desc:'<strong>FSK（頻移鍵控）</strong>：用<strong>兩個不同頻率</strong>分別代表數位的 0 與 1，載波振幅固定。<br><br>因振幅固定、資訊藏在頻率上，抗振幅雜訊能力強。RTTY、封包通信（Packet）、APRS、AFSK 都屬於 FSK 家族。<span class="exam">📝 數位調變：FSK 用「頻率切換」傳送 0/1，常見於數據與電傳打字（RTTY）</span>',
+    desc:'<strong>FSK（頻移鍵控）</strong>：用<strong>兩個不同頻率</strong>分別代表數位的 0 與 1，載波振幅固定。<br><br>因振幅固定、資訊藏在頻率上，抗振幅雜訊能力強。RTTY、封包通信（Packet）、APRS、AFSK 都屬於 FSK 家族。<span class="exam"><i data-lucide="pencil"></i>數位調變：FSK 用「頻率切換」傳送 0/1，常見於數據與電傳打字（RTTY）</span>',
     power:{labels:['FSK 全功率'],colors:['#4CAF50']},
   },
   PSK:{
@@ -324,7 +324,7 @@ const MODES = {
       {k:'頻譜效率',v:'同頻寬資料率高',c:'g'},
       {k:'典型應用',v:'PSK31 鍵盤通信',c:'a'},
     ],
-    desc:'<strong>PSK（相移鍵控 / BPSK）</strong>：用載波的<strong>相位反轉</strong>（0° 與 180°）代表數位 0 與 1，振幅與頻率都不變。<br><br>頻譜效率高、弱訊號下表現好，業餘常用的 PSK31 鍵盤對話即屬此類。<span class="exam">📝 BPSK 每個位元以相位反轉 180° 表示；相同頻寬下資料率比 FSK 高</span>',
+    desc:'<strong>PSK（相移鍵控 / BPSK）</strong>：用載波的<strong>相位反轉</strong>（0° 與 180°）代表數位 0 與 1，振幅與頻率都不變。<br><br>頻譜效率高、弱訊號下表現好，業餘常用的 PSK31 鍵盤對話即屬此類。<span class="exam"><i data-lucide="pencil"></i>BPSK 每個位元以相位反轉 180° 表示；相同頻寬下資料率比 FSK 高</span>',
     power:{labels:['PSK 全功率'],colors:['#5C6BC0']},
   },
 };
@@ -423,6 +423,7 @@ function setMode(m){
   const irows = document.getElementById('info-rows');
   irows.innerHTML = d.rows.map(r=>`<div class="ic-row"><span class="ic-key">${r.k}</span><span class="ic-val ${r.c||''}">${r.v}</span></div>`).join('');
   document.getElementById('ic-desc').innerHTML = d.ic_desc || d.desc;
+  if (window.lucide) lucide.createIcons();
   document.getElementById('info-card').style.borderLeftColor = d.color;
   document.getElementById('mod-lbl').textContent = d.modLbl;
   document.getElementById('sr-mod').style.display = (m==='PSK') ? 'none' : '';

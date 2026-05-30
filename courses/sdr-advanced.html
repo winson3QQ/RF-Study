@@ -18,7 +18,7 @@
 
   <div class="read-hero">
     <div class="eyebrow">COURSE · ADVANCED</div>
-    <h1>SDR 深化課程 🔬</h1>
+    <h1>SDR 深化課程</h1>
     <p>RF 理論推導 + 無線電參數 + 實驗驗證 + 現場應急應用。不只教「怎麼用」，更教「為什麼這樣用」及背後的物理與數學原理。</p>
   </div>
 
@@ -35,10 +35,10 @@
 
   <!-- 導讀 -->
   <div id="p0" class="scenario active">
-    <h2>📖 課程導讀</h2>
-    <div class="callout analogy"><span class="ct">💡 核心理念</span>不只教「怎麼用」，更教「為什麼這樣用」及背後的物理和數學原理。</div>
+    <h2><i data-lucide="book-open" style="width:24px;height:24px;vertical-align:-4px"></i> 課程導讀</h2>
+    <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>核心理念</span>不只教「怎麼用」，更教「為什麼這樣用」及背後的物理和數學原理。</div>
 
-    <div class="sec-h">🎯 五層深化學習模式</div>
+    <div class="sec-h"><i data-lucide="target"></i>五層深化學習模式</div>
     <div class="visual">第1層 ─ 災害現場困難     為什麼需要這個參數？
        ↓
 第2層 ─ RF物理原理        這個參數在RF層面做了什麼？
@@ -49,7 +49,7 @@
        ↓
 第5層 ─ 現場應急應用      災害時如何快速正確決策</div>
 
-    <div class="sec-h">💡 為何需要 RF 理論深化？</div>
+    <div class="sec-h"><i data-lucide="lightbulb"></i>為何需要 RF 理論深化？</div>
     <table class="tbl">
       <tr><th>問題</th><th>傳統教學</th><th>RF 深化學習</th></tr>
       <tr><td>CTCSS</td><td>「是 67-250Hz 的亞音」</td><td>推導 FM 調制方程 + 看 FFT 峰值驗證</td></tr>
@@ -59,7 +59,7 @@
       <tr><td>干擾</td><td>無法判斷</td><td>掃頻找峰值位置 + 三角定位估算來源</td></tr>
     </table>
 
-    <div class="sec-h">📦 課程所需工具（全免費開源）</div>
+    <div class="sec-h"><i data-lucide="package"></i>課程所需工具（全免費開源）</div>
     <div class="prose-card">
       <p><strong>硬體：</strong>RTL-SDR 接收器（約 300 元台幣）+ USB 線 + 天線</p>
       <p><strong>軟體：</strong></p>
@@ -69,16 +69,16 @@
         <li>CubicSDR：友善介面，適合快速掃頻</li>
       </ul>
     </div>
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>任何民防隊可用最低成本自建「無線電實驗室」，學員可在真實信號上驗證每一條理論。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>任何民防隊可用最低成本自建「無線電實驗室」，學員可在真實信號上驗證每一條理論。</div>
   </div>
 
   <!-- 情境1 -->
   <div id="p1" class="scenario">
-    <h2>🏘️ 情境1：CTCSS 亞音頻</h2>
-    <div class="sec-h">📍 現場困境</div>
+    <h2><i data-lucide="building-2" style="width:24px;height:24px;vertical-align:-4px"></i> 情境1：CTCSS 亞音頻</h2>
+    <div class="sec-h"><i data-lucide="map-pin"></i>現場困境</div>
     <div class="prose-card"><p>地震後 5 支隊伍共用唯一申請到的頻率 145.500MHz，所有隊伍同時搶頻講話，指揮所只聽到雜訊，救援協調完全癱瘓。</p></div>
 
-    <div class="sec-h">🔬 RF 理論：CTCSS 的本質</div>
+    <div class="sec-h"><i data-lucide="microscope"></i>RF 理論：CTCSS 的本質</div>
     <div class="prose-card">
       <p><strong>關鍵概念：CTCSS 不是新頻率，而是訊號疊加</strong></p>
       <p>一個對講機發出的 FM 信號，同時包含三層：</p>
@@ -89,7 +89,7 @@
       </ul>
     </div>
 
-    <div class="sec-h">📐 數學公式推導</div>
+    <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">FM調制基本方程：
   s(t) = A·cos( 2π·f_c·t + (Δf/f_m)·sin(2π·f_m·t) )
 
@@ -115,8 +115,8 @@ FM調制指數：
 結論：β越大，低頻信號的能量分布越廣，傳輸越穩定
 這正是CTCSS即使在低頻（67Hz）仍能被可靠檢測的原因</div>
 
-    <div class="sec-h">🔬 SDR 驗證實驗</div>
-    <div class="callout info"><span class="ct">🔬 工具 — GQRX + RTL-SDR + 2 支對講機</span>
+    <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
+    <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX + RTL-SDR + 2 支對講機</span>
       <p style="margin-top:8px"><strong>步驟1：接收單一 CTCSS 信號</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>對講機A設 CTCSS = 67.0Hz，在 145.500MHz 發話</li>
@@ -165,25 +165,25 @@ FM調制指數：
                  ╱   ╲
   ─────────────────────────────────</div>
 
-    <div class="sec-h">📋 現場應急應用</div>
+    <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
       <tr><th>隊伍數量</th><th>CTCSS 分配策略</th><th>指揮所設定</th></tr>
       <tr><td>2–5 支</td><td>標準 38 碼，各隊一個</td><td>無 CTCSS（接收全部）</td></tr>
       <tr><td>6–10 支</td><td>選擇間隔較大的碼（避免互調）</td><td>無 CTCSS</td></tr>
       <tr><td>11+ 支</td><td>考慮分配第二個頻率</td><td>無 CTCSS</td></tr>
     </table>
-    <div class="callout warn"><span class="ct">⚠ 注意（事實）</span>CTCSS 不提供通訊保密！只要不設 CTCSS 的接收機都能聽到全部通話。</div>
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>CTCSS 是「靜噪鑰匙」而非「加密鑰匙」——它決定接收喇叭開不開，不是頻率隔離。</div>
-    <div class="callout warn"><span class="ct">⚠ 容易誤會</span>CTCSS <strong>不能</strong>讓多隊「同時」在同一頻率講話互不干擾。同時發射會因 FM 捕獲效應相撞（強者勝、弱者被吃掉）。它真正的價值是搭配<strong>輪流發話</strong>，讓多隊「分時」共用一個頻率，並各自只聽自己關心的那組。</div>
+    <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>注意（事實）</span>CTCSS 不提供通訊保密！只要不設 CTCSS 的接收機都能聽到全部通話。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>CTCSS 是「靜噪鑰匙」而非「加密鑰匙」——它決定接收喇叭開不開，不是頻率隔離。</div>
+    <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>容易誤會</span>CTCSS <strong>不能</strong>讓多隊「同時」在同一頻率講話互不干擾。同時發射會因 FM 捕獲效應相撞（強者勝、弱者被吃掉）。它真正的價值是搭配<strong>輪流發話</strong>，讓多隊「分時」共用一個頻率，並各自只聽自己關心的那組。</div>
   </div>
 
   <!-- 情境2 -->
   <div id="p2" class="scenario">
-    <h2>🏔️ 情境2：RF 增益與接收靈敏度</h2>
-    <div class="sec-h">📍 現場困境</div>
+    <h2><i data-lucide="mountain" style="width:24px;height:24px;vertical-align:-4px"></i> 情境2：RF 增益與接收靈敏度</h2>
+    <div class="sec-h"><i data-lucide="map-pin"></i>現場困境</div>
     <div class="prose-card"><p>山區搜救隊距指揮所 5km，信號微弱，調到最大音量仍聽不清楚。指揮官問：「除了大聲，還有什麼辦法？」</p></div>
 
-    <div class="sec-h">🔬 RF 理論：靈敏度與增益的關係</div>
+    <div class="sec-h"><i data-lucide="microscope"></i>RF 理論：靈敏度與增益的關係</div>
     <div class="prose-card">
       <p><strong>接收機的本質問題：</strong>信號和雜訊都會被放大</p>
       <ul>
@@ -193,7 +193,7 @@ FM調制指數：
       </ul>
     </div>
 
-    <div class="sec-h">📐 數學公式推導</div>
+    <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">接收靈敏度公式（事實）：
   S(dBm) = 10·lg(k·T·B) + NF + SNR_min
 
@@ -223,8 +223,8 @@ RF增益的dB計算：
   過載點（Overload）：接收機前端飽和
     → RTL-SDR典型過載點：約 -30 dBm輸入</div>
 
-    <div class="sec-h">🔬 SDR 驗證實驗</div>
-    <div class="callout info"><span class="ct">🔬 工具 — GQRX + RTL-SDR + 對講機（500m 外發話）</span>
+    <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
+    <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX + RTL-SDR + 對講機（500m 外發話）</span>
       <p style="margin-top:8px"><strong>步驟1：建立基準</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>GQRX 設定：NFM 模式，頻寬 12.5kHz，目標頻率 145.500MHz</li>
@@ -268,7 +268,7 @@ RF增益 49dB（過載）：
      ╱███████
   ▀▀███████████▀▀▀▀▀▀▀▀▀▀▀   語音：噪聲蓋過 ✗</div>
 
-    <div class="sec-h">📋 現場應急應用</div>
+    <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
       <tr><th>距離/環境</th><th>建議起始增益</th><th>調整方向</th><th>警告訊號</th></tr>
       <tr><td>近距離市區（&lt;300m）</td><td>10–15dB</td><td>信號好不需再增</td><td>嗡聲=過載→降低</td></tr>
@@ -276,16 +276,16 @@ RF增益 49dB（過載）：
       <tr><td>山區/遠距（1km+）</td><td>30–40dB</td><td>找 SNR 最大點</td><td>仍無信號=天線問題</td></tr>
       <tr><td>城市大樓（多反射）</td><td>15–25dB</td><td>先降後調</td><td>過多多路徑=換位置</td></tr>
     </table>
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>「最大增益 ≠ 最好接收」。每個環境都有一個最佳增益點，用 FFT 的 SNR 就能找到。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「最大增益 ≠ 最好接收」。每個環境都有一個最佳增益點，用 FFT 的 SNR 就能找到。</div>
   </div>
 
   <!-- 情境3 -->
   <div id="p3" class="scenario">
-    <h2>📡 情境3：頻寬與頻譜效率</h2>
-    <div class="sec-h">📍 現場困境</div>
+    <h2><i data-lucide="radio-tower" style="width:24px;height:24px;vertical-align:-4px"></i> 情境3：頻寬與頻譜效率</h2>
+    <div class="sec-h"><i data-lucide="map-pin"></i>現場困境</div>
     <div class="prose-card"><p>中繼台停電後隊伍改用直聯，但通話距離從 5km 驟降到不到 2km。查對講機設定，發現部分隊伍設的是 25kHz 寬頻。</p></div>
 
-    <div class="sec-h">🔬 RF 理論：頻寬與能量密度</div>
+    <div class="sec-h"><i data-lucide="microscope"></i>RF 理論：頻寬與能量密度</div>
     <div class="prose-card">
       <p><strong>核心物理原理：</strong></p>
       <ul>
@@ -295,7 +295,7 @@ RF增益 49dB（過載）：
       </ul>
     </div>
 
-    <div class="sec-h">📐 數學公式推導</div>
+    <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">頻譜功率密度（推論，基於FM頻譜特性）：
 
 功率密度 PSD(W/Hz) = P_total / B
@@ -320,8 +320,8 @@ Carson規則（FM頻寬計算）：
   窄頻（12.5kHz限）：Δf = 2.5kHz，f_max = 3.5kHz
   寬頻（25kHz限）：  Δf = 5kHz，  f_max = 7.5kHz</div>
 
-    <div class="sec-h">🔬 SDR 驗證實驗</div>
-    <div class="callout info"><span class="ct">🔬 工具 — GQRX + RTL-SDR + 2 支不同頻寬設定的對講機</span>
+    <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
+    <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX + RTL-SDR + 2 支不同頻寬設定的對講機</span>
       <p style="margin-top:8px"><strong>步驟1：測量 FFT 波形寬度</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>對講機A設 25kHz 模式在 145.500MHz 發話</li>
@@ -366,7 +366,7 @@ Carson規則（FM頻寬計算）：
   └─────────────────────────────────────┘
   能量集中 → 功率密度更高 → 信號更清晰</div>
 
-    <div class="sec-h">📋 現場應急應用</div>
+    <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
       <tr><th>情況</th><th>推薦頻寬</th><th>原因</th></tr>
       <tr><td>有中繼台支援</td><td>12.5kHz（仍建議）</td><td>現代標準，節省電力</td></tr>
@@ -374,16 +374,16 @@ Carson規則（FM頻寬計算）：
       <tr><td>與舊式對講機配合</td><td>視對方設定</td><td>需確認對方設定</td></tr>
       <tr><td>強電池使用時間優先</td><td>12.5kHz</td><td>相同覆蓋所需功率更低</td></tr>
     </table>
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>12.5kHz 窄頻是「用更少能量走更遠的路」。災害時節省電力和擴大覆蓋都靠它。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>12.5kHz 窄頻是「用更少能量走更遠的路」。災害時節省電力和擴大覆蓋都靠它。</div>
   </div>
 
   <!-- 情境4 -->
   <div id="p4" class="scenario">
-    <h2>🏢 情境4：CTCSS 層級管理</h2>
-    <div class="sec-h">📍 現場困境</div>
+    <h2><i data-lucide="building" style="width:24px;height:24px;vertical-align:-4px"></i> 情境4：CTCSS 層級管理</h2>
+    <div class="sec-h"><i data-lucide="map-pin"></i>現場困境</div>
     <div class="prose-card"><p>大樓倒塌 40 人被困不同樓層，1 台對講機需協調 5 支搜救隊，結果 40 人搶著發話，指揮所聽到一片混亂。</p></div>
 
-    <div class="sec-h">🔬 RF 理論：頻率共享的信道容量</div>
+    <div class="sec-h"><i data-lucide="microscope"></i>RF 理論：頻率共享的信道容量</div>
     <div class="prose-card">
       <p><strong>Shannon 容量公式（推論方向）：</strong></p>
       <ul>
@@ -394,7 +394,7 @@ Carson規則（FM頻寬計算）：
       </ul>
     </div>
 
-    <div class="sec-h">📐 系統設計原則</div>
+    <div class="sec-h"><i data-lucide="ruler"></i>系統設計原則</div>
     <div class="formula">層級化通訊模型：
 
 主頻率：145.500MHz（唯一申請）
@@ -420,8 +420,8 @@ CTCSS碼選擇建議（避免互調干擾）：
   例：67.0, 88.5, 110.9, 131.8 → 間隔約20Hz ✓
   避免：67.0, 71.9, 74.4 → 間隔過小，有互調風險</div>
 
-    <div class="sec-h">🔬 SDR 驗證實驗</div>
-    <div class="callout info"><span class="ct">🔬 工具 — GQRX 瀑布圖 + 4 支對講機（分別設不同 CTCSS）</span>
+    <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
+    <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX 瀑布圖 + 4 支對講機（分別設不同 CTCSS）</span>
       <p style="margin-top:8px"><strong>步驟1：建立層級通訊系統</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>對講機1（指揮所）：145.500MHz，無 CTCSS</li>
@@ -457,16 +457,16 @@ CTCSS碼選擇建議（避免互調干擾）：
 │1-2樓監聽時：只聽到廣播 + 自己的確認
 │→ 不被其他層的通話干擾</div>
 
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>CTCSS 層級化 ≈ 在同一頻率上創造「虛擬分頻道」——但這是「選聽」上的虛擬分頻，物理上仍是<strong>一個頻率、同時只能一人講</strong>。必須搭配輪流發話的通訊規程才成立，不是讓各層可以同時開講。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>CTCSS 層級化 ≈ 在同一頻率上創造「虛擬分頻道」——但這是「選聽」上的虛擬分頻，物理上仍是<strong>一個頻率、同時只能一人講</strong>。必須搭配輪流發話的通訊規程才成立，不是讓各層可以同時開講。</div>
   </div>
 
   <!-- 情境5 -->
   <div id="p5" class="scenario">
-    <h2>🔧 情境5：天線診斷與故障定位</h2>
-    <div class="sec-h">📍 現場困境</div>
+    <h2><i data-lucide="wrench" style="width:24px;height:24px;vertical-align:-4px"></i> 情境5：天線診斷與故障定位</h2>
+    <div class="sec-h"><i data-lucide="map-pin"></i>現場困境</div>
     <div class="prose-card"><p>救援第 8 小時，信號突然完全消失，電池有電，頻率沒動，找不到原因。後來發現天線被倒塌物砸歪。</p></div>
 
-    <div class="sec-h">🔬 RF 理論：天線的核心作用</div>
+    <div class="sec-h"><i data-lucide="microscope"></i>RF 理論：天線的核心作用</div>
     <div class="prose-card">
       <p><strong>天線的本質：將電能轉換為電磁波（或反向）</strong></p>
       <ul>
@@ -476,7 +476,7 @@ CTCSS碼選擇建議（避免互調干擾）：
       </ul>
     </div>
 
-    <div class="sec-h">📐 數學公式推導</div>
+    <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">波長計算：
   λ = c / f
 
@@ -504,8 +504,8 @@ UHF 435MHz對講機：
   SWR 2.0–3.0：有問題，需調整
   SWR > 3.0：嚴重失配，損壞天線</div>
 
-    <div class="sec-h">🔬 SDR 診斷流程</div>
-    <div class="callout info"><span class="ct">🔬 快速診斷三步驟（目標：2 分鐘內定位問題）</span>
+    <div class="sec-h"><i data-lucide="microscope"></i>SDR 診斷流程</div>
+    <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>快速診斷三步驟（目標：2 分鐘內定位問題）</span>
       <p style="margin-top:8px"><strong>步驟1：FFT 有無信號（最快）</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>GQRX 監聽目標頻率，叫對方發話</li>
@@ -555,16 +555,16 @@ UHF 435MHz對講機：
   │            （無峰值）     │ 峰值 ≤ -100dBm
   └──────────────────────────┘</div>
 
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>信號消失的第一個診斷工具是 FFT，不是猜測。2 分鐘內可定位是天線問題還是設定問題。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>信號消失的第一個診斷工具是 FFT，不是猜測。2 分鐘內可定位是天線問題還是設定問題。</div>
   </div>
 
   <!-- 情境6 -->
   <div id="p6" class="scenario">
-    <h2>⚡ 情境6：干擾檢測與定位</h2>
-    <div class="sec-h">📍 現場困境</div>
+    <h2><i data-lucide="zap" style="width:24px;height:24px;vertical-align:-4px"></i> 情境6：干擾檢測與定位</h2>
+    <div class="sec-h"><i data-lucide="map-pin"></i>現場困境</div>
     <div class="prose-card"><p>救援 12 小時後，指揮所突然聽到陌生聲音插進來：「天氣很好，今天適合釣魚」。通訊協調被打斷，無法確認干擾來源。</p></div>
 
-    <div class="sec-h">🔬 RF 理論：干擾的類型與物理特徵</div>
+    <div class="sec-h"><i data-lucide="microscope"></i>RF 理論：干擾的類型與物理特徵</div>
     <div class="prose-card">
       <p><strong>FM 通訊中常見干擾類型（事實）：</strong></p>
       <ul>
@@ -574,7 +574,7 @@ UHF 435MHz對講機：
       </ul>
     </div>
 
-    <div class="sec-h">📐 數學公式推導</div>
+    <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">FM捕捉效應（Capture Effect）：
   當S1/S2 > 6dB（約4倍功率差）時
   接收機傾向「捕捉」強信號，弱信號被抑制
@@ -604,8 +604,8 @@ UHF 435MHz對講機：
   兩個頻率 f1, f2 → 產生 2f1-f2 及 2f2-f1
   例：145.500 + 146.000MHz → 產生 145.000MHz虛假信號</div>
 
-    <div class="sec-h">🔬 SDR 驗證實驗</div>
-    <div class="callout info"><span class="ct">🔬 工具 — GQRX 掃頻模式 + RTL-SDR</span>
+    <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
+    <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX 掃頻模式 + RTL-SDR</span>
       <p style="margin-top:8px"><strong>步驟1：定位干擾頻率</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>GQRX 設定：掃描模式，範圍 144.0–147.0MHz</li>
@@ -651,16 +651,16 @@ UHF 435MHz對講機：
 
 干擾更強（145.510MHz）→ FM捕捉效應讓干擾壓過我方信號</div>
 
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>干擾不是魔鬼，用 FFT 能清楚看到它的頻率和強度，三角定位能推算方向，快速換頻是最有效的應急處置。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>干擾不是魔鬼，用 FFT 能清楚看到它的頻率和強度，三角定位能推算方向，快速換頻是最有效的應急處置。</div>
   </div>
 
   <!-- 情境7 -->
   <div id="p7" class="scenario">
-    <h2>🌉 情境7：中繼台設計與雙工原理</h2>
-    <div class="sec-h">📍 現場困境</div>
+    <h2><i data-lucide="route" style="width:24px;height:24px;vertical-align:-4px"></i> 情境7：中繼台設計與雙工原理</h2>
+    <div class="sec-h"><i data-lucide="map-pin"></i>現場困境</div>
     <div class="prose-card"><p>文山區與信義區搜救隊需要協調，直線距離 3km 但中間有山丘遮擋，直聯完全無法通話。</p></div>
 
-    <div class="sec-h">🔬 RF 理論：中繼台的物理原理</div>
+    <div class="sec-h"><i data-lucide="microscope"></i>RF 理論：中繼台的物理原理</div>
     <div class="prose-card">
       <p><strong>為什麼需要中繼台：地形遮擋 = 菲涅耳區阻礙</strong></p>
       <ul>
@@ -676,7 +676,7 @@ UHF 435MHz對講機：
       </ul>
     </div>
 
-    <div class="sec-h">📐 數學公式推導</div>
+    <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">菲涅耳區（Fresnel Zone）計算（事實）：
   第一菲涅耳區半徑：
   r1 = √(λ·d1·d2 / (d1+d2))
@@ -708,8 +708,8 @@ UHF 435MHz對講機：
   UHF常見偏移：±5MHz
   例：接收430.000，發射435.000MHz</div>
 
-    <div class="sec-h">🔬 SDR 驗證實驗</div>
-    <div class="callout info"><span class="ct">🔬 工具 — GQRX 雙頻監聽 + RTL-SDR</span>
+    <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
+    <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX 雙頻監聽 + RTL-SDR</span>
       <p style="margin-top:8px"><strong>步驟1：設置中繼台通訊系統</strong></p>
       <ul style="margin:4px 0 0 20px">
         <li>文山隊對講機：發 145.500，收 146.100MHz（設 offset +600kHz）</li>
@@ -752,7 +752,7 @@ t=0   ▓▓▓▓▓▓▓▓▓▓▓▓       (無)
 t=0.1 ▓▓▓▓▓▓▓▓▓▓▓▓       (無)  ← 沒有轉發！
 → 立刻在GQRX上看出中繼台故障</div>
 
-    <div class="sec-h">📋 現場應急應用</div>
+    <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
       <tr><th>地形情況</th><th>中繼台部署策略</th><th>SDR 驗證方式</th></tr>
       <tr><td>兩點間有山丘（&lt;5km）</td><td>山頂或高樓架設</td><td>兩頻同時監聽</td></tr>
@@ -760,11 +760,11 @@ t=0.1 ▓▓▓▓▓▓▓▓▓▓▓▓       (無)  ← 沒有轉發！
       <tr><td>廣大搜索區域</td><td>多個中繼形成網絡</td><td>掃頻監控所有節點</td></tr>
       <tr><td>無法架設實體中繼</td><td>考慮衛星電話備援</td><td>SDR 監測無線電段</td></tr>
     </table>
-    <div class="callout tip"><span class="ct">✓ 記憶方法</span>中繼台是「把低谷的信號搬到山頂再播出」，雙工頻率是「防止自己講話時堵住自己的耳朵」。</div>
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>中繼台是「把低谷的信號搬到山頂再播出」，雙工頻率是「防止自己講話時堵住自己的耳朵」。</div>
   </div>
 
   <!-- 總覽 -->
-  <div class="sec-h">📋 課程總覽：七大情境 × RF 理論 × SDR 工具</div>
+  <div class="sec-h"><i data-lucide="clipboard-list"></i>課程總覽：七大情境 × RF 理論 × SDR 工具</div>
   <table class="tbl">
     <tr><th>情境</th><th>核心困難</th><th>RF 參數</th><th>關鍵公式</th><th>SDR 工具</th></tr>
     <tr><td>1：CTCSS</td><td>5 隊搶 1 頻</td><td>亞音頻調制</td><td>FM 調制指數 β=Δf/f_m</td><td>GQRX 音頻 FFT</td></tr>

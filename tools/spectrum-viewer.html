@@ -16,7 +16,7 @@
     <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
   </div>
 
-  <div class="tool-title">業餘頻段互動頻譜 📊</div>
+  <div class="tool-title">業餘頻段互動頻譜</div>
   <p class="tool-sub">對應「無線電規章與相關法規」題庫 · 點擊頻段查看詳細規定。</p>
 
   <div class="emerg">
@@ -210,7 +210,7 @@ function showDetail(band) {
     const note = document.createElement('div');
     note.className = 'callout warn';
     note.style.width = '100%';
-    note.innerHTML = '<span class="ct">⚠ 限制</span>' + band.restriction;
+    note.innerHTML = '<span class="ct"><i data-lucide="triangle-alert"></i>限制</span>' + band.restriction;
     modesEl.appendChild(note);
   }
 
@@ -218,10 +218,11 @@ function showDetail(band) {
     const note = document.createElement('div');
     note.className = 'callout warn';
     note.style.width = '100%';
-    note.innerHTML = `<span class="ct">⚠ 緊急救難</span>${band.emerg} MHz 為緊急救難呼叫頻率，呼叫後立即移頻，不得停留。`;
+    note.innerHTML = `<span class="ct"><i data-lucide="triangle-alert"></i>緊急救難</span>${band.emerg} MHz 為緊急救難呼叫頻率，呼叫後立即移頻，不得停留。`;
     modesEl.appendChild(note);
   }
 
+  if (window.lucide) lucide.createIcons();
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
@@ -266,12 +267,12 @@ function lookupFreq() {
   let freqStr = mhz >= 1 ? `${mhz.toFixed(3)} MHz` : `${khz.toFixed(3)} kHz`;
   const lambda = (300 / mhz).toFixed(2);
 
-  let matchText = '<span class="match-no">✗ 此頻率不在台灣二等業餘分配頻段內</span>';
+  let matchText = '<span class="match-no"><i data-lucide="x"></i>此頻率不在台灣二等業餘分配頻段內</span>';
   let detailText = '';
 
   const match = bands.find(b => mhz >= b.mhzLow && mhz <= b.mhzHigh);
   if (match) {
-    matchText = `<span class="match-yes">✓ 在頻段內：${match.name}（${match.freq}）</span>`;
+    matchText = `<span class="match-yes"><i data-lucide="circle-check"></i>在頻段內：${match.name}（${match.freq}）</span>`;
     detailText = `二等功率限制：<b>${match.pw2}</b><br>三等可用：<b>${match.grade3 ? '✓ ' + match.pw3 : '✗ 不可使用'}</b>`
       + (match.restriction ? `<br><span style="color:var(--rose-ink)">⚠ ${match.restriction}</span>` : '')
       + (match.emerg && Math.abs(mhz - match.emerg) < 1 ? `<br><span style="color:var(--rose-ink)">⚠ 緊急救難頻率附近，請注意規定</span>` : '')
@@ -282,6 +283,7 @@ function lookupFreq() {
   document.getElementById('fc-freq-display').textContent = freqStr;
   document.getElementById('fc-detail').innerHTML = `波長：<b>${lambda} m</b> ｜ 半波偶極：<b>${(142.5/mhz).toFixed(2)} m</b><br>${detailText}`;
   document.getElementById('fc-match').innerHTML = matchText;
+  if (window.lucide) lucide.createIcons();
 }
 
 function switchView(v, btn) {

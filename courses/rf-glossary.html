@@ -26,7 +26,7 @@
 
   <div class="read-hero">
     <div class="eyebrow">REFERENCE · 白話手冊</div>
-    <h1>📻 RF 無線電術語白話手冊</h1>
+    <h1>RF 無線電術語白話手冊</h1>
     <p>給沒學過 RF 理論的你 — 不用公式，用比喻和圖解理解每個術語。查了就懂，隨時翻閱。</p>
   </div>
 
@@ -37,28 +37,28 @@
 
   <div class="filters">
     <button class="fbtn active" onclick="filterCat('all',this)">全部</button>
-    <button class="fbtn" onclick="filterCat('basic',this)">📡 基礎概念</button>
-    <button class="fbtn" onclick="filterCat('sdr',this)">🖥 SDR 操作</button>
-    <button class="fbtn" onclick="filterCat('scenario',this)">🏘 情境參數</button>
-    <button class="fbtn" onclick="filterCat('advanced',this)">🔬 進階理論</button>
+    <button class="fbtn" onclick="filterCat('basic',this)"><i data-lucide="radio-tower"></i>基礎概念</button>
+    <button class="fbtn" onclick="filterCat('sdr',this)"><i data-lucide="cpu"></i>SDR 操作</button>
+    <button class="fbtn" onclick="filterCat('scenario',this)"><i data-lucide="building-2"></i>情境參數</button>
+    <button class="fbtn" onclick="filterCat('advanced',this)"><i data-lucide="microscope"></i>進階理論</button>
   </div>
 
   <!-- ===== 基礎概念 ===== -->
-  <div class="cat-title">📡 基礎概念：先搞懂這些，其他就通了</div>
+  <div class="cat-title"><i data-lucide="radio-tower"></i>基礎概念：先搞懂這些，其他就通了</div>
   <div class="concept-grid">
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico">📻</span><div><div class="title">無線電頻率 / 頻道</div><div class="en">Radio Frequency / Channel</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="radio"></i></span><div><div class="title">無線電頻率 / 頻道</div><div class="en">Radio Frequency / Channel</div></div></div>
       <div class="concept-bd">
         <div class="explain">無線電信號在空氣中以「波」的形式傳播，每個波每秒振動的次數就是頻率，單位是 Hz（赫茲）。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>就像廣播電台一樣，「台北廣播 FM 98.1」就是在 98.1MHz 這個頻率上。你把對講機「調到 145.500MHz」，就是在聽那個頻率上的對話，就像調廣播電台。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像廣播電台一樣，「台北廣播 FM 98.1」就是在 98.1MHz 這個頻率上。你把對講機「調到 145.500MHz」，就是在聽那個頻率上的對話，就像調廣播電台。</div>
         <div class="visual">常見頻率範圍：
 VHF 144–148 MHz → 對講機常用（如145.500）
 UHF 430–440 MHz → 手持對講機常用（如433.500）
 FM廣播 87.5–108 MHz → 收音機
 
 頻率越高 → 波越短 → 穿透力越弱但帶寬越大</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>頻率就是「電台號碼」，兩台對講機要通話，電台號碼必須一樣。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>頻率就是「電台號碼」，兩台對講機要通話，電台號碼必須一樣。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span><span class="ctag scen">情境1</span></div>
       </div>
     </div>
@@ -67,7 +67,7 @@ FM廣播 87.5–108 MHz → 收音機
       <div class="concept-hd hd-basic"><span class="ico">〰️</span><div><div class="title">波長</div><div class="en">Wavelength (λ)</div></div></div>
       <div class="concept-bd">
         <div class="explain">一個完整無線電波的「長度」，單位是公尺或公分。頻率越高，波長越短。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>把無線電波想成水波紋。你快速揮手（高頻），水波紋密集、每個波紋很短。你慢慢揮手（低頻），波紋稀疏、每個波紋很長。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>把無線電波想成水波紋。你快速揮手（高頻），水波紋密集、每個波紋很短。你慢慢揮手（低頻），波紋稀疏、每個波紋很長。</div>
         <div class="visual">計算公式（這個夠簡單，記住吧）：
 波長(公尺) = 300 ÷ 頻率(MHz)
 
@@ -75,16 +75,16 @@ FM廣播 87.5–108 MHz → 收音機
 435MHz → 300 ÷ 435 ≈ 0.69公尺（波長69公分）
 
 這直接決定天線該做多長！</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>頻率 × 波長 = 300（光速的簡化）。145MHz 的對講機，天線長約 52 公分（波長的四分之一）。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>頻率 × 波長 = 300（光速的簡化）。145MHz 的對講機，天線長約 52 公分（波長的四分之一）。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span><span class="ctag scen">情境5</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico">🔊</span><div><div class="title">FM 調制</div><div class="en">Frequency Modulation</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="volume-2"></i></span><div><div class="title">FM 調制</div><div class="en">Frequency Modulation</div></div></div>
       <div class="concept-bd">
         <div class="explain">FM 是「調頻」的縮寫。把聲音「藏進」無線電波的一種方式。對講機和廣播電台都用 FM。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>想像你講話時聲音忽高忽低，FM 就是把這個「高低起伏」轉換成電波頻率的「快慢變化」。收音機再把「快慢變化」還原成聲音。就像摩斯密碼，但編碼規則不同。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你講話時聲音忽高忽低，FM 就是把這個「高低起伏」轉換成電波頻率的「快慢變化」。收音機再把「快慢變化」還原成聲音。就像摩斯密碼，但編碼規則不同。</div>
         <div class="visual">AM（調幅）：改變波的「高度（振幅）」來藏信息
   ─波波波─  →  ───波─波波────
 
@@ -95,16 +95,16 @@ FM的優點：
   ✓ 抗干擾（捕捉效應）
   ✓ 音質較AM清晰
   ✓ 民防對講機的標準</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>FM 廣播和對講機的原理一樣。你每天聽的台北 FM 電台就是 FM 調制！</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FM 廣播和對講機的原理一樣。你每天聽的台北 FM 電台就是 FM 調制！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico">📶</span><div><div class="title">信號強度 / S值</div><div class="en">Signal Strength / S-meter</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="signal"></i></span><div><div class="title">信號強度 / S值</div><div class="en">Signal Strength / S-meter</div></div></div>
       <div class="concept-bd">
         <div class="explain">接收到的信號有多強，用 S1 到 S9 表示，S9 最強。通訊報告時說「你的信號是五九」，意思就是 S5 S9 的最高值，信號很強。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>就像手機的格數。1格=S3，2格=S5，3格=S7，4格=S9。格數越多，訊號越強，通話越清晰。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像手機的格數。1格=S3，2格=S5，3格=S7，4格=S9。格數越多，訊號越強，通話越清晰。</div>
         <div class="visual">S值對照表：
 S1  ────── 幾乎聽不到（-121dBm）
 S3  ──────── 很弱（-115dBm）
@@ -113,16 +113,16 @@ S7  ──────────────── 中等清晰（-103dBm）
 S9  ──────────────────── 很強（-97dBm）
 
 每增加1個S值 ≈ 信號強度增加6dB（約4倍功率）</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>「五九報告」是無線電通訊裡說對方信號最完美的方式，就像給 5 顆星的評價！</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「五九報告」是無線電通訊裡說對方信號最完美的方式，就像給 5 顆星的評價！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico">🔋</span><div><div class="title">功率 / dBm</div><div class="en">Power / dBm</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="battery-charging"></i></span><div><div class="title">功率 / dBm</div><div class="en">Power / dBm</div></div></div>
       <div class="concept-bd">
         <div class="explain">功率是信號有多「用力」發射，單位是瓦（W）。dBm 是另一種表示方式，更方便計算弱信號。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>瓦特就像燈泡的亮度。1W 對講機就是 1 瓦的燈泡，5W 就是 5 瓦，更亮（更遠）。dBm 就像把亮度轉換成「刻度」，讓你更容易比較非常暗到非常亮的範圍。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>瓦特就像燈泡的亮度。1W 對講機就是 1 瓦的燈泡，5W 就是 5 瓦，更亮（更遠）。dBm 就像把亮度轉換成「刻度」，讓你更容易比較非常暗到非常亮的範圍。</div>
         <div class="visual">常用換算（記幾個就夠）：
 1W  = 30 dBm  （對講機低功率）
 5W  = 37 dBm  （對講機標準功率）
@@ -135,16 +135,16 @@ S9  ──────────────────── 很強（-97dBm
 
 dBm每增加3 = 功率約加倍
 dBm每增加10 = 功率增加10倍</div>
-        <div class="callout warn"><span class="ct">⚠ 常見誤解</span>很多人以為功率大就一定能通話。錯！天線方向、地形、頻率都影響更大。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>很多人以為功率大就一定能通話。錯！天線方向、地形、頻率都影響更大。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico">🌊</span><div><div class="title">VHF / UHF</div><div class="en">Very High / Ultra High Frequency</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="waves"></i></span><div><div class="title">VHF / UHF</div><div class="en">Very High / Ultra High Frequency</div></div></div>
       <div class="concept-bd">
         <div class="explain">兩種不同的頻率範圍，決定無線電信號的「個性」：能傳多遠、能不能穿牆、天線要多長。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>VHF 像「長跑選手」，跑得遠但體型大（天線長）。UHF 像「城市跑者」，更靈活能在建築物間穿梭，但跑不那麼遠。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>VHF 像「長跑選手」，跑得遠但體型大（天線長）。UHF 像「城市跑者」，更靈活能在建築物間穿梭，但跑不那麼遠。</div>
         <div class="visual">VHF（30–300MHz，台灣民防常用144–148MHz）
   ├─ 波長：1–10公尺
   ├─ 天線長：約51公分（144MHz的λ/4）
@@ -156,7 +156,7 @@ UHF（300–3000MHz，台灣民防常用430–440MHz）
   ├─ 天線長：約17公分（435MHz的λ/4）
   ├─ 特性：穿透建築物較佳，城市適用
   └─ 用途：市區救災、室內通訊</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>VHF＝視野好的郊外，UHF＝城市裡的街道。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>VHF＝視野好的郊外，UHF＝城市裡的街道。</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
@@ -164,14 +164,14 @@ UHF（300–3000MHz，台灣民防常用430–440MHz）
   </div>
 
   <!-- ===== SDR操作 ===== -->
-  <div class="cat-title">🖥 SDR 操作術語：用 GQRX 時會看到的</div>
+  <div class="cat-title"><i data-lucide="cpu"></i>SDR 操作術語：用 GQRX 時會看到的</div>
   <div class="concept-grid">
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">💻</span><div><div class="title">SDR（軟體定義無線電）</div><div class="en">Software Defined Radio</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="cpu"></i></span><div><div class="title">SDR（軟體定義無線電）</div><div class="en">Software Defined Radio</div></div></div>
       <div class="concept-bd">
         <div class="explain">傳統無線電的硬體線路（濾波器、解調器）全部改用電腦軟體來做。一個小小的 USB 接收器加上電腦就能接收各種無線電信號。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>以前每種收音機只能收一個波段（AM 或 FM）。SDR 就像一台「萬能收音機」，只要換軟體設定，就能收 AM、FM、對講機、飛機通訊、氣象衛星…什麼都收。硬體只是個「窗口」，軟體決定你聽什麼。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>以前每種收音機只能收一個波段（AM 或 FM）。SDR 就像一台「萬能收音機」，只要換軟體設定，就能收 AM、FM、對講機、飛機通訊、氣象衛星…什麼都收。硬體只是個「窗口」，軟體決定你聽什麼。</div>
         <div class="visual">傳統對講機：
   天線 → 固定硬體電路 → 只能做FM
 
@@ -182,16 +182,16 @@ RTL-SDR：
 
 RTL-SDR：電視棒改裝，約300元台幣
 能接收：25MHz–1750MHz（幾乎涵蓋民用通訊）</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>SDR 就是「可程式化的收音機」。硬體不變，軟體改，用途就變了。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>SDR 就是「可程式化的收音機」。硬體不變，軟體改，用途就變了。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">📊</span><div><div class="title">FFT（頻譜圖）</div><div class="en">Fast Fourier Transform / Spectrum</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="chart-column"></i></span><div><div class="title">FFT（頻譜圖）</div><div class="en">Fast Fourier Transform / Spectrum</div></div></div>
       <div class="concept-bd">
         <div class="explain">把「時間軸上的信號」轉換成「頻率軸上的成分」，讓你一眼看出哪些頻率有信號、強度多少。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>你在演唱會錄了一段音樂，FFT 就像音樂分析師，把這段音樂拆解成：「這裡有鼓（低頻）、這裡有吉他（中頻）、這裡有人聲（高頻）」，告訴你每個成分的「音量」。頻譜就是這個「成分分佈圖」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>你在演唱會錄了一段音樂，FFT 就像音樂分析師，把這段音樂拆解成：「這裡有鼓（低頻）、這裡有吉他（中頻）、這裡有人聲（高頻）」，告訴你每個成分的「音量」。頻譜就是這個「成分分佈圖」。</div>
         <div class="visual">GQRX的頻譜圖長這樣：
 
 信號強度
@@ -205,16 +205,16 @@ RTL-SDR：電視棒改裝，約300元台幣
 
 峰值越高 = 信號越強
 峰值位置 = 信號頻率</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>FFT 把「時間」換成「頻率」來顯示信號，就像把一首歌變成「音樂成份清單」。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FFT 把「時間」換成「頻率」來顯示信號，就像把一首歌變成「音樂成份清單」。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">🌊</span><div><div class="title">瀑布圖</div><div class="en">Waterfall Display</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="waves"></i></span><div><div class="title">瀑布圖</div><div class="en">Waterfall Display</div></div></div>
       <div class="concept-bd">
         <div class="explain">把頻譜圖隨時間「往下疊」，就形成瀑布圖。顏色深淺代表信號強度，讓你看到信號在時間上的變化。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>把頻譜圖印成細細的一條，然後一條一條往下疊起來。新的在上面，舊的在下面。你能看出「這個信號是什麼時候出現的」以及「持續多久」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>把頻譜圖印成細細的一條，然後一條一條往下疊起來。新的在上面，舊的在下面。你能看出「這個信號是什麼時候出現的」以及「持續多久」。</div>
         <div class="visual">瀑布圖示意（時間從上往下）：
 
 時間  145.0      145.5      146.0 MHz
@@ -226,16 +226,16 @@ t4  ░░░░░░░░░░░░░░░░░░░░░░░  ← �
 t5  ░░░░░░░░░░░░▓▓▓░░░░░░░░  ← 又出現
 
 深色=強信號  淺色/空白=沒有信號</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>瀑布圖是「有時間軸的頻譜」，能看出信號的歷史。誰在說話、說了多久，一目瞭然。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>瀑布圖是「有時間軸的頻譜」，能看出信號的歷史。誰在說話、說了多久，一目瞭然。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">🔕</span><div><div class="title">底噪（噪聲底）</div><div class="en">Noise Floor</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="bell-off"></i></span><div><div class="title">底噪（噪聲底）</div><div class="en">Noise Floor</div></div></div>
       <div class="concept-bd">
         <div class="explain">即使沒有任何人發話，接收機仍然會「聽到」一些隨機的微弱雜訊，這就是底噪。是接收機能力的下限。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>你在安靜的圖書館裡，即使沒有人說話，你也能聽到空調嗡嗡聲、微弱的環境音。這就是「底噪」。任何聲音要比這個底噪高，你才能「聽到」。無線電也一樣，信號必須比底噪強，才能被接收。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>你在安靜的圖書館裡，即使沒有人說話，你也能聽到空調嗡嗡聲、微弱的環境音。這就是「底噪」。任何聲音要比這個底噪高，你才能「聽到」。無線電也一樣，信號必須比底噪強，才能被接收。</div>
         <div class="visual">FFT中的底噪與信號：
 
 信號強度
@@ -248,16 +248,16 @@ t5  ░░░░░░░░░░░░▓▓▓░░░░░░░░  ← �
 
 RTL-SDR的底噪：約 -90 至 -100 dBm
 專業接收機底噪：約 -110 至 -120 dBm</div>
-        <div class="callout warn"><span class="ct">⚠ 常見誤解</span>RF 增益調太高 → 底噪也升高 → 反而遮蓋了弱信號！這是最常見的錯誤。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>RF 增益調太高 → 底噪也升高 → 反而遮蓋了弱信號！這是最常見的錯誤。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span><span class="ctag scen">情境2</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">📈</span><div><div class="title">信噪比（SNR）</div><div class="en">Signal-to-Noise Ratio</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="trending-up"></i></span><div><div class="title">信噪比（SNR）</div><div class="en">Signal-to-Noise Ratio</div></div></div>
       <div class="concept-bd">
         <div class="explain">信號強度和雜訊強度的「比值」。SNR 越高，信號比雜訊強越多，通話越清晰。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>在吵鬧的派對上，你朋友對你說話：「朋友的聲音」就是信號，「派對噪音」就是雜訊。朋友近在耳邊（SNR 高）＝聽得很清楚。朋友在房間另一頭（SNR 低）＝聽不清楚。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>在吵鬧的派對上，你朋友對你說話：「朋友的聲音」就是信號，「派對噪音」就是雜訊。朋友近在耳邊（SNR 高）＝聽得很清楚。朋友在房間另一頭（SNR 低）＝聽不清楚。</div>
         <div class="visual">SNR = 信號強度 - 底噪（用dB表示）
 
 SNR 5dB以下：幾乎聽不到
@@ -272,16 +272,16 @@ SNR 30dB以上：非常清晰
           ███
   ──────── ← 底噪 -90dBm
   SNR = -60 - (-90) = 30dB ← 很清晰</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>SNR 就是「信號相對雜訊有多大聲」。30dB 的 SNR 意思是信號比雜訊響 1000 倍。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>SNR 就是「信號相對雜訊有多大聲」。30dB 的 SNR 意思是信號比雜訊響 1000 倍。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span><span class="ctag scen">情境2</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">🎚️</span><div><div class="title">RF 增益</div><div class="en">RF Gain</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="sliders-horizontal"></i></span><div><div class="title">RF 增益</div><div class="en">RF Gain</div></div></div>
       <div class="concept-bd">
         <div class="explain">接收機放大天線信號的倍數。增益越高，弱信號被放大越多，但雜訊也同時被放大。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>就像麥克風的音量旋鈕。聲音很小時轉大一點，確實能聽得更清楚。但轉太大了，連空氣震動都放大了，變成嗡嗡嗡的噪音。RF 增益也一樣，有個「最佳位置」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像麥克風的音量旋鈕。聲音很小時轉大一點，確實能聽得更清楚。但轉太大了，連空氣震動都放大了，變成嗡嗡嗡的噪音。RF 增益也一樣，有個「最佳位置」。</div>
         <div class="visual">增益與通話品質的關係：
 
 增益 0────────────────────49.6 dB
@@ -294,16 +294,16 @@ SNR 30dB以上：非常清晰
 
 GQRX的RF Gain滑桿就在畫面左側
 目標：讓SNR（差值）最大的那個增益值</div>
-        <div class="callout warn"><span class="ct">⚠ 常見誤解</span>「增益設最高＝接收最好」是最常見的誤解！過高增益會讓接收機「飽和」，反而什麼都聽不到。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>「增益設最高＝接收最好」是最常見的誤解！過高增益會讓接收機「飽和」，反而什麼都聽不到。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span><span class="ctag scen">情境2</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">📻</span><div><div class="title">NFM / WFM</div><div class="en">Narrow-band / Wide-band FM</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="radio"></i></span><div><div class="title">NFM / WFM</div><div class="en">Narrow-band / Wide-band FM</div></div></div>
       <div class="concept-bd">
         <div class="explain">NFM 是「窄頻 FM」，用於對講機和民防通訊（12.5kHz）。WFM 是「寬頻 FM」，用於廣播電台（200kHz）。在 GQRX 中要正確選擇模式。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>NFM 像普通電話，只傳語音，通道窄，省資源。WFM 像 HiFi 音響，傳高音質音樂，通道寬。接收對講機一定要選 NFM，不能選 WFM，否則聲音會悶或聽不清楚。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>NFM 像普通電話，只傳語音，通道窄，省資源。WFM 像 HiFi 音響，傳高音質音樂，通道寬。接收對講機一定要選 NFM，不能選 WFM，否則聲音會悶或聽不清楚。</div>
         <div class="visual">GQRX模式選擇：
   對講機通話 → 選 NFM，設帶寬 12.5kHz
   FM廣播     → 選 WFM，設帶寬 200kHz
@@ -316,16 +316,16 @@ AM:  ───10kHz──          （中波廣播）
 調錯模式的症狀：
   用WFM收對講機 → 聲音悶、低音重
   用NFM收廣播   → 音質差、高頻切掉</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>收對講機一律用 NFM（Narrow ＝ 窄），不然就像用望遠鏡看旁邊，焦距永遠不對。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>收對講機一律用 NFM（Narrow ＝ 窄），不然就像用望遠鏡看旁邊，焦距永遠不對。</div>
         <div class="tagrow"><span class="ctag sdr">SDR</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="sdr">
-      <div class="concept-hd hd-sdr"><span class="ico">🧮</span><div><div class="title">採樣率</div><div class="en">Sample Rate</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="calculator"></i></span><div><div class="title">採樣率</div><div class="en">Sample Rate</div></div></div>
       <div class="concept-bd">
         <div class="explain">SDR 每秒「拍照」電波狀態的次數。採樣率越高，能同時觀看的頻率範圍越寬。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>就像電影的「幀率」。24fps 的電影看起來流暢，因為每秒拍了 24 張照片。SDR 的採樣率越高，每秒收集越多「電波快照」，能分析更寬的頻段。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像電影的「幀率」。24fps 的電影看起來流暢，因為每秒拍了 24 張照片。SDR 的採樣率越高，每秒收集越多「電波快照」，能分析更寬的頻段。</div>
         <div class="visual">採樣率與可視頻段：
 
 採樣率 1.0 MSPS → 可視1.0MHz（例：145.0–146.0）
@@ -343,14 +343,14 @@ AM:  ───10kHz──          （中波廣播）
   </div>
 
   <!-- ===== 情境參數 ===== -->
-  <div class="cat-title">🏘 情境參數：七大情境中的核心術語</div>
+  <div class="cat-title"><i data-lucide="building-2"></i>情境參數：七大情境中的核心術語</div>
   <div class="concept-grid">
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">🔑</span><div><div class="title">CTCSS（亞音頻）</div><div class="en">Continuous Tone Coded Squelch</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="key-round"></i></span><div><div class="title">CTCSS（亞音頻）</div><div class="en">Continuous Tone Coded Squelch</div></div></div>
       <div class="concept-bd">
         <div class="explain">在正常語音信號中「夾帶」一個極低頻的純音，用來控制接收機的靜噪是否開啟。38 個標準頻率，每個隊伍用一個「自己的頻率」。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>想像你和朋友說好，如果你先「清一下喉嚨」，他才開始認真聽你說話。CTCSS 就是那聲「清喉嚨」。同一個頻率上可以有很多人在說話，但只有「清喉嚨聲對上」的人，你的對講機才打開喇叭。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你和朋友說好，如果你先「清一下喉嚨」，他才開始認真聽你說話。CTCSS 就是那聲「清喉嚨」。同一個頻率上可以有很多人在說話，但只有「清喉嚨聲對上」的人，你的對講機才打開喇叭。</div>
         <div class="visual">同一頻率145.500MHz上的多個隊伍：
 
 隊伍A說話：語音 + 67Hz純音
@@ -361,16 +361,16 @@ AM:  ───10kHz──          （中波廣播）
 38個標準CTCSS頻率：
 67.0, 71.9, 74.4, 77.0, 79.7, 82.5, 85.4, 88.5...
 ...最高到 250.3Hz</div>
-        <div class="callout warn"><span class="ct">⚠ 常見誤解</span>CTCSS 不是「加密」！只要對方不設 CTCSS 就能聽到全部對話。這只是「喇叭開關」，不是保密工具。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>CTCSS 不是「加密」！只要對方不設 CTCSS 就能聽到全部對話。這只是「喇叭開關」，不是保密工具。</div>
         <div class="tagrow"><span class="ctag scen">情境1、4</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">🔢</span><div><div class="title">DCS（數位亞音）</div><div class="en">Digital Coded Squelch</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="binary"></i></span><div><div class="title">DCS（數位亞音）</div><div class="en">Digital Coded Squelch</div></div></div>
       <div class="concept-bd">
         <div class="explain">和 CTCSS 相同功能，但用數位編碼（0 和 1）代替類比純音。有 104 個碼，比 CTCSS 的 38 個多，誤碼率更低。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>CTCSS 是「說一個暗號音調」（類比），DCS 是「說一串暗號數字」（數位）。兩者目的一樣：控制喇叭。DCS 更精確，但設備要相容才行。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>CTCSS 是「說一個暗號音調」（類比），DCS 是「說一串暗號數字」（數位）。兩者目的一樣：控制喇叭。DCS 更精確，但設備要相容才行。</div>
         <div class="visual">CTCSS vs DCS 比較：
 
 特性        CTCSS         DCS
@@ -379,16 +379,16 @@ AM:  ───10kHz──          （中波廣播）
 誤碼率       中             低
 相容性       非常廣         需確認設備
 民防推薦     ✓（更普及）    視設備而定</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>C＝類比（連續音調），D＝數位（數字碼）。民防建議優先用 CTCSS，因為相容性最廣。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>C＝類比（連續音調），D＝數位（數字碼）。民防建議優先用 CTCSS，因為相容性最廣。</div>
         <div class="tagrow"><span class="ctag scen">情境1</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">🔇</span><div><div class="title">靜噪（Squelch）</div><div class="en">Squelch</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="volume-x"></i></span><div><div class="title">靜噪（Squelch）</div><div class="en">Squelch</div></div></div>
       <div class="concept-bd">
         <div class="explain">對講機上的一個電路，沒有信號時自動「關掉」喇叭，避免一直聽到嘶嘶聲。有信號時才開啟。CTCSS 是靜噪的一種進階控制方式。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>就像門鈴。有人按門鈴（有信號）才發出聲音，沒人按時一直保持安靜。靜噪就是對講機的「自動門鈴模式」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像門鈴。有人按門鈴（有信號）才發出聲音，沒人按時一直保持安靜。靜噪就是對講機的「自動門鈴模式」。</div>
         <div class="visual">靜噪的兩種控制方式：
 
 1. 信號強度靜噪（傳統）
@@ -406,10 +406,10 @@ AM:  ───10kHz──          （中波廣播）
     </div>
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">🛣️</span><div><div class="title">頻寬（Bandwidth）</div><div class="en">Bandwidth / Channel Spacing</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="route"></i></span><div><div class="title">頻寬（Bandwidth）</div><div class="en">Bandwidth / Channel Spacing</div></div></div>
       <div class="concept-bd">
         <div class="explain">每個無線電頻道「佔用」多少頻率空間。民防用 12.5kHz（窄頻），舊設備用 25kHz（寬頻）。頻寬窄＝每個頻道佔地小＝同段頻率可放更多頻道。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>把頻率範圍想成一條公路。25kHz 頻寬就像佔了兩個車道，12.5kHz 只佔一個車道。用窄車道就能放更多車（頻道），其他車也不容易撞到你（干擾少）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>把頻率範圍想成一條公路。25kHz 頻寬就像佔了兩個車道，12.5kHz 只佔一個車道。用窄車道就能放更多車（頻道），其他車也不容易撞到你（干擾少）。</div>
         <div class="visual">相同頻段放多少頻道：
 
 144–148MHz（4MHz可用）
@@ -420,16 +420,16 @@ AM:  ───10kHz──          （中波廣播）
 GQRX中的視覺差異：
 25kHz：  ─────█████████─────  （寬山型）
 12.5kHz：──────████───────    （窄尖型）</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>12.5＝窄頻＝現代標準＝省空間。25＝寬頻＝老式＝佔空間。民防統一用 12.5kHz，才能和更多隊伍溝通。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>12.5＝窄頻＝現代標準＝省空間。25＝寬頻＝老式＝佔空間。民防統一用 12.5kHz，才能和更多隊伍溝通。</div>
         <div class="tagrow"><span class="ctag scen">情境3</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">📡</span><div><div class="title">天線 / λ/4 天線</div><div class="en">Antenna / Quarter-wave</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="radio-tower"></i></span><div><div class="title">天線 / λ/4 天線</div><div class="en">Antenna / Quarter-wave</div></div></div>
       <div class="concept-bd">
         <div class="explain">天線把電能轉換成電磁波（發射），或把電磁波轉換成電能（接收）。最簡單有效的是四分之一波長天線（λ/4），長度是頻率波長的 1/4。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>天線就像音叉。音叉的長度決定它振動的頻率（音調）。天線的長度決定它最有效率地「振動」哪個頻率。長度不對的天線就像一把走音的吉他。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>天線就像音叉。音叉的長度決定它振動的頻率（音調）。天線的長度決定它最有效率地「振動」哪個頻率。長度不對的天線就像一把走音的吉他。</div>
         <div class="visual">如何算你的對講機天線應該多長：
 波長 = 300 ÷ 頻率(MHz)
 λ/4天線長度 = 波長 ÷ 4
@@ -443,16 +443,16 @@ GQRX中的視覺差異：
   λ/4  = 0.69 ÷ 4 ≈ 17.2cm
 
 應急情況下可用電話線自製天線！</div>
-        <div class="callout warn"><span class="ct">⚠ 常見誤解</span>天線方向也很重要！垂直極化的天線要豎起來，不能橫放。橫放可能損失 10dB 以上（＝信號強度減少 10 倍）。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>天線方向也很重要！垂直極化的天線要豎起來，不能橫放。橫放可能損失 10dB 以上（＝信號強度減少 10 倍）。</div>
         <div class="tagrow"><span class="ctag scen">情境5</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">🔁</span><div><div class="title">中繼台 / 雙工</div><div class="en">Repeater / Duplex</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="repeat"></i></span><div><div class="title">中繼台 / 雙工</div><div class="en">Repeater / Duplex</div></div></div>
       <div class="concept-bd">
         <div class="explain">中繼台放在高點（山頂、大樓屋頂），接收一個頻率，立刻用另一個頻率轉發出去，讓兩側的隊伍能通過中繼台互相通話。雙工就是「一邊收一邊發」。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>你和朋友之間有一座山，直接講話對方聽不到。你在山頂放一個「傳話機器人」，你說一句，機器人立刻用大喇叭廣播出去。「雙工」就是這個機器人同時用耳朵聽和嘴巴說，要用不同頻率否則會「迴音」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>你和朋友之間有一座山，直接講話對方聽不到。你在山頂放一個「傳話機器人」，你說一句，機器人立刻用大喇叭廣播出去。「雙工」就是這個機器人同時用耳朵聽和嘴巴說，要用不同頻率否則會「迴音」。</div>
         <div class="visual">中繼台頻率對（Offset）：
 
 隊伍A 發145.500 ──→ 中繼台接收145.500
@@ -466,16 +466,16 @@ GQRX中的視覺差異：
 
 為什麼收發要不同頻率？
   同頻率 → 自己說話自己聽到 → 產生嘯叫聲</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>中繼台＝山頂傳話員，雙工＝分開「嘴巴」和「耳朵」的頻率，避免迴音。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>中繼台＝山頂傳話員，雙工＝分開「嘴巴」和「耳朵」的頻率，避免迴音。</div>
         <div class="tagrow"><span class="ctag scen">情境7</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">📻</span><div><div class="title">靈敏度</div><div class="en">Receiver Sensitivity</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="radio"></i></span><div><div class="title">靈敏度</div><div class="en">Receiver Sensitivity</div></div></div>
       <div class="concept-bd">
         <div class="explain">接收機能聽到的「最微弱的信號」。靈敏度越好（數字越小），越遠的對講機你也能聽到。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>在黑暗中，有人能看到 1 公里外的蠟燭，有人只能看到 100 公尺內的。看得到 1 公里外蠟燭的眼睛，就有更好的「靈敏度」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>在黑暗中，有人能看到 1 公里外的蠟燭，有人只能看到 100 公尺內的。看得到 1 公里外蠟燭的眼睛，就有更好的「靈敏度」。</div>
         <div class="visual">靈敏度的單位是dBm（越小越好）：
 
 普通對講機靈敏度：-100 dBm
@@ -487,16 +487,16 @@ RTL-SDR靈敏度：   約-90 至-100 dBm
   ✓ 接收機品質（雜訊低 → 靈敏度好）
   ✓ RF增益設定（適當 → 靈敏度好）
   ✗ 環境溫度高 → 靈敏度變差</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>靈敏度就是「耳力」，數字越小（負越多）＝耳力越好。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>靈敏度就是「耳力」，數字越小（負越多）＝耳力越好。</div>
         <div class="tagrow"><span class="ctag scen">情境2</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="scenario">
-      <div class="concept-hd hd-scen"><span class="ico">⚡</span><div><div class="title">干擾 / 捕捉效應</div><div class="en">Interference / Capture Effect</div></div></div>
+      <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="zap"></i></span><div><div class="title">干擾 / 捕捉效應</div><div class="en">Interference / Capture Effect</div></div></div>
       <div class="concept-bd">
         <div class="explain">干擾是指不相關的信號破壞你的通訊。FM 特有的「捕捉效應」是：當兩個信號在同一頻率上，FM 接收機傾向只接收「更強的那個」，較弱的信號被「壓制」。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>想像兩個人同時對你大喊話，一個離你很近（強），一個離你很遠（弱）。FM 的捕捉效應讓你只關注近的那個人。但如果干擾者的信號比你的指揮官更強，你就只聽到干擾者了！</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像兩個人同時對你大喊話，一個離你很近（強），一個離你很遠（弱）。FM 的捕捉效應讓你只關注近的那個人。但如果干擾者的信號比你的指揮官更強，你就只聽到干擾者了！</div>
         <div class="visual">FM捕捉效應：
 
 情況1：我方信號強（乾淨通話）
@@ -508,7 +508,7 @@ RTL-SDR靈敏度：   約-90 至-100 dBm
   干擾 ─────████─────── S7（較強）
   我方 ─────███──────── S4（較弱）
   結果 → 只聽到干擾 ✗ ← 緊急換頻！</div>
-        <div class="callout warn"><span class="ct">⚠ 常見誤解</span>干擾不是「有人故意搞你」，可能只是附近的工業設備、舊式電台、甚至相鄰頻道洩漏。先掃頻確認再行動。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>干擾不是「有人故意搞你」，可能只是附近的工業設備、舊式電台、甚至相鄰頻道洩漏。先掃頻確認再行動。</div>
         <div class="tagrow"><span class="ctag scen">情境6</span></div>
       </div>
     </div>
@@ -516,14 +516,14 @@ RTL-SDR靈敏度：   約-90 至-100 dBm
   </div>
 
   <!-- ===== 進階理論 ===== -->
-  <div class="cat-title">🔬 進階理論：深入理解的關鍵概念</div>
+  <div class="cat-title"><i data-lucide="microscope"></i>進階理論：深入理解的關鍵概念</div>
   <div class="concept-grid">
 
     <div class="concept" data-tags="advanced">
-      <div class="concept-hd hd-adv"><span class="ico">🔢</span><div><div class="title">dB（分貝）</div><div class="en">Decibel</div></div></div>
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="binary"></i></span><div><div class="title">dB（分貝）</div><div class="en">Decibel</div></div></div>
       <div class="concept-bd">
         <div class="explain">一種「倍數」的表示方式，用對數把超大或超小的數字壓縮成好記的數字。無線電領域中到處都用到。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>人聲最小（耳語）是 0dB，搖滾演唱會是 110dB。如果用直線計算，演唱會比耳語響 1 千億倍。dB 讓這個巨大的數字變成可以寫在黑板上的「110」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>人聲最小（耳語）是 0dB，搖滾演唱會是 110dB。如果用直線計算，演唱會比耳語響 1 千億倍。dB 讓這個巨大的數字變成可以寫在黑板上的「110」。</div>
         <div class="visual">dB的直覺感受（功率）：
 +3dB  = 功率變為2倍（幾乎感受不到）
 +6dB  = 功率變為4倍（稍微大聲）
@@ -535,16 +535,16 @@ RTL-SDR靈敏度：   約-90 至-100 dBm
 -3dB  = 功率剩一半
 -10dB = 功率剩十分之一
 -20dB = 功率剩百分之一</div>
-        <div class="callout tip"><span class="ct">✓ 記憶方法</span>+10dB ＝ 10 倍功率，+3dB ≈ 2 倍功率。這兩個數字記住，其他都可以推算。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>+10dB ＝ 10 倍功率，+3dB ≈ 2 倍功率。這兩個數字記住，其他都可以推算。</div>
         <div class="tagrow"><span class="ctag adv">進階</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="advanced">
-      <div class="concept-hd hd-adv"><span class="ico">🌊</span><div><div class="title">駐波比（SWR）</div><div class="en">Standing Wave Ratio</div></div></div>
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="waves"></i></span><div><div class="title">駐波比（SWR）</div><div class="en">Standing Wave Ratio</div></div></div>
       <div class="concept-bd">
         <div class="explain">衡量天線和電纜「配合度」的數字。SWR=1 是完美，SWR 越高代表越多能量被「反射回來」而浪費掉，沒有真正發射出去。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>想像你用水管澆花，水管有個彎折處（天線和電纜接頭不匹配）。一部分水能出來澆花（信號發出），一部分被擠回來（反射能量）浪費了。SWR=1 就是水管筆直，完全沒阻礙。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你用水管澆花，水管有個彎折處（天線和電纜接頭不匹配）。一部分水能出來澆花（信號發出），一部分被擠回來（反射能量）浪費了。SWR=1 就是水管筆直，完全沒阻礙。</div>
         <div class="visual">SWR判讀標準：
 
 SWR 1.0       完美匹配（理論值）
@@ -558,10 +558,10 @@ SWR 無限大    開路（天線斷了）或短路</div>
     </div>
 
     <div class="concept" data-tags="advanced">
-      <div class="concept-hd hd-adv"><span class="ico">🏔️</span><div><div class="title">菲涅耳區 / 視距</div><div class="en">Fresnel Zone / Line of Sight</div></div></div>
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="mountain"></i></span><div><div class="title">菲涅耳區 / 視距</div><div class="en">Fresnel Zone / Line of Sight</div></div></div>
       <div class="concept-bd">
         <div class="explain">無線電信號不只走「直線」，它的能量分布在一個橢圓形的「管子」裡（菲涅耳區）。如果這個管子被山丘或建築物擋住，信號就會嚴重衰減，即使你「看得到」對方。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>水管裡的水不只在管子中心流，靠近管壁的水流也很重要。無線電的「菲涅耳區」就是這個能量分布的「管子」。山丘如果超過這個管子半徑高度，信號就受到嚴重影響。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>水管裡的水不只在管子中心流，靠近管壁的水流也很重要。無線電的「菲涅耳區」就是這個能量分布的「管子」。山丘如果超過這個管子半徑高度，信號就受到嚴重影響。</div>
         <div class="visual">為什麼「看得到」但還是收不到：
 
 你 ─────────────────── 對方（直線距離3km）
@@ -579,10 +579,10 @@ SWR 無限大    開路（天線斷了）或短路</div>
     </div>
 
     <div class="concept" data-tags="advanced">
-      <div class="concept-hd hd-adv"><span class="ico">🔴</span><div><div class="title">互調干擾（IMD）</div><div class="en">Intermodulation Distortion</div></div></div>
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="circle"></i></span><div><div class="title">互調干擾（IMD）</div><div class="en">Intermodulation Distortion</div></div></div>
       <div class="concept-bd">
         <div class="explain">當兩個強信號同時進入接收機時，接收機內部的非線性元件會產生「假信號」在其他頻率上，造成莫名其妙的干擾。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>你的麥克風同時收到兩個樂器的聲音，音響系統產生了這兩個頻率「相加減」的新音調，即使沒有人演奏那個音。這個「幻影音」就是互調干擾。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>你的麥克風同時收到兩個樂器的聲音，音響系統產生了這兩個頻率「相加減」的新音調，即使沒有人演奏那個音。這個「幻影音」就是互調干擾。</div>
         <div class="visual">互調干擾的計算：
 兩個信號頻率 f1=145.500MHz, f2=146.000MHz
 
@@ -598,10 +598,10 @@ SWR 無限大    開路（天線斷了）或短路</div>
     </div>
 
     <div class="concept" data-tags="advanced">
-      <div class="concept-hd hd-adv"><span class="ico">📉</span><div><div class="title">路徑衰減</div><div class="en">Path Loss / Free Space Loss</div></div></div>
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="trending-down"></i></span><div><div class="title">路徑衰減</div><div class="en">Path Loss / Free Space Loss</div></div></div>
       <div class="concept-bd">
         <div class="explain">無線電信號從發射天線出發，隨著距離增加而自然「擴散變弱」。即使沒有任何障礙物，距離加倍，信號強度也會剩約四分之一。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>你拿手電筒在空曠地方照射，光束越走越散。在 1 公尺處非常亮，在 10 公尺處同樣的光就散開很多。無線電信號也一樣，距離越遠，「每平方公尺收到的信號」就越弱。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>你拿手電筒在空曠地方照射，光束越走越散。在 1 公尺處非常亮，在 10 公尺處同樣的光就散開很多。無線電信號也一樣，距離越遠，「每平方公尺收到的信號」就越弱。</div>
         <div class="visual">距離與信號衰減（自由空間）：
 
 每倍距離 → 信號衰減約6dB（= 強度剩1/4）
@@ -618,10 +618,10 @@ SWR 無限大    開路（天線斷了）或短路</div>
     </div>
 
     <div class="concept" data-tags="advanced">
-      <div class="concept-hd hd-adv"><span class="ico">🧲</span><div><div class="title">天線增益 / dBi</div><div class="en">Antenna Gain / dBi</div></div></div>
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="magnet"></i></span><div><div class="title">天線增益 / dBi</div><div class="en">Antenna Gain / dBi</div></div></div>
       <div class="concept-bd">
         <div class="explain">天線把電能「集中」到某個方向的能力。增益越高，方向性越強，那個方向的信號越強，但其他方向變弱。</div>
-        <div class="callout analogy"><span class="ct">💡 生活比喻</span>手電筒的燈泡發出的光是向四面八方（低增益天線）。加上反射鏡後，光全都集中在一個方向，前方非常亮（高增益天線）。dBi 是衡量它比全向天線強多少的單位。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>手電筒的燈泡發出的光是向四面八方（低增益天線）。加上反射鏡後，光全都集中在一個方向，前方非常亮（高增益天線）。dBi 是衡量它比全向天線強多少的單位。</div>
         <div class="visual">常見天線增益：
 
 類型           增益    方向性
@@ -639,7 +639,7 @@ SWR 無限大    開路（天線斷了）或短路</div>
   </div>
 
   <!-- 快速對照表 -->
-  <div class="cat-title">📋 快速對照表：現場遇到問題時翻這裡</div>
+  <div class="cat-title"><i data-lucide="clipboard-list"></i>快速對照表：現場遇到問題時翻這裡</div>
   <div class="panel" style="overflow-x:auto">
     <table class="ref-table">
       <tr><th>遇到的問題</th><th>可能原因</th><th>關鍵術語</th><th>SDR 診斷方式</th></tr>
