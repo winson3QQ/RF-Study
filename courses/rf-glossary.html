@@ -41,6 +41,7 @@
     <button class="fbtn" onclick="filterCat('sdr',this)"><i data-lucide="cpu"></i>SDR 操作</button>
     <button class="fbtn" onclick="filterCat('scenario',this)"><i data-lucide="building-2"></i>情境參數</button>
     <button class="fbtn" onclick="filterCat('advanced',this)"><i data-lucide="microscope"></i>進階理論</button>
+    <button class="fbtn" onclick="filterCat('propagation',this)"><i data-lucide="waves"></i>電波傳播</button>
   </div>
 
   <!-- ===== 基礎概念 ===== -->
@@ -633,6 +634,82 @@ SWR 無限大    開路（天線斷了）或短路</div>
 
 增益越高：該方向更遠，但必須精確對準</div>
         <div class="tagrow"><span class="ctag adv">進階</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 電波傳播 -->
+  <div class="cat-title"><i data-lucide="waves"></i>電波傳播：電波怎麼傳到遠方</div>
+  <div class="concept-grid">
+
+    <div class="concept" data-tags="propagation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="layers"></i></span><div><div class="title">電離層分層（D / E / F 層）</div><div class="en">Ionospheric Layers</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">地球高空被太陽曬出一層帶電氣體，能把短波「反彈」回地面，讓訊號傳到很遠。由低到高分成 D、E、F 層。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像天空有一面鏡子。最低的 D 層白天會「吸收」低頻電波（像髒玻璃吃掉光線）；最高的 F2 層反射力最強，訊號跳得最遠。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>順序 D &lt; E &lt; F（低到高）。「D 層吸收」（白天 40m 難遠通就是它）、「F2 層最高負責長距離 DX」。</div>
+        <div class="tagrow"><span class="ctag adv">傳播</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="propagation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="arrow-up-narrow-wide"></i></span><div><div class="title">MUF / LUF 最高·最低可用頻率</div><div class="en">Max / Lowest Usable Frequency</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">MUF＝能被電離層反射回來的「最高」頻率（再高就穿出太空）；LUF＝能穿過 D 層不被吸收的「最低」頻率（再低就被吃掉）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像一扇窗：頻率太高（&gt;MUF）飛出去、太低（&lt;LUF）被擋住，要挑落在窗戶中間的頻率才通得到。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>最佳頻率是「稍低於 MUF」最穩定。若某時段 LUF 反而高過 MUF → 代表此時沒有任何頻率能用。</div>
+        <div class="tagrow"><span class="ctag adv">傳播</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="propagation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="circle-dashed"></i></span><div><div class="title">跳躍距離 / 盲區</div><div class="en">Skip Distance / Skip Zone</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">天波第一次落地的距離叫「跳躍距離」；地波到不了、天波又還沒落下的中間地帶收不到訊號，叫「盲區（Skip Zone）」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像打水漂，石頭飛出去到第一次點水之間那段水面，碰不到——那就是盲區。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>F2 一跳最遠約 <span class="readout">4000 km</span>、E 層約 <span class="readout">1920 km</span>。盲區內可用 NVIS 或中繼台補。</div>
+        <div class="tagrow"><span class="ctag adv">傳播</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="propagation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="move-up"></i></span><div><div class="title">NVIS 近垂直入射天波</div><div class="en">Near Vertical Incidence Skywave</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">用很高的仰角（接近垂直）把電波打上電離層再折返，覆蓋自己周圍 0–600 km，剛好補上盲區。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像往天花板丟球，讓它幾乎垂直落回你身邊一圈——近距離全照顧到，不留死角。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>NVIS 用 MF/HF 低頻（<span class="readout">3.5–10 MHz</span>）、天線刻意低掛（<span class="readout">1/8–1/4 波長</span>）。災難、山區短距常用。</div>
+        <div class="tagrow"><span class="ctag adv">傳播</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="propagation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="triangle"></i></span><div><div class="title">臨界角</div><div class="en">Critical Angle</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">能被反射回地面的「最高發射仰角」。超過臨界角，電波就穿出電離層回不來。仰角越低、跳得越遠。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像打水漂：角度太陡，石頭直接沉下去；角度放平，才會彈得又遠又多次。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>要遠距 → 壓低仰角；要近距覆蓋（NVIS）→ 拉高仰角。</div>
+        <div class="tagrow"><span class="ctag adv">傳播</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="propagation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="sun"></i></span><div><div class="title">太陽黑子與磁暴</div><div class="en">Sunspots &amp; Geomagnetic Storms</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">太陽黑子多 → 電離層更強 → MUF 升高，高頻段（10m、6m）更好通。磁暴則會打亂電離層、降低高緯度 HF 傳播。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>太陽黑子像「幫鏡子打蠟」讓它更亮反射更好；磁暴像「往鏡子潑髒水」讓它一時模糊。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>太陽週期約 <span class="readout">11 年</span>；HF 約每 <span class="readout">28 天</span>小循環（太陽自轉）。磁暴看 K 指標（短期）、A 指標（長期）。</div>
+        <div class="tagrow"><span class="ctag adv">傳播</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="propagation">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="audio-waveform"></i></span><div><div class="title">散射 / 顫抖訊號</div><div class="en">Scatter / Flutter</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">訊號走多條路徑（多路徑）抵達，彼此干涉，聽起來會「顫抖、忽強忽弱」，這就是散射造成的衰落（QSB）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像同一句話從好幾個方向同時帶著回音傳來，疊在一起就糊掉、抖動。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>散射訊號「顫抖」是辨識特徵；屬自然現象無法消除，用 AGC 緩解音量起伏。</div>
+        <div class="tagrow"><span class="ctag adv">傳播</span></div>
       </div>
     </div>
 
