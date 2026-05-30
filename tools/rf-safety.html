@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RF 安全防護互動工具 — 二等業餘無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+:root {
+  --mono: var(--font-mono); --txt: var(--ink-2); --dim: var(--ink-3);
+  --s1: var(--surface); --s2: var(--surface-soft);
+  --acc: var(--leaf-ink); --red: var(--rose-ink); --amb: var(--honey-ink); --blu: var(--sky-ink); --org: #C2620E;
+}
+.tab.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.tab.on:hover { color: #fff; }
+
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+
+/* canvas screen */
+.viz { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; }
+canvas { width: 100%; display: block; background: #0e160e; border-radius: var(--r-sm); }
+
+/* sliders */
+.ctrl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 500px) { .ctrl-grid { grid-template-columns: 1fr; } }
+.cg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); }
+.cg-label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.cg-label span { color: var(--teal-ink); font-family: var(--font-mono); font-size: 13px; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; margin-bottom: 6px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: var(--shadow-sm); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: var(--primary); cursor: pointer; }
+.cg-sub { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+
+/* status metrics (renamed from .stat) */
+.status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+@media (max-width: 500px) { .status-grid { grid-template-columns: 1fr 1fr; } }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 10px; text-align: center; box-shadow: var(--shadow-sm); }
+.metric-lbl { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 5px; }
+.metric-val { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--ink); }
+
+/* insight */
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.85; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: var(--teal-ink); }
+.enote { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; color: var(--honey-ink); background: var(--honey-soft); border-left: 3px solid var(--honey); border-radius: var(--r-sm); padding: 7px 11px; margin-top: 9px; line-height: 1.7; }
+.enote svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
+
+/* note boxes (static) */
+.notebox { background: var(--surface-soft); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 13px; margin-bottom: 12px; font-size: 13px; line-height: 1.85; color: var(--ink-2); }
+.notebox strong { color: var(--teal-ink); }
+.examline { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; color: var(--honey-ink); background: var(--honey-soft); border: 1px solid #f0dcae; border-radius: var(--r-md); padding: 9px 13px; line-height: 1.8; }
+.examline svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; }
+
+/* duty bars */
+.dc-row { display: flex; gap: 10px; margin-bottom: 4px; align-items: center; font-family: var(--font-mono); font-size: 12px; }
+.dc-bar { flex: 1; height: 20px; background: var(--border); border-radius: var(--r-pill); position: relative; overflow: hidden; }
+.dc-fill { height: 100%; border-radius: var(--r-pill); transition: width .3s; }
+.dc-label { min-width: 120px; color: var(--ink-2); font-size: 12px; font-family: var(--font-sans); font-weight: 700; }
+.dc-val { min-width: 48px; text-align: right; font-weight: 700; }
+.dc-note { font-size: 11px; color: var(--ink-3); font-family: var(--font-mono); margin: -2px 0 6px 130px; }
+
+/* method cards */
+.method-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+@media (max-width: 500px) { .method-grid { grid-template-columns: 1fr; } }
+.method { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; text-align: center; box-shadow: var(--shadow-sm); }
+.method .mi { display: flex; justify-content: center; margin-bottom: 8px; color: var(--teal-ink); }
+.method .mi svg { width: 24px; height: 24px; }
+.method .mt { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+.method .md { font-size: 11.5px; color: var(--ink-3); line-height: 1.5; }
+
+/* checklist */
+.checklist { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.check-item { display: flex; align-items: flex-start; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 14px; cursor: pointer; transition: all var(--dur) var(--ease); box-shadow: var(--shadow-sm); }
+.check-item:hover { border-color: var(--teal); }
+.check-item.done { border-color: var(--leaf); background: var(--leaf-soft); }
+.check-icon { flex-shrink: 0; color: var(--teal-ink); margin-top: 1px; }
+.check-icon svg { width: 20px; height: 20px; }
+.check-item.done .check-icon { color: var(--leaf-ink); }
+.check-text { font-size: 13px; line-height: 1.7; flex: 1; color: var(--ink-2); }
+.check-text strong { color: var(--ink); }
+.check-tag { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: 1px; margin-bottom: 3px; }
+
+/* tables */
+.ex-table, .awg-table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 12px; }
+.ex-table th, .awg-table th { padding: 9px 11px; text-align: left; font-family: var(--font-display); font-size: 12px; color: var(--teal-ink); background: var(--teal-soft); font-weight: 700; border-bottom: 1px solid var(--border); }
+.ex-table td, .awg-table td { padding: 9px 11px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--ink-2); }
+.ex-table tr:last-child td, .awg-table tr:last-child td { border-bottom: none; }
+.ex-table tbody tr:hover td, .awg-table tbody tr:hover td { background: var(--surface-soft); }
+.ex-table .q { color: var(--ink); font-weight: 600; }
+.ex-table .a { color: var(--leaf-ink); font-weight: 600; }
+.awg-highlight td { background: var(--teal-soft) !important; }
+.awg-highlight td:first-child { box-shadow: inset 3px 0 0 var(--teal); }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">RF 安全防護互動工具</div>
+  <p class="tool-sub">對應「無線電相關安全防護」題庫 · 必抽 2 題 · 全 26 題覆蓋。</p>
+
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('rf')"><i data-lucide="radiation"></i> RF 曝露視覺化</button>
+    <button class="tab" onclick="switchTab('duty')"><i data-lucide="percent"></i> 工作週期</button>
+    <button class="tab" onclick="switchTab('safety')"><i data-lucide="shield-check"></i> 電氣安全速查</button>
+    <button class="tab" onclick="switchTab('exam')"><i data-lucide="graduation-cap"></i> 考試題</button>
+  </div>
+
+  <!-- ═══ RF EXPOSURE TAB ═══ -->
+  <div id="tab-rf">
+    <div class="st">RF 曝露距離互動模擬</div>
+
+    <div class="ctrl-grid">
+      <div class="cg">
+        <div class="cg-label">發射功率 P <span id="lbl-p">100 W</span></div>
+        <input type="range" id="sl-p" min="1" max="1500" value="100" step="1" oninput="redrawRf()">
+        <div class="cg-sub">一等最高 1500W，二等最高 600W/200W</div>
+      </div>
+      <div class="cg">
+        <div class="cg-label">天線增益 G <span id="lbl-g">2.15 dBi</span></div>
+        <input type="range" id="sl-g" min="0" max="20" value="2.15" step="0.1" oninput="redrawRf()">
+        <div class="cg-sub">偶極=2.15dBi，八木可達 10dBi 以上</div>
+      </div>
+      <div class="cg">
+        <div class="cg-label">頻率 <span id="lbl-f">14 MHz</span></div>
+        <input type="range" id="sl-f" min="1.8" max="450" value="14" step="0.1" oninput="redrawRf()">
+        <div class="cg-sub">不同頻率，人體吸收率不同</div>
+      </div>
+      <div class="cg">
+        <div class="cg-label">工作週期 <span id="lbl-dc">50%</span></div>
+        <input type="range" id="sl-dc" min="5" max="100" value="50" step="5" oninput="redrawRf()">
+        <div class="cg-sub">SSB≈20%，FM=100%，CW≈40%</div>
+      </div>
+    </div>
+
+    <div class="status-grid">
+      <div class="metric"><div class="metric-lbl">管制環境安全距離</div><div class="metric-val" id="st-ctrl" style="color:var(--org)">—</div></div>
+      <div class="metric"><div class="metric-lbl">非管制環境安全距離</div><div class="metric-val" id="st-unctrl" style="color:var(--rose-ink)">—</div></div>
+      <div class="metric"><div class="metric-lbl">有效輻射功率 ERP</div><div class="metric-val" id="st-erp">—</div></div>
+    </div>
+
+    <div class="viz">
+      <div class="viz-head">RF 曝露場強分佈（俯視圖）</div>
+      <canvas id="c-rf" height="240"></canvas>
+    </div>
+
+    <div class="insight" id="rf-insight">
+      <strong>說明</strong>：調整上方參數，觀察安全距離如何變化。橘色圓圈 = 管制環境安全邊界（操作員）；紅色圓圈 = 非管制環境安全邊界（一般民眾）。
+      <div class="enote" id="rf-enote"><i data-lucide="pencil"></i><span>調整工作週期滑桿，觀察較低工作週期如何允許更大的短期曝露量</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ DUTY CYCLE TAB ═══ -->
+  <div id="tab-duty" style="display:none">
+    <div class="st">工作週期對 RF 曝露的影響</div>
+
+    <div class="notebox">
+      <strong>時間平均（Time Averaging）</strong>：RF 曝露量是以一段時間內的<strong>平均值</strong>計算，不是瞬間值。因此：工作週期越低 → 平均曝露量越低 → 允許更大的<strong>短期（瞬間）</strong>曝露量。
+    </div>
+
+    <div class="st">各發射模式工作週期比較</div>
+    <div id="dc-bars" style="margin-bottom:14px;"></div>
+
+    <div class="insight">
+      <strong>考試重點</strong>：<br>
+      • 工作週期「低」→ 允許更大的<strong>短期暴露量</strong>（題目8）<br>
+      • 時間平均 = 在一定時間內，總射頻暴露量的<strong>平均值</strong>（題目5）<br>
+      • 不能因為工作週期低就「免於評估」——仍需要評估，只是限制較寬鬆
+      <div class="enote"><i data-lucide="pencil"></i><span>題目8答案：「較低的發射機工作週期允許更大的短期暴露量」；常見錯誤：選「低工作週期可免於評估」→ 錯！仍需評估</span></div>
+    </div>
+
+    <div class="st">確認符合曝露規定的方法</div>
+    <div class="method-grid">
+      <div class="method"><div class="mi"><i data-lucide="calculator"></i></div><div class="mt">計算方式</div><div class="md">使用訂定的計算公式估算</div></div>
+      <div class="method"><div class="mi"><i data-lucide="cpu"></i></div><div class="mt">電腦模型</div><div class="md">用軟體模擬電磁場分布</div></div>
+      <div class="method"><div class="mi"><i data-lucide="radio-tower"></i></div><div class="mt">儀器測量</div><div class="md">用校準強場計實測</div></div>
+    </div>
+    <div class="examline"><i data-lucide="pencil"></i><span>題目4答案：「以上皆是」——三種方法都可以確認符合規定</span></div>
+  </div>
+
+  <!-- ═══ SAFETY TAB ═══ -->
+  <div id="tab-safety" style="display:none">
+    <div class="st">電氣安全速查清單（點擊打勾）</div>
+    <div class="checklist" id="checklist"></div>
+
+    <div class="st" style="margin-top:16px;">AWG 電線規格 × 電流容量</div>
+    <table class="awg-table">
+      <thead><tr><th>AWG 號</th><th>最大安全電流</th><th>對應保險絲</th><th>考試出現</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--teal-ink)">AWG 8</td><td>40A</td><td>40A</td><td style="color:var(--ink-3)">—</td></tr>
+        <tr class="awg-highlight"><td style="color:var(--teal-ink)">AWG 12</td><td style="color:var(--leaf-ink);font-weight:700">20A</td><td>20A</td><td style="color:var(--honey-ink)">★ 題目14</td></tr>
+        <tr class="awg-highlight"><td style="color:var(--teal-ink)">AWG 14</td><td>15A</td><td style="color:var(--leaf-ink);font-weight:700">15A</td><td style="color:var(--honey-ink)">★ 題目15</td></tr>
+        <tr><td style="color:var(--teal-ink)">AWG 16</td><td>13A</td><td>15A</td><td style="color:var(--ink-3)">—</td></tr>
+        <tr><td style="color:var(--teal-ink)">AWG 20</td><td>5A</td><td>5A</td><td style="color:var(--ink-3)">—</td></tr>
+      </tbody>
+    </table>
+    <div class="examline"><i data-lucide="pencil"></i><span>記憶口訣：AWG 號越大 = 電線越細 = 電流越小。20A 電路 → 最小要用 AWG 12（題14）；AWG 14 號線 → 配 15A 保險絲（題15）</span></div>
+  </div>
+
+  <!-- ═══ EXAM TAB ═══ -->
+  <div id="tab-exam" style="display:none">
+    <div class="st">安全防護題庫全 26 題速查</div>
+    <table class="ex-table">
+      <thead><tr><th>#</th><th class="q">題目重點</th><th class="a">正確答案</th></tr></thead>
+      <tbody id="exam-tbody"></tbody>
+    </table>
+  </div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+function icons(){ if (window.lucide) lucide.createIcons(); }
+const CFONT = 'Space Mono';
+const COL = {'#ff4455':'#B5342C','#ff8844':'#C2620E','#44aaff':'#225F95','#44ff88':'#1F8F4A','#cc88ff':'#6D3FC0'};
+
+// ═══ RF EXPOSURE CALC ═══
+function calcMPE(p, gDb, fMHz, dc) {
+  const g = Math.pow(10, gDb / 10);
+  const dcFrac = dc / 100;
+  let ctrlLimit, unctrlLimit;
+  if (fMHz < 3) { ctrlLimit = 100; unctrlLimit = 100; }
+  else if (fMHz < 30) { ctrlLimit = 900/fMHz/fMHz*0.3; unctrlLimit = 180/fMHz/fMHz*0.3; }
+  else if (fMHz < 300) { ctrlLimit = 1.0; unctrlLimit = 0.2; }
+  else { ctrlLimit = fMHz/300; unctrlLimit = fMHz/1500; }
+  ctrlLimit = Math.max(0.5, Math.min(ctrlLimit, 5));
+  unctrlLimit = Math.max(0.1, Math.min(unctrlLimit, 1));
+  const pW = p;
+  const sCtrl = ctrlLimit * 10;
+  const sUnctrl = unctrlLimit * 10;
+  const dCtrl = Math.sqrt(pW * g * dcFrac / (4 * Math.PI * sCtrl));
+  const dUnctrl = Math.sqrt(pW * g * dcFrac / (4 * Math.PI * sUnctrl));
+  const erp = (p * g * dcFrac).toFixed(1);
+  return { dCtrl, dUnctrl, erp };
+}
+
+function redrawRf() {
+  const p = parseFloat(document.getElementById('sl-p').value);
+  const g = parseFloat(document.getElementById('sl-g').value);
+  const f = parseFloat(document.getElementById('sl-f').value);
+  const dc = parseFloat(document.getElementById('sl-dc').value);
+  document.getElementById('lbl-p').textContent = p + ' W';
+  document.getElementById('lbl-g').textContent = g.toFixed(1) + ' dBi';
+  document.getElementById('lbl-f').textContent = f < 1000 ? f.toFixed(1) + ' MHz' : (f/1000).toFixed(2) + ' GHz';
+  document.getElementById('lbl-dc').textContent = dc + '%';
+
+  const { dCtrl, dUnctrl, erp } = calcMPE(p, g, f, dc);
+  document.getElementById('st-ctrl').textContent = dCtrl.toFixed(1) + ' m';
+  document.getElementById('st-unctrl').textContent = dUnctrl.toFixed(1) + ' m';
+  document.getElementById('st-erp').textContent = erp + ' W';
+
+  drawRfMap(dCtrl, dUnctrl);
+  updateRfInsight(p, g, f, dc, dCtrl, dUnctrl);
+}
+
+function drawRfMap(dCtrl, dUnctrl) {
+  const cv = document.getElementById('c-rf');
+  cv.width = cv.offsetWidth || 800;
+  const W = cv.width, H = cv.height;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#0e160e'; ctx.fillRect(0, 0, W, H);
+
+  const cx = W * 0.35, cy = H / 2;
+  const scale = Math.min((W * 0.55) / dUnctrl, H * 0.42 / dUnctrl, 80);
+  const r1 = dCtrl * scale;
+  const r2 = dUnctrl * scale;
+
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r2 * 1.2);
+  grad.addColorStop(0, 'rgba(255,68,85,0.15)');
+  grad.addColorStop(0.4, 'rgba(255,204,0,0.06)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(cx, cy, r2 * 1.3, 0, Math.PI * 2); ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,204,0,0.07)';
+  ctx.beginPath(); ctx.arc(cx, cy, r2, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,68,85,0.12)';
+  ctx.beginPath(); ctx.arc(cx, cy, r1, 0, Math.PI * 2); ctx.fill();
+
+  ctx.strokeStyle = 'rgba(255,136,68,0.85)'; ctx.lineWidth = 2;
+  ctx.shadowColor = '#ff8844'; ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(cx, cy, r1, 0, Math.PI * 2); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.strokeStyle = 'rgba(255,68,85,0.85)'; ctx.lineWidth = 2;
+  ctx.shadowColor = '#ff4455'; ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(cx, cy, r2, 0, Math.PI * 2); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#44ff88';
+  ctx.shadowColor = '#44ff88'; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#44ff88'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 20); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - 10, cy - 12); ctx.lineTo(cx, cy - 20); ctx.lineTo(cx + 10, cy - 12);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,136,68,0.95)'; ctx.font = '10px ' + CFONT; ctx.textAlign = 'left';
+  ctx.fillText('管制距離 ' + dCtrl.toFixed(1) + 'm', cx + r1 + 6, cy - 6);
+  ctx.fillStyle = 'rgba(255,68,85,0.95)';
+  ctx.fillText('非管制距離 ' + dUnctrl.toFixed(1) + 'm', cx + r2 + 6, cy + 14);
+
+  const scaleM = 5;
+  const scalePx = scaleM * scale;
+  if (scalePx < W * 0.4) {
+    ctx.strokeStyle = 'rgba(120,180,120,0.5)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(20, H - 15); ctx.lineTo(20 + scalePx, H - 15); ctx.stroke();
+    ctx.fillStyle = 'rgba(120,180,120,0.7)'; ctx.font = '9px ' + CFONT; ctx.textAlign = 'center';
+    ctx.fillText(scaleM + ' m', 20 + scalePx / 2, H - 5);
+  }
+
+  const lx = W * 0.72;
+  ctx.fillStyle = 'rgba(255,68,85,0.5)'; ctx.fillRect(lx, 20, 14, 10);
+  ctx.fillStyle = 'rgba(255,68,85,.95)'; ctx.font = '10px ' + CFONT; ctx.textAlign = 'left';
+  ctx.fillText('非管制邊界（一般民眾）', lx + 18, 30);
+  ctx.fillStyle = 'rgba(255,136,68,0.5)'; ctx.fillRect(lx, 40, 14, 10);
+  ctx.fillStyle = 'rgba(255,136,68,.95)';
+  ctx.fillText('管制邊界（操作員）', lx + 18, 50);
+  ctx.fillStyle = 'rgba(120,210,140,.85)'; ctx.font = '9px ' + CFONT;
+  ctx.fillText('管制環境：操作員及家屬', lx + 18, 68);
+  ctx.fillText('非管制環境：一般民眾（更嚴格）', lx + 18, 82);
+}
+
+function updateRfInsight(p, g, f, dc, dCtrl, dUnctrl) {
+  const box = document.getElementById('rf-insight');
+  let note = '';
+  if (dc < 30) note = '工作週期低（' + dc + '%），允許更大的短期曝露量——這是題目8的核心概念。';
+  else if (dc === 100) note = 'FM = 100% 工作週期（持續發射），需要最嚴格的曝露評估。';
+  else note = '題目3：估計是否超過允許曝露量時，工作週期、頻率、功率密度「以上皆是」都重要。';
+
+  box.innerHTML = `<strong>目前狀態</strong>：${p}W 發射 / 增益 ${g.toFixed(1)}dBi / 頻率 ${f.toFixed(1)}MHz / 工作週期 ${dc}%<br>
+  管制環境安全距離：<strong style="color:var(--org)">${dCtrl.toFixed(2)} 公尺</strong>（操作員需保持此距離以外）<br>
+  非管制環境安全距離：<strong style="color:var(--rose-ink)">${dUnctrl.toFixed(2)} 公尺</strong>（一般民眾需保持此距離以外）
+  <div class="enote"><i data-lucide="pencil"></i><span>${note}</span></div>`;
+  icons();
+}
+
+// ═══ DUTY CYCLE BARS ═══
+function buildDcBars() {
+  const modes = [
+    { name: 'FM（調頻語音）', dc: 100, color: '#ff4455', note: '持續發射，工作週期最高' },
+    { name: 'RTTY / FT8', dc: 100, color: '#ff8844', note: '數位模式通常持續發射' },
+    { name: 'CW（電碼）', dc: 40, color: '#44aaff', note: '發送間有停頓，約 40%' },
+    { name: 'SSB（單邊帶語音）', dc: 20, color: '#44ff88', note: '語音有停頓，約 20%' },
+    { name: 'CW（慢速）', dc: 15, color: '#cc88ff', note: '慢速電碼停頓多' },
+  ];
+  const wrap = document.getElementById('dc-bars');
+  wrap.innerHTML = '';
+  modes.forEach(m => {
+    const tcol = COL[m.color] || 'var(--ink)';
+    const row = document.createElement('div'); row.className = 'dc-row';
+    row.innerHTML = `<div class="dc-label">${m.name}</div>
+      <div class="dc-bar"><div class="dc-fill" style="width:${m.dc}%;background:${m.color}"></div></div>
+      <div class="dc-val" style="color:${tcol}">${m.dc}%</div>`;
+    wrap.appendChild(row);
+    const note = document.createElement('div');
+    note.className = 'dc-note';
+    note.textContent = m.note;
+    wrap.appendChild(note);
+  });
+}
+
+// ═══ SAFETY CHECKLIST ═══
+const CHECKLIST = [
+  { icon: 'zap',            tag: '電氣安全', text: '<strong>設備金屬外殼必須接地</strong>：確保危險電壓不會出現在機箱上（題18）' },
+  { icon: 'plug',           tag: '電源安全', text: '<strong>220V 單相電源</strong>：保險絲或斷路器只連接「帶電壓的兩條線」，不連零線和地線（題13）' },
+  { icon: 'shield-check',   tag: '保護元件', text: '<strong>GFCI（接地故障斷路器）</strong>：電流從電壓線直接流到地線時跳脫（題17）' },
+  { icon: 'lock',          tag: '電源連鎖', text: '<strong>電源連鎖 Interlock</strong>：確保機櫃打開時移除危險電壓（題24）' },
+  { icon: 'radio-tower',   tag: '鐵塔安全', text: '<strong>爬鐵塔前</strong>：確保所有相關供電電路已鎖定並標記（題20）' },
+  { icon: 'hard-hat',      tag: '高空作業', text: '<strong>安全帶</strong>：確認額定載重符合攀爬者體重，且在允許使用期限內（題19）' },
+  { icon: 'cloud-lightning',tag: '避雷防護', text: '<strong>焊接接頭不用於防雷接地</strong>：閃電熱量可能破壞焊點（題21）' },
+  { icon: 'biohazard',     tag: '有毒物質', text: '<strong>鉛焊料危險</strong>：接觸後如未洗手，鉛可能污染食物（題22）' },
+  { icon: 'factory',       tag: '發電機',   text: '<strong>汽油發電機</strong>不置於使用區域：一氧化碳中毒危險（題16）；緊急發電機應位於通風良好的區域（題26）' },
+  { icon: 'radio',         tag: 'RF 安全',  text: '<strong>地面天線</strong>應安裝在一般民眾無法觸及之處（題7）' },
+  { icon: 'wrench',        tag: '維修安全', text: '<strong>天線調整或維修時</strong>：關閉發射機並斷開饋線（題12）' },
+  { icon: 'house',         tag: '室內天線', text: '<strong>室內發射天線</strong>：確保使用區域不超過最大允許曝露限制（題11）' },
+];
+
+function buildChecklist() {
+  const wrap = document.getElementById('checklist');
+  CHECKLIST.forEach(item => {
+    const div = document.createElement('div'); div.className = 'check-item';
+    div.innerHTML = `<div class="check-icon"><i data-lucide="${item.icon}"></i></div>
+      <div><div class="check-tag">${item.tag}</div><div class="check-text">${item.text}</div></div>`;
+    div.onclick = () => div.classList.toggle('done');
+    wrap.appendChild(div);
+  });
+  icons();
+}
+
+// ═══ EXAM TABLE ═══
+const EXAM_DATA = [
+  [1,'RF灼傷雖已接地，可能原因？','地線在該頻率上具有高阻抗（接地線共振）'],
+  [2,'RF能量影響人體組織的方式？','加熱身體組織（非輻射中毒）'],
+  [3,'估計是否超過MPE時，哪些特性重要？','以上皆是（工作週期、頻率、功率密度）'],
+  [4,'如何確定符合射頻暴露量規定？','以上皆是（計算/電腦模型/儀器測量）'],
+  [5,'「時間平均」是什麼意思？','在一定時間內，總射頻暴露量的平均值'],
+  [6,'輻射量超過允許限制，應如何處理？','採取防止人類過度暴露的措施'],
+  [7,'安裝地面天線的預防措施？','應安裝在一般民眾無法觸及之處'],
+  [8,'工作週期對RF曝露評估有何影響？','較低的工作週期允許更大的短期暴露量'],
+  [9,'精確測量RF電磁場用什麼儀器？','具有校準天線的校準強場計'],
+  [10,'定向天線主波瓣指向鄰居超過限制，應？','採取確保天線不會指向鄰居方向的措施'],
+  [11,'安裝室內發射天線的預防措施？','確保使用區域不超過最大允許曝露限制'],
+  [12,'天線調整或維修時的預防措施？','關閉發射機並斷開饋線'],
+  [13,'220V單相電源，保險絲接哪些線？','只連結帶電壓的那兩條線'],
+  [14,'20A電路最小導線尺寸？','AWG 第 12 號'],
+  [15,'AWG 14號線對應的保險絲？','15 安培'],
+  [16,'汽油發動機不置於使用區域的主要原因？','一氧化碳中毒的危險'],
+  [17,'GFCI 斷開電源的情況？','電流從電壓承載線直接流到地線'],
+  [18,'設備金屬外殼為何必須接地？','確保危險電壓不會出現在機箱上'],
+  [19,'攀爬鐵塔時安全帶注意事項？','確認額定載重符合體重，且在允許使用期限內'],
+  [20,'爬有電力設備的鐵塔前應做什麼？','確保所有相關供電的電路已鎖定並標記'],
+  [21,'焊接接頭不用於防雷接地的原因？','焊接接頭可能被雷擊的熱量破壞'],
+  [22,'鉛錫焊料的危險？','接觸後未洗手，鉛會污染食物'],
+  [23,'防雷接地的良好做法？','必須與所有其他防雷接地線黏接在一起'],
+  [24,'電源連鎖(Interlock)的目的？','確保機櫃打開時移除危險電壓'],
+  [25,'緊急發電機供電時必須做什麼？','斷開公共電源之輸入'],
+  [26,'緊急發電機安裝哪項正確？','發電機應位於通風良好的區域'],
+];
+
+function buildExam() {
+  const tbody = document.getElementById('exam-tbody');
+  EXAM_DATA.forEach(([num, q, a]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="font-family:var(--font-mono);color:var(--ink-3)">${num}</td><td class="q">${q}</td><td class="a">${a}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function switchTab(name) {
+  ['rf','duty','safety','exam'].forEach(t => { document.getElementById('tab-'+t).style.display = t===name?'':'none'; });
+  document.querySelectorAll('.tabs .tab').forEach((el,i) => { el.classList.toggle('on', ['rf','duty','safety','exam'][i]===name); });
+}
+
+// ═══ INIT ═══
+redrawRf();
+buildDcBars();
+buildChecklist();
+buildExam();
+icons();
+</script>
+</body>
+</html>
