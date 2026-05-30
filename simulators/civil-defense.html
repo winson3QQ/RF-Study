@@ -62,6 +62,9 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; background: var
 .team-header { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
 .team-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .team-name { font-size: .82em; font-weight: 800; color: var(--ink); font-family: var(--font-display); }
+.team-name-input { font-size: .82em; font-weight: 800; color: var(--ink); font-family: var(--font-display); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 1px 4px; width: 96px; transition: all var(--dur) var(--ease); }
+.team-name-input:hover { border-color: var(--border-strong); }
+.team-name-input:focus { outline: none; border-color: var(--primary); background: var(--surface); }
 .team-ctcss-label { font-size: .66em; color: var(--ink-3); margin-left: auto; font-family: var(--font-mono); }
 .team-ctcss-val { font-family: var(--font-mono); font-size: .72em; color: var(--honey-ink); font-weight: 700; }
 .team-controls { display: flex; align-items: center; gap: 6px; }
@@ -315,6 +318,8 @@ canvas { display: block; width: 100%; border-radius: var(--r-sm); }
         <div>🔑 <span style="color:var(--ink);font-weight:700">CTCSS不符</span> = 喇叭不開</div>
         <div>⚡ <span style="color:var(--ink);font-weight:700">干擾強於信號</span> = 被壓制</div>
         <div>🔁 <span style="color:var(--ink);font-weight:700">中繼台</span> = 克服地形</div>
+        <div>💥 <span style="color:var(--ink);font-weight:700">兩隊同時講</span> = 同頻碰撞（CTCSS 救不了）</div>
+        <div>🗣️ <span style="color:var(--ink);font-weight:700">輪流發話</span> = 唯一解法</div>
       </div>
     </div>
 
@@ -379,6 +384,13 @@ function getSNR(signal, noise) {
 function canHear(teamCtcss, rxCtcss) {
   if (rxCtcss === 0) return true;
   return Math.abs(teamCtcss - rxCtcss) < 2;
+}
+
+// FM 同頻碰撞：所有隊伍都在同一頻率，2 隊以上同時發話 → 電波相撞。
+// CTCSS 只是接收端篩選，無法避免射頻碰撞。本模擬器各隊功率相同，
+// 沒有明顯較強者 → 捕獲效應無法選出贏家 → 雙方語音皆被破壞。
+function isColliding() {
+  return state.teams.filter(t => t.talking).length >= 2;
 }
 
 // =====================
@@ -617,6 +629,14 @@ function drawFFT() {
       ctx.fillText('中繼↑146.100', rxCx + 3, 13);
     }
   }
+
+  // 同頻碰撞警示：多隊在同一頻率同時發話
+  if (isColliding()) {
+    const cxC = freqToX(state.centerFreq);
+    ctx.fillStyle = COL_ROSE;
+    ctx.font = 'bold 11px monospace';
+    ctx.fillText('💥 同頻碰撞', cxC - 30, H - 6);
+  }
 }
 
 // =====================
@@ -738,6 +758,37 @@ function drawAudio() {
 
   // Any team talking?
   const talkingTeams = state.teams.filter(t => t.talking);
+  const colliding = isColliding();
+
+  if (colliding) {
+    // FM 同頻碰撞：電波相撞 → 語音被破壞，畫出混亂的雜訊波形
+    ctx.beginPath();
+    const gStart = freqToX(300), gEnd = freqToX(3000);
+    ctx.moveTo(gStart, H * 0.5);
+    for (let x = gStart; x <= gEnd; x += 2) {
+      const chaos = (Math.random() - 0.5) * 2
+                  + Math.sin(state.time * 7 + x * 0.15) * 0.5
+                  + Math.sin(state.time * 13 + x * 0.31) * 0.4;
+      const amp = chaos * (H * 0.32);
+      ctx.lineTo(x, H * 0.5 - amp);
+    }
+    ctx.lineTo(gEnd, H * 0.5);
+    ctx.strokeStyle = '#E5544B'; ctx.lineWidth = 1.4; ctx.stroke();
+    ctx.fillStyle = 'rgba(229,84,75,0.12)'; ctx.fill();
+
+    // CTCSS 峰仍可見（每隊的亞音頻），但語音已無法辨識
+    talkingTeams.forEach(team => {
+      const cx = freqToX(team.ctcss);
+      ctx.fillStyle = team.color + 'AA';
+      ctx.fillRect(cx - 3, H * 0.55, 6, H * 0.45 - 4);
+    });
+
+    ctx.fillStyle = '#E5544B'; ctx.font = 'bold 11px monospace';
+    ctx.fillText('💥 同頻碰撞 — ' + talkingTeams.length + ' 隊同時發話，語音無法辨識', freqToX(250), 14);
+    ctx.fillStyle = COL_HONEY; ctx.font = '9px monospace';
+    ctx.fillText('CTCSS 過濾不了射頻碰撞 → 解法：輪流發話 / 換頻率', freqToX(250), H - 16);
+    return;
+  }
 
   if (talkingTeams.length > 0) {
     talkingTeams.forEach(team => {
@@ -823,7 +874,9 @@ function buildTeams() {
     div.innerHTML = `
       <div class="team-header">
         <div class="team-dot" style="background:${team.color}"></div>
-        <span class="team-name">${team.name}</span>
+        <input class="team-name-input" id="team-name-${team.id}" value="${team.name}" maxlength="8"
+               title="點擊可修改隊伍名稱"
+               oninput="setTeamName(${team.id}, this.value)">
         <span class="team-ctcss-label">CTCSS</span>
         <span class="team-ctcss-val" id="ctcss-val-${team.id}">${team.ctcss}Hz</span>
       </div>
@@ -849,17 +902,26 @@ function updateHearList() {
     list.innerHTML = '<div style="font-size:.73em;color:var(--ink-3);padding:5px">（無隊伍發話）</div>';
     return;
   }
+  const colliding = isColliding();
   talkingTeams.forEach(team => {
     const hear = canHear(team.ctcss, state.rxCtcss);
     const div = document.createElement('div');
-    div.className = 'hear-item ' + (hear ? 'hearing' : 'silent');
+    // 同頻碰撞時，即使 CTCSS 相符也聽不清楚（射頻相撞）
+    const ok = hear && !colliding;
+    div.className = 'hear-item ' + (ok ? 'hearing' : 'silent');
+    const status = colliding ? '💥 碰撞' : (hear ? '✓ 聽得到' : '✗ 靜音');
     div.innerHTML = `
-      <div class="hear-dot" style="background:${hear ? team.color : '#E5544B'}"></div>
+      <div class="hear-dot" style="background:${ok ? team.color : '#E5544B'}"></div>
       <span style="flex:1;font-size:.75em">${team.name}（${team.ctcss}Hz）</span>
-      <span style="font-size:.73em;font-weight:700;color:${hear ? 'var(--leaf-ink)' : 'var(--rose-ink)'}">${hear ? '✓ 聽得到' : '✗ 靜音'}</span>`;
+      <span style="font-size:.73em;font-weight:700;color:${ok ? 'var(--leaf-ink)' : 'var(--rose-ink)'}">${status}</span>`;
     list.appendChild(div);
   });
-  if (state.rxCtcss === 0) {
+  if (colliding) {
+    const note = document.createElement('div');
+    note.style = 'font-size:.68em;color:var(--rose-ink);padding:5px 0;line-height:1.5';
+    note.innerHTML = '⚠ <strong>同頻碰撞</strong>：多隊同時發話，電波在同一頻率相撞。FM 捕獲效應只會讓較強者勝出，功率相同時雙方皆毀。<strong>CTCSS 救不了這種干擾</strong> → 請輪流發話或改用不同頻率。';
+    list.appendChild(note);
+  } else if (state.rxCtcss === 0) {
     const note = document.createElement('div');
     note.style = 'font-size:.68em;color:var(--ink-3);padding:4px 0';
     note.textContent = '（無CTCSS設定 → 所有隊伍皆可聽）';
@@ -977,6 +1039,14 @@ function setRxCtcss(val) {
   updateHearList();
 }
 
+function setTeamName(id, name) {
+  const team = state.teams.find(t => t.id === id);
+  if (team) {
+    team.name = name;
+    updateHearList();
+  }
+}
+
 function setTeamCtcss(id, ctcss) {
   const team = state.teams.find(t => t.id === id);
   if (team) {
@@ -999,6 +1069,10 @@ function toggleTalk(id) {
     btn.classList.add('active');
     card.classList.add('talking');
     addLog(`${team.name} 開始發話（CTCSS ${team.ctcss}Hz）`, 'good');
+    if (isColliding()) {
+      const names = state.teams.filter(t => t.talking).map(t => t.name).join('、');
+      addLog(`💥 同頻碰撞！${names} 同時發話 → 電波相撞，語音無法辨識（CTCSS 無法解決，請輪流發話）`, 'bad');
+    }
   } else {
     btn.textContent = '📢 發話';
     btn.classList.remove('active');

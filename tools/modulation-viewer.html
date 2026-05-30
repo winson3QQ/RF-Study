@@ -92,7 +92,7 @@
 <div class="read-top"><a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a></div>
 
 <h1 class="tool-title">調變方式深度視覺化</h1>
-<p class="tool-sub">AM · DSB · USB · LSB · FM · CW —— 同時看時域波形、頻域頻譜、功率分配與考試重點。拖動下方滑桿，畫面會即時跟著變。</p>
+<p class="tool-sub">AM · DSB · USB · LSB · FM · CW · FSK · PSK（數位）—— 同時看時域波形、頻域頻譜、功率分配與考試重點。拖動下方滑桿，畫面會即時跟著變。</p>
 
 <!-- MODE BAR -->
 <div class="mode-bar" id="mode-bar"></div>
@@ -299,6 +299,34 @@ const MODES = {
     desc:'<strong>CW（等幅電報 / 摩斯碼）</strong>：載波做開/關（On-Off Keying），頻寬極窄（< 500Hz）。相同功率下通信距離最遠，弱訊號通信首選。<br><br>接收 CW 可使用「反向邊帶」（選 USB/LSB 反向）來減少鄰頻干擾。<span class="exam">📝 頻寬最窄 → 相同功率通信距離最遠。RST 中 T=Tone 只用於 CW 評估。零拍差 = 兩台發射頻率完全相同</span>',
     power:{labels:['CW載波'],colors:['#3B86C9']},
   },
+  FSK:{
+    label:'FSK 頻移鍵控',color:'#4CAF50',
+    bw:'依 Rb+Δf',carrier:'固定振幅',eff:'100%',effCls:'g',
+    hf:'RTTY/數據',vhf:'封包/APRS',noise:'強',
+    modLbl:'頻移量 Δf',
+    rows:[
+      {k:'原理',v:'兩個頻率代表 0 / 1',c:''},
+      {k:'振幅',v:'固定（抗振幅雜訊）',c:'g'},
+      {k:'典型應用',v:'RTTY、APRS、AFSK',c:'a'},
+      {k:'抗雜訊',v:'數位 → 可糾錯',c:'g'},
+    ],
+    desc:'<strong>FSK（頻移鍵控）</strong>：用<strong>兩個不同頻率</strong>分別代表數位的 0 與 1，載波振幅固定。<br><br>因振幅固定、資訊藏在頻率上，抗振幅雜訊能力強。RTTY、封包通信（Packet）、APRS、AFSK 都屬於 FSK 家族。<span class="exam">📝 數位調變：FSK 用「頻率切換」傳送 0/1，常見於數據與電傳打字（RTTY）</span>',
+    power:{labels:['FSK 全功率'],colors:['#4CAF50']},
+  },
+  PSK:{
+    label:'PSK 相移鍵控',color:'#5C6BC0',
+    bw:'≈ 2×Rb',carrier:'相位反轉',eff:'100%',effCls:'g',
+    hf:'PSK31',vhf:'數據',noise:'強',
+    modLbl:'（BPSK 固定）',
+    rows:[
+      {k:'原理',v:'相位 0° / 180° 代表 1 / 0',c:''},
+      {k:'BPSK',v:'每次反轉 180°',c:'a'},
+      {k:'頻譜效率',v:'同頻寬資料率高',c:'g'},
+      {k:'典型應用',v:'PSK31 鍵盤通信',c:'a'},
+    ],
+    desc:'<strong>PSK（相移鍵控 / BPSK）</strong>：用載波的<strong>相位反轉</strong>（0° 與 180°）代表數位 0 與 1，振幅與頻率都不變。<br><br>頻譜效率高、弱訊號下表現好，業餘常用的 PSK31 鍵盤對話即屬此類。<span class="exam">📝 BPSK 每個位元以相位反轉 180° 表示；相同頻寬下資料率比 FSK 高</span>',
+    power:{labels:['PSK 全功率'],colors:['#5C6BC0']},
+  },
 };
 
 const TABLE_DATA = [
@@ -308,6 +336,8 @@ const TABLE_DATA = [
   ['LSB','3 kHz','抑制','好 100%','14MHz↓ 標準','不用','中'],
   ['FM','10~15 kHz','固定振幅','好','不適合','VHF/UHF 主流','強'],
   ['CW','<500 Hz','OOK鍵控','最佳 100%','最窄最遠','可用','極強'],
+  ['FSK','依Rb+Δf','固定振幅','好 100%','RTTY/數據','封包/APRS','強'],
+  ['PSK','≈2×Rb','相位反轉','好 100%','PSK31','數據','強'],
 ];
 
 const EXAM_DATA = [
@@ -323,6 +353,8 @@ const EXAM_DATA = [
    items:['頻寬最窄：< 500 Hz','OOK = On-Off Keying（開關鍵控）','相同功率通信距離最遠','RST 中 T=Tone，CW 專用評分','零拍差：兩台頻率完全重合']},
   {title:'PEP 峰值波封功率',color:'#D2691E',
    items:['PEP = Vpeak² / (2R)','Vpp=示波器峰對峰，Vpeak=Vpp/2','50Ω假負載：PEP = Vpp²/200','SSB/CW/FM 功率標準皆用 PEP']},
+  {title:'數位調變（FSK / PSK）',color:'#5C6BC0',
+   items:['FSK 頻移鍵控：用兩個頻率代表 0/1','PSK 相移鍵控：用相位 0°/180° 代表 0/1','BPSK 每位元相位反轉 180°','數位模式抗雜訊強、可糾錯','RTTY/APRS=FSK；PSK31=PSK']},
 ];
 
 // ══════════════════════════════════════════════
@@ -393,6 +425,7 @@ function setMode(m){
   document.getElementById('ic-desc').innerHTML = d.ic_desc || d.desc;
   document.getElementById('info-card').style.borderLeftColor = d.color;
   document.getElementById('mod-lbl').textContent = d.modLbl;
+  document.getElementById('sr-mod').style.display = (m==='PSK') ? 'none' : '';
   // Over-mod warning only for AM
   document.getElementById('overmod-warn').classList.toggle('show', m==='AM' && parseFloat(document.getElementById('sl-mod').value) > 1);
   // SSB breakdown
@@ -510,9 +543,38 @@ function drawTime(fc,fm,mod){
     }
   }
 
+  // digital bit overlay (FSK/PSK): mark bit boundaries + 0/1 labels
+  if(cur==='FSK'||cur==='PSK'){
+    let prev=null;
+    for(let i=0;i<=N;i++){
+      const t=(i/N)*4*Math.PI+phase;
+      const bit=digitalBit(t,fm);
+      if(bit!==prev){
+        const px=(i/N)*W;
+        if(prev!==null){
+          ctx.strokeStyle='rgba(255,246,236,.14)'; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+          ctx.beginPath(); ctx.moveTo(px,14); ctx.lineTo(px,H); ctx.stroke(); ctx.setLineDash([]);
+        }
+        ctx.fillStyle=bit?'#9fe6a0':'#f0b9b9';
+        ctx.font='bold 11px "Space Mono",monospace'; ctx.textAlign='left';
+        ctx.fillText(bit?'1':'0', px+3, 26);
+        prev=bit;
+      }
+    }
+  }
+
   // mode label
   ctx.fillStyle=color; ctx.font='bold 12px "Space Mono",monospace'; ctx.textAlign='left';
   ctx.fillText(cur, 6, 16);
+}
+
+// digital bit stream: bits-per-window scales with fm (= bit rate Rb)
+const DPATTERN=[1,0,1,1,0,0,1,0,1,1,1,0,0,1,0,1];
+function digitalBit(t,fm){
+  const bitsPerWin=Math.max(2,Math.round(fm*8));
+  const idx=Math.floor((t/(4*Math.PI))*bitsPerWin);
+  const n=DPATTERN.length;
+  return DPATTERN[((idx%n)+n)%n];
 }
 
 function signal(mode,t,fc,fm,mod){
@@ -527,6 +589,12 @@ function signal(mode,t,fc,fm,mod){
       const on=pos<p*.35||(pos>p*.5&&pos<p*.82);
       return on?Math.sin(fc*t):0;
     }
+    case 'FSK':{
+      const shift=mod*2;
+      const f=digitalBit(t,fm)?fc+shift:fc-shift;
+      return Math.sin(f*t);
+    }
+    case 'PSK': return Math.sin(fc*t+(digitalBit(t,fm)?0:Math.PI));
   }
 }
 
@@ -624,6 +692,19 @@ function drawFreq(fc,fm,mod){
       spike(0,.95,'fc',color,3);
       bwArrow(cx-8,cx+8,H-32,'< 500Hz',color);
       break;
+    case 'FSK':{
+      const shift=mod*2;
+      spike(+shift,.9,'f1（位元1）',color);
+      spike(-shift,.9,'f0（位元0）',color);
+      bwArrow(cx-(shift+fm)*fSc,cx+(shift+fm)*fSc,H-32,'← BW≈2(Δf+Rb) →');
+      break;
+    }
+    case 'PSK':
+      ctx.globalAlpha=.3; spike(0,.35,'fc（抑制）','#a89c8c'); ctx.globalAlpha=1;
+      spike(+fm,.9,'+Rb',color);
+      spike(-fm,.9,'-Rb',color);
+      bwArrow(cx-fm*fSc,cx+fm*fSc,H-32,'← BW≈2×Rb →',color);
+      break;
   }
 
   // Mode label
@@ -660,6 +741,8 @@ function drawPower(mod){
     case 'LSB': segments=[{label:'下邊帶 100%',pct:100,col:'#C44C86'}]; break;
     case 'FM':  segments=[{label:'FM 全功率有效',pct:100,col:'#1F9E96'}]; break;
     case 'CW':  segments=[{label:'CW 全功率有效',pct:100,col:'#3B86C9'}]; break;
+    case 'FSK': segments=[{label:'FSK 全功率（固定包絡）',pct:100,col:'#4CAF50'}]; break;
+    case 'PSK': segments=[{label:'PSK 全功率（固定包絡）',pct:100,col:'#5C6BC0'}]; break;
   }
 
   let x=10;

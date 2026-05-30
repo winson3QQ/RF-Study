@@ -145,7 +145,8 @@
 現場效果：
 隊伍A發話 → 只有設 CTCSS=67Hz 的隊伍會聽到
 隊伍B發話 → 只有設 CTCSS=88.5Hz 的隊伍會聽到
-→ 五支隊伍秩序井然，互不干擾</div>
+→ 各隊只聽自己這組（但仍須「輪流發話」，
+　 同一頻率不能同時講，否則電波會相撞）</div>
 
     <div class="sec-h">🔬 SDR 實驗：看見 CTCSS</div>
     <div class="callout info"><span class="ct">🎯 實驗活動 — 演示步驟</span></div>
@@ -189,13 +190,15 @@
 
     <div class="sec-h">💡 核心知識點</div>
     <div class="lcards">
-      <div class="lcard"><strong>CTCSS 的作用</strong><p>在同一頻率上為不同隊伍開啟「靜噪」，實現多隊隔離</p></div>
+      <div class="lcard"><strong>CTCSS 的作用</strong><p>替你「過濾要聽的對象」：只開啟符合組號的接收喇叭，是<strong>接收端的篩選</strong>，不是頻率隔離</p></div>
       <div class="lcard"><strong>技術原理</strong><p>67-250Hz 的低頻亞音附著在語音上，不同隊伍有不同的「鑰匙」</p></div>
       <div class="lcard"><strong>何時使用</strong><p>緊急狀況下頻率有限，需要多支隊伍共用一個頻率</p></div>
       <div class="lcard"><strong>限制條件</strong><p>標準 CTCSS 只有 38 組，最多能隔離 38 支隊伍</p></div>
     </div>
 
     <div class="callout tip"><span class="ct">✓ 記憶方法</span>CTCSS 不提供保密（仍可聽到發射），只控制「接收喇叭開/關」。</div>
+
+    <div class="callout warn"><span class="ct">⚠ 容易誤會</span>CTCSS <strong>不是頻率隔離</strong>，也不能讓多隊「同時講話互不干擾」。它只是接收端的篩選器——電波還是擠在<strong>同一個頻率</strong>上。若兩隊同時按下發話鍵，電波會在空中相撞：FM 的「捕獲效應」會讓<strong>較強的一方蓋過較弱的一方</strong>，弱的那邊整段話被吃掉。真正避免相撞的方法是：<strong>① 輪流發話（通信紀律）② 不同隊用不同頻率 ③ 用中繼台搭配多頻道</strong>。CTCSS 解決的是「我不想聽到別組」，不是「大家可以一起講」。</div>
 
     <div class="sec-h">📝 課堂活動：CTCSS 探險隊</div>
     <div class="callout info"><span class="ct">🎯 目標 — 認識 38 個 CTCSS 組號</span>
