@@ -128,13 +128,17 @@ CTCSS 38個標準頻率（EIA規格）：
   210.7, 218.1, 225.7, 233.6, 241.8, 250.3 Hz
 
 FM調制指數：
-  β = Δf / f_m
+  β = Δf / f_m   （Δf＝頻率偏移，f_m＝調制訊號頻率）
 
-  對語音(f_m≈1000Hz)：β ≈ 3         →窄帶FM
-  對CTCSS(f_m≈100Hz)：β ≈ 30        →寬帶效應
+  窄帶語音(Δf≈±2.5kHz, f_m≈3kHz)：β ≈ 0.8  →窄帶FM(NBFM)
+  CTCSS次音：刻意用「很小的偏移」(約±0.5kHz以下)疊加
 
-結論：β越大，低頻信號的能量分布越廣，傳輸越穩定
-這正是CTCSS即使在低頻（67Hz）仍能被可靠檢測的原因</div>
+重點（更正常見誤解）：
+  CTCSS 偏移刻意壓到系統峰值偏移的約15%以下，
+  只在語音下方佔一小塊頻率，不影響語音可懂度。
+
+  CTCSS 能被可靠解碼，靠的是接收端的「窄帶濾波＋連續音判別」，
+  與 β 大小無關——β 越大只代表佔用頻寬越寬，並不等於越穩定。</div>
 
     <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
     <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX + RTL-SDR + 2 支對講機</span>
@@ -551,7 +555,8 @@ UHF 435MHz對講機：
 
     <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">FM捕捉效應（Capture Effect）：
-  當S1/S2 > 6dB（約4倍功率差）時
+  當S1/S2 > 6dB（約4倍功率差）時（6dB 為保守教學門檻，
+  品質好的接收機「捕捉比」可低到 1–3dB）
   接收機傾向「捕捉」強信號，弱信號被抑制
 
   → 若干擾信號比我方信號強 > 6dB：
@@ -569,7 +574,8 @@ UHF 435MHz對講機：
 
   最大路徑損耗 = 37 + 0 - (-100) = 137dB
 
-  自由空間距離估算（145MHz）：
+  自由空間距離估算（145MHz，僅供量級參考）：
+  ※ 實際距離受發射功率、天線、地形影響甚大，下表只是粗略量級
   RSSI S9（強）→ 約 300m–1km
   RSSI S7（中）→ 約 1–3km
   RSSI S5（弱）→ 約 3–8km

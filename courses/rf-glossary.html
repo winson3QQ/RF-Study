@@ -60,8 +60,8 @@
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像廣播電台一樣，「台北廣播 FM 98.1」就是在 98.1MHz 這個頻率上。你把對講機「調到 145.500MHz」，就是在聽那個頻率上的對話，就像調廣播電台。</div>
         <table class="tbl">
           <tr><th>頻段</th><th>範圍</th><th>用途</th></tr>
-          <tr><td><b>VHF</b></td><td><span class="readout">144–148 MHz</span></td><td>對講機常用（145.500）</td></tr>
-          <tr><td><b>UHF</b></td><td><span class="readout">430–440 MHz</span></td><td>手持對講機（433.500）</td></tr>
+          <tr><td><b>VHF</b></td><td><span class="readout">144–146 MHz</span></td><td>業餘 2m（如 145.250）</td></tr>
+          <tr><td><b>UHF</b></td><td><span class="readout">430–440 MHz</span></td><td>業餘 70cm（三等限 430–432）</td></tr>
           <tr><td>FM 廣播</td><td><span class="readout">87.5–108 MHz</span></td><td>收音機</td></tr>
         </table>
         <div class="gnote">頻率越高 → 波越短 → 穿透力越弱但頻寬越大。</div>
@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="basic">
+    <div class="concept" data-tags="basic" id="wavelength">
       <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="audio-waveform"></i></span><div><div class="title">波長</div><div class="en">Wavelength (λ)</div></div></div>
       <div class="concept-bd">
         <div class="explain">一個完整無線電波的「長度」，單位是公尺或公分。頻率越高，波長越短。</div>
@@ -107,18 +107,18 @@
     <div class="concept" data-tags="basic">
       <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="signal"></i></span><div><div class="title">信號強度 / S值</div><div class="en">Signal Strength / S-meter</div></div></div>
       <div class="concept-bd">
-        <div class="explain">接收到的信號有多強，用 S1 到 S9 表示，S9 最強。通訊報告時說「你的信號是五九」，意思就是 S5 S9 的最高值，信號很強。</div>
+        <div class="explain">接收到的信號有多強，用 S1 到 S9 表示，S9 最強。通訊報告常用 <strong>RST 制</strong>，「你的信號是<strong>五九</strong>」指的是<strong>可讀度（R）5 ＋ 信號強度（S）9</strong>——又清楚又強，不是「S5、S9 取最高」。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像手機的格數。1格=S3，2格=S5，3格=S7，4格=S9。格數越多，訊號越強，通話越清晰。</div>
         <table class="tbl">
-          <tr><th>S 值</th><th>強度</th><th>說明</th></tr>
+          <tr><th>S 值</th><th>強度*</th><th>說明</th></tr>
           <tr><td><b>S1</b></td><td><span class="readout">−121 dBm</span></td><td>幾乎聽不到</td></tr>
           <tr><td><b>S3</b></td><td><span class="readout">−115 dBm</span></td><td>很弱</td></tr>
           <tr><td><b>S5</b></td><td><span class="readout">−109 dBm</span></td><td>勉強可聽</td></tr>
           <tr><td><b>S7</b></td><td><span class="readout">−103 dBm</span></td><td>中等清晰</td></tr>
           <tr><td><b>S9</b></td><td><span class="readout">−97 dBm</span></td><td>很強</td></tr>
         </table>
-        <div class="gnote">每增加 1 個 S 值 ≈ 強 6 dB（約 4 倍功率）。</div>
-        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「五九報告」是無線電通訊裡說對方信號最完美的方式，就像給 5 顆星的評價！</div>
+        <div class="gnote">每增加 1 個 S 值 ≈ 強 6 dB（約 4 倍功率）。*為簡化示意值；IARU 標準 VHF/UHF 定義 S9 = −93 dBm、HF S9 = −73 dBm，實機刻度可能不同。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「59 報告」＝可讀度與信號都滿分，是說對方信號最完美的方式，就像給 5 顆星的評價！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
@@ -148,7 +148,7 @@
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>VHF 像「長跑選手」，跑得遠但體型大（天線長）。UHF 像「城市跑者」，更靈活能在建築物間穿梭，但跑不那麼遠。</div>
         <table class="tbl">
           <tr><th></th><th>VHF</th><th>UHF</th></tr>
-          <tr><td>頻率</td><td><span class="readout">30–300 MHz</span><br>常用 144–148</td><td><span class="readout">300–3000 MHz</span><br>常用 430–440</td></tr>
+          <tr><td>頻率</td><td><span class="readout">30–300 MHz</span><br>業餘 144–146</td><td><span class="readout">300–3000 MHz</span><br>業餘 430–440</td></tr>
           <tr><td>波長</td><td>1–10 m</td><td>10 cm–1 m</td></tr>
           <tr><td>λ/4 天線</td><td>≈ 51 cm</td><td>≈ 17 cm</td></tr>
           <tr><td>特性</td><td>傳得遠、穿牆差</td><td>穿牆較佳、城市適用</td></tr>
@@ -328,7 +328,7 @@
   <div class="cat-title"><i data-lucide="building-2"></i>情境參數：七大情境中的核心術語</div>
   <div class="concept-grid">
 
-    <div class="concept" data-tags="scenario">
+    <div class="concept" data-tags="scenario" id="ctcss">
       <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="key-round"></i></span><div><div class="title">CTCSS（亞音頻）</div><div class="en">Continuous Tone Coded Squelch</div></div></div>
       <div class="concept-bd">
         <div class="explain">在正常語音信號中「夾帶」一個極低頻的純音，用來控制接收機的靜噪是否開啟。38 個標準頻率，每個隊伍用一個「自己的頻率」。</div>
@@ -385,9 +385,9 @@
         <div class="explain">每個無線電頻道「佔用」多少頻率空間。民防用 12.5kHz（窄頻），舊設備用 25kHz（寬頻）。頻寬窄＝每個頻道佔地小＝同段頻率可放更多頻道。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>把頻率範圍想成一條公路。25kHz 頻寬就像佔了兩個車道，12.5kHz 只佔一個車道。用窄車道就能放更多車（頻道），其他車也不容易撞到你（干擾少）。</div>
         <table class="tbl">
-          <tr><th>頻寬</th><th>144–148MHz 可放頻道</th></tr>
-          <tr><td><span class="readout">25 kHz</span>（寬頻、老式）</td><td>160 個</td></tr>
-          <tr><td><span class="readout">12.5 kHz</span>（窄頻、現代）</td><td>320 個</td></tr>
+          <tr><th>頻寬</th><th>144–146MHz（2MHz）可放頻道</th></tr>
+          <tr><td><span class="readout">25 kHz</span>（寬頻、老式）</td><td>80 個</td></tr>
+          <tr><td><span class="readout">12.5 kHz</span>（窄頻、現代）</td><td>160 個</td></tr>
         </table>
         <div class="gnote">窄頻讓頻道數加倍。FFT 上 25kHz 是寬山型、12.5kHz 是窄尖型。民防統一用 12.5kHz。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>12.5＝窄頻＝現代標準＝省空間。25＝寬頻＝老式＝佔空間。民防統一用 12.5kHz，才能和更多隊伍溝通。</div>

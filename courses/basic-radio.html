@@ -84,13 +84,14 @@
     <div class="prose-card">
       <p>本隊演練與通聯使用以下頻道。每組都有<strong>主頻率</strong>與<strong>備用頻率</strong>，主頻率受干擾或無法使用時，全隊改用同代號的備用頻率。</p>
       <table class="tbl">
-        <tr><th>頻率代號</th><th>頻率（MHz）</th><th>備用（MHz）</th></tr>
-        <tr><td><b>F1</b></td><td>430.30</td><td>144.20</td></tr>
-        <tr><td><b>F2</b></td><td>144.50</td><td>430.60</td></tr>
-        <tr><td><b>F3</b></td><td>430.90</td><td>144.60</td></tr>
-        <tr><td><b>F4</b></td><td>144.90</td><td>431.30</td></tr>
+        <tr><th>頻率代號</th><th>主頻率（MHz）</th><th>備用（MHz）</th></tr>
+        <tr><td><b>F1</b></td><td>430.250</td><td>145.225</td></tr>
+        <tr><td><b>F2</b></td><td>430.500</td><td>145.350</td></tr>
+        <tr><td><b>F3</b></td><td>431.500</td><td>145.450</td></tr>
+        <tr><td><b>F4</b></td><td>431.750</td><td>145.575</td></tr>
       </table>
       <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>只記「代號」不記數字：聽到「全體轉 F2」就把機器切到 F2 那一組頻率，省得在無線電上唸一長串數字、也不怕聽錯。</div>
+      <div class="callout info"><span class="ct"><i data-lucide="info"></i>頻道設計原則</span>主頻率用 UHF（430–432）、備用用 VHF（144–146），一旦某頻段壅塞或受擾就整隊跨頻段切到備用。全部落在三等合法範圍、對齊 <span class="readout">12.5 kHz</span> 柵格，並刻意避開 <span class="readout">145.000</span> 緊急呼叫頻率。實際部署請再以 NCC 最新公告與當地公跑頻率協調為準。</div>
     </div>
 
     <div class="sec-h"><i data-lucide="users"></i>加入 Zello 群組（模擬練習用）</div>
@@ -153,9 +154,10 @@
       <table class="tbl">
         <tr><th>頻段</th><th>合法範圍</th></tr>
         <tr><td><b>VHF</b></td><td><span class="readout">144 – 146 MHz</span></td></tr>
-        <tr><td><b>UHF</b></td><td><span class="readout">432 – 440 MHz</span></td></tr>
+        <tr><td><b>UHF</b></td><td><span class="readout">430 – 432 MHz</span></td></tr>
       </table>
-      <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>緊急頻率不可亂用</span>國際救災救難頻率為 <span class="readout">145.000</span> 與 <span class="readout">433.000</span>，NCC 宣導為緊急呼叫頻道。<strong>不當使用這兩個頻率，罰款新台幣 10 萬元以上</strong>。</div>
+      <div class="callout info"><span class="ct"><i data-lucide="info"></i>三等可用頻段</span>以上為<strong>三等</strong>業餘人員的常用頻段。70cm 業餘全頻段為 430–440 MHz，但三等實際可發射範圍為 <span class="readout">430–432 MHz</span>、功率上限 <span class="readout">25W</span>（依 NCC《業餘無線電管理辦法》附表，以最新公告為準）。</div>
+      <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>緊急頻率不可亂用</span>呼叫及緊急救難頻率為 <span class="readout">145.000</span> 與 <span class="readout">433.000</span> MHz（107 年起 UHF 已由 431 改為 433），任何電臺不得停留佔用或干擾。<strong>不當使用罰款新台幣 10 萬元以上</strong>。</div>
       <div class="callout task"><span class="ct"><i data-lucide="hand"></i>動動手</span>把<strong>步進頻率（STEP）設為 10.0 kHz</strong>，再用 SCAN 掃描看看會停在哪個有訊號的頻道。</div>
     </div>
 
@@ -341,7 +343,7 @@
 
   v（波速 / 光速）≈ 3 × 10⁸ m/s
   λ（波長，公尺）   f（頻率，Hz）</div>
-      <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>記住 <span class="readout">v = λ × f</span> 一條就好——光速固定，知道頻率就能推波長，反之亦然。想更白話可看 <a href="rf-glossary.html#">白話手冊的「波長」</a>。</div>
+      <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>記住 <span class="readout">v = λ × f</span> 一條就好——光速固定，知道頻率就能推波長，反之亦然。想更白話可看 <a href="rf-glossary.html#wavelength">白話手冊的「波長」</a>。</div>
     </div>
 
     <!-- 2. 頻帶分類 -->
@@ -383,8 +385,9 @@
       <h3>三等業餘頻段</h3>
       <table class="tbl">
         <tr><th>頻段</th><th>三等可用範圍</th></tr>
-        <tr><td><b>VHF</b></td><td><span class="readout">50 ~ 50.15 MHz</span>、<span class="readout">144 ~ 146 MHz</span></td></tr>
-        <tr><td><b>UHF</b></td><td><span class="readout">432 ~ 433 MHz</span></td></tr>
+        <tr><td><b>6m</b></td><td><span class="readout">50 ~ 50.15 MHz</span></td></tr>
+        <tr><td><b>VHF（2m）</b></td><td><span class="readout">144 ~ 146 MHz</span></td></tr>
+        <tr><td><b>UHF（70cm）</b></td><td><span class="readout">430 ~ 432 MHz</span></td></tr>
       </table>
       <h3>分配頻段與發射功率上限</h3>
       <table class="tbl">
@@ -393,6 +396,7 @@
         <tr><td>144 – 146</td><td>200W 以下</td><td>200W 以下</td><td>25W 以下</td></tr>
         <tr><td>430 – 432</td><td>200W 以下</td><td>200W 以下</td><td>25W 以下</td></tr>
       </table>
+      <p style="font-size:13px;color:var(--ink-3);margin-top:8px">資料來源：NCC《業餘無線電管理辦法》附表「業餘無線電分配頻段、發射功率及發射方式一覽表」。各等級功率與頻段以 NCC 最新公告為準。</p>
       <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>三等不管哪個頻段，發射功率上限都是 <span class="readout">25W 以下</span>。</div>
     </div>
 
