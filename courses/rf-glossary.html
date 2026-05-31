@@ -14,6 +14,13 @@
 .ref-table td { padding:10px 12px; border-bottom:1px solid var(--border); color:var(--ink-2); }
 .ref-table tr:nth-child(even) td { background:var(--surface-soft); }
 .disclaimer { font-size:13px; color:var(--ink-3); text-align:center; margin-top:28px; line-height:1.7; }
+/* 吸頂的搜尋＋分類列：捲動時固定，隨時可切類，不必滑回頂端 */
+.sticky-filter { position: sticky; top: 0; z-index: 30; background: var(--bg); padding-top: 10px; margin: 0 -4px 0; padding-left: 4px; padding-right: 4px; box-shadow: 0 6px 12px -10px rgba(94,60,32,.5); }
+.sticky-filter .filters { margin-bottom: 14px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; scrollbar-width: thin; }
+@media (min-width: 640px) { .sticky-filter .filters { flex-wrap: wrap; overflow: visible; } }
+.fbtn .cnt { font-family: var(--font-mono); font-size: 10px; font-weight: 700; margin-left: 5px; padding: 0 5px; border-radius: var(--r-pill); background: var(--bg-tint); color: var(--ink-3); }
+.fbtn.active .cnt { background: rgba(255,255,255,.25); color: #fff; }
+.cat-empty { display: none !important; }
 </style>
 </head>
 <body>
@@ -30,6 +37,7 @@
     <p>給沒學過 RF 理論的你 — 不用公式，用比喻和圖解理解每個術語。查了就懂，隨時翻閱。</p>
   </div>
 
+  <div class="sticky-filter">
   <div class="search">
     <span class="ico"><i data-lucide="search"></i></span>
     <input type="text" id="search" placeholder="搜尋術語…（中英文皆可）" oninput="doSearch()">
@@ -47,7 +55,9 @@
     <button class="fbtn" onclick="filterCat('emc',this)"><i data-lucide="zap-off"></i>干擾相容</button>
     <button class="fbtn" onclick="filterCat('safety',this)"><i data-lucide="shield-check"></i>安全防護</button>
     <button class="fbtn" onclick="filterCat('modulation',this)"><i data-lucide="audio-waveform"></i>調變方式</button>
+    <button class="fbtn" onclick="filterCat('linksys',this)"><i data-lucide="route"></i>鏈路/系統</button>
   </div>
+  </div><!-- /sticky-filter -->
 
   <!-- ===== 基礎概念 ===== -->
   <div class="cat-title"><i data-lucide="radio-tower"></i>基礎概念：先搞懂這些，其他就通了</div>
@@ -518,7 +528,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="advanced">
+    <div class="concept" data-tags="advanced" id="imd">
       <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="circle"></i></span><div><div class="title">互調干擾（IMD）</div><div class="en">Intermodulation Distortion</div></div></div>
       <div class="concept-bd">
         <div class="explain">當兩個強信號同時進入接收機時，接收機內部的非線性元件會產生「假信號」在其他頻率上，造成莫名其妙的干擾。</div>
@@ -1016,7 +1026,119 @@
 
   </div>
 
-  <!-- 快速對照表 -->
+  <!-- 鏈路與系統工程 -->
+  <div class="cat-title"><i data-lucide="route"></i>鏈路與系統工程：點對點與進階工具用到的詞</div>
+  <div class="concept-grid">
+
+    <div class="concept" data-tags="linksys" id="linkbudget">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="route"></i></span><div><div class="title">鏈路預算</div><div class="en">Link Budget</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">把一條無線鏈路從發射到接收的所有「加分」（功率、天線增益）和「扣分」（路徑損耗）逐項加總，算出接收端到底收到多強，能不能通。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像記帳：發射功率＋天線增益是收入，路徑損耗是支出，結餘就是接收功率。結餘還要高過「聽得到的門檻」才算通。</div>
+        <div class="formula">P_rx = P_tx + 天線增益 − 路徑損耗</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/link-budget-sim.html" style="font-weight:700">Link Budget 鏈路預算模擬器 →</a></div>
+        <div class="tagrow"><span class="ctag sdr">鏈路</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="fademargin">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="shield-half"></i></span><div><div class="title">餘裕</div><div class="en">Fade Margin</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">接收功率比「最低可用門檻」高出來的那一段（dB）。這段是預留給衰落、雨天、天線沒對準等不確定因素的「安全存款」。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像戶頭裡留的緩衝金。平常用不到，但訊號忽然變弱時就靠它撐住不斷線。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>經驗法則：餘裕留 ≥ 10dB 比較穩（量級參考）。餘裕 = 接收功率 − 靈敏度。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/link-budget-sim.html" style="font-weight:700">Link Budget 模擬器 →</a></div>
+        <div class="tagrow"><span class="ctag sdr">鏈路</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="nf">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="bell-off"></i></span><div><div class="title">雜訊指數</div><div class="en">Noise Figure (NF)</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">一個元件（或整台接收機）自己「加進去多少雜訊」的指標，單位 dB。NF 越小越乾淨。多級串接時，<strong>第一級的 NF 影響最大</strong>。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像一條傳話接力：第一個人講不清楚（雜訊大），後面再怎麼清楚也救不回來。所以低雜訊放大器（LNA）要擺最前面。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>Friis 雜訊式：總雜訊幾乎由第一級決定 → LNA 要好、要在前。（注意：與 Link Budget 的「Friis 傳輸式」同名不同式。）</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/receiver-chain.html" style="font-weight:700">接收機 NF/MDS 串接計算器 →</a></div>
+        <div class="tagrow"><span class="ctag sdr">鏈路</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="mds">
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="radio"></i></span><div><div class="title">最小可測訊號</div><div class="en">MDS</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">接收機能勉強「分辨出來」的最弱訊號功率，是靈敏度的一種量化。由熱雜訊底、頻寬、NF 與解調所需 SNR 共同決定。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像聽力檢查中你能聽到的最小音量。比這更小的聲音，就被埋進背景雜音裡了。</div>
+        <div class="formula">MDS = −174 + 10·log(B) + NF + SNR_min</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/receiver-chain.html" style="font-weight:700">接收機鏈路計算器 →</a> ｜ 📖 <a href="#sensitivity">靈敏度</a></div>
+        <div class="tagrow"><span class="ctag sdr">鏈路</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="iip3">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="trending-up"></i></span><div><div class="title">線性度 / IIP3 / 動態範圍</div><div class="en">IIP3 / SFDR</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">接收機面對「大訊號」時還能不能保持線性、不產生互調假訊號的能力。<strong>IIP3</strong> 越高越耐大訊號；<strong>SFDR（無雜散動態範圍）</strong>則是「最弱聽得到」到「最強不失真」之間的範圍。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像耳朵：既要聽得到細語（靈敏度好），又要在巨響下不破音（線性度好）。兩者拉扯，就是接收機設計的核心。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>取捨</span>增益放太前面 → 雜訊變好，但大訊號更早把後級推進非線性（IIP3 變差）。NF 與線性度要平衡。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/receiver-chain.html" style="font-weight:700">接收機鏈路計算器（看瓶頸級）→</a> ｜ 📖 <a href="#imd">互調干擾</a></div>
+        <div class="tagrow"><span class="ctag adv">進階</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="multipath">
+      <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="radio-tower"></i></span><div><div class="title">多徑衰落 / 雙射線</div><div class="en">Multipath Fading / Two-ray</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">訊號同時走「直射」與「地面反射」等多條路徑抵達，彼此的路徑差造成時而加強、時而抵消 → 收訊忽強忽弱（衰落）。雙射線是最簡單的解釋模型。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像在山谷喊話，原聲和回音疊在一起：對到拍子變更大聲，錯開拍子反而互相抵消。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/propagation-multipath.html" style="font-weight:700">傳播與多徑視覺化 →</a> ｜ 📖 <a href="#fresnel">菲涅耳區</a>、<a href="#scatter">散射/顫抖</a></div>
+        <div class="tagrow"><span class="ctag scen">傳播</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="qam">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="grid-3x3"></i></span><div><div class="title">QAM（如 16QAM）</div><div class="en">Quadrature Amplitude Modulation</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">同時用「振幅」和「相位」兩個維度編碼，一個符號能帶更多 bit（16QAM＝4 bit）。資料率高，但點變密 → 較不耐雜訊。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像停車格：BPSK 只有 2 格、QPSK 4 格、16QAM 16 格。格子越多停越多車（資料），但車位越擠越容易刮到（雜訊出錯）。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/adv-constellation-eye.html" style="font-weight:700">〔進階〕星座與眼圖實驗室 →</a> ｜ 📖 <a href="#fskpsk">FSK/PSK</a></div>
+        <div class="tagrow"><span class="ctag adv">進階</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="eye">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="eye"></i></span><div><div class="title">眼圖 / EVM</div><div class="en">Eye Diagram / EVM</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">把許多符號的波形疊起來看，中間會出現像「眼睛」的開口。眼開越大＝符號間干擾（ISI）與雜訊越小、越好判讀。<strong>EVM</strong> 則量化接收星座點偏離理想點多遠。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>眼睛張得開＝字跡清楚，一眼能認；眼睛快閉了＝字糊在一起，容易認錯。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/adv-constellation-eye.html" style="font-weight:700">〔進階〕星座與眼圖實驗室 →</a></div>
+        <div class="tagrow"><span class="ctag adv">進階</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="ofdm">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="bar-chart-3"></i></span><div><div class="title">OFDM 正交分頻多工</div><div class="en">Orthogonal FDM</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">把一條高速資料拆成許多互相「正交」的低速子載波並排傳送。每個子載波的峰值剛好落在其他子載波的零點，重疊也不互擾 → 頻譜利用率極高。Wi-Fi／4G／5G 的核心。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像很多人同時講話卻不吵架——因為每個人「聲音的節奏」剛好錯開，彼此的高峰落在別人的空檔。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>代價</span>對頻率偏移與相位噪聲敏感（會破壞正交性）。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/adv-ofdm.html" style="font-weight:700">〔進階〕OFDM 子載波視覺化 →</a></div>
+        <div class="tagrow"><span class="ctag adv">進階</span></div>
+      </div>
+    </div>
+
+    <div class="concept" data-tags="linksys" id="mimo">
+      <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="grid-3x3"></i></span><div><div class="title">MIMO 多天線</div><div class="en">Multiple-In Multiple-Out</div></div></div>
+      <div class="concept-bd">
+        <div class="explain">用多支收發天線，可做<strong>空間多工</strong>（多條資料流並行 → 提速）或<strong>分集</strong>（同資料走多路 → 抗衰落）。反直覺：豐富的多徑反而讓各通道獨立、成了容量來源。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>多工像開多線道一起塞車流（更快）；分集像同一封信寄多份走不同路（更不會全丟）。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/adv-mimo.html" style="font-weight:700">〔進階〕MIMO 基礎 →</a></div>
+        <div class="tagrow"><span class="ctag adv">進階</span></div>
+      </div>
+    </div>
+
+  </div>
+
+
   <div class="cat-title"><i data-lucide="clipboard-list"></i>快速對照表：現場遇到問題時翻這裡</div>
   <div class="panel" style="overflow-x:auto">
     <table class="ref-table">
@@ -1041,21 +1163,49 @@
 <script src="../assets/js/rf-data.js"></script>
 <script src="../assets/js/nav.js?v=3"></script>
 <script>
+var curTag = 'all';
+// 捲動時隱藏空的分類標題，過濾後版面才乾淨
+function syncCatTitles() {
+  document.querySelectorAll('.cat-title').forEach(function (title) {
+    var grid = title.nextElementSibling;
+    if (!grid || !grid.classList.contains('concept-grid')) return;
+    var anyVisible = Array.prototype.some.call(grid.querySelectorAll('.concept'), function (c) { return c.style.display !== 'none'; });
+    title.classList.toggle('cat-empty', !anyVisible);
+  });
+}
 function doSearch() {
   var q = document.getElementById('search').value.toLowerCase();
   document.querySelectorAll('.concept').forEach(function (card) {
+    var inCat = (curTag === 'all') || (card.dataset.tags && card.dataset.tags.indexOf(curTag) !== -1);
     var txt = card.innerText.toLowerCase();
-    card.style.display = (!q || txt.indexOf(q) !== -1) ? '' : 'none';
+    card.style.display = (inCat && (!q || txt.indexOf(q) !== -1)) ? '' : 'none';
   });
+  syncCatTitles();
 }
 function filterCat(tag, btn) {
+  curTag = tag;
   document.querySelectorAll('.fbtn').forEach(function (b) { b.classList.remove('active'); });
   btn.classList.add('active');
-  document.querySelectorAll('.concept').forEach(function (card) {
-    if (tag === 'all') { card.style.display = ''; }
-    else { card.style.display = (card.dataset.tags && card.dataset.tags.indexOf(tag) !== -1) ? '' : 'none'; }
-  });
+  doSearch(); // 套用分類 + 既有搜尋字
+  // 切類後捲回內容頂端（吸頂列下方）
+  var anchor = document.querySelector('.cat-title:not(.cat-empty)');
+  if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+// 在每個分類按鈕注入數量徽章
+(function injectCounts() {
+  var total = document.querySelectorAll('.concept').length;
+  document.querySelectorAll('.fbtn').forEach(function (btn) {
+    var m = (btn.getAttribute('onclick') || '').match(/filterCat\('([a-z]+)'/);
+    if (!m) return;
+    var tag = m[1];
+    var n = tag === 'all' ? total
+      : document.querySelectorAll('.concept[data-tags~="' + tag + '"], .concept[data-tags*="' + tag + '"]').length;
+    var b = document.createElement('span');
+    b.className = 'cnt';
+    b.textContent = n;
+    btn.appendChild(b);
+  });
+})();
 
 /* ===== Phase 3 交叉連結 ===== */
 // 1) 把「情境N」標籤變成可點連結，連到 SDR 課程對應情境
