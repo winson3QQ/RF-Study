@@ -52,6 +52,24 @@
 - FRS 段落在地化：改為「免照低功率對講機」，不再把美規 0.5W／14 頻道當台灣事實，並指向 NCC 規格。
 - 註：`tools/superhet-receiver.html` 仍有「鑑相器」用詞，將於 Phase 5 工具審查時一併校正。
 
-## Phase 5 — 互動工具深度查核
+## Phase 5 — 互動工具深度查核 ✅（完成）
 
-對 11 個工具的計算邏輯做 RF 正確性檢查：SWR／反射係數、超外差本振·中頻·鏡像、RF 安全距離（MPE）、電離層 MUF、調變波形等公式。
+逐一檢查工具計算邏輯，結果：
+
+**正確、無需修改**
+- `swr-visualizer`：SWR=Z_L/Z_0、Γ=|（Z_L−Z_0）/（Z_L+Z_0）|、反射功率=Γ² ✓
+- `superhet-receiver`：IF=|RF−LO|、鏡像=RF+2·IF、dBi=dBd+2.15 ✓
+- `circuit-calculator`：V=IR、P=VI=I²R=V²/R、PEP=Vpk²/2R、PEP=Vpp²/(8·50) ✓
+- `rf-safety`：遠場 d=√(P·G/4πS) ✓（MPE 限值為簡化值）
+- `ionosphere-viewer`：E 一跳≈1920km、F2 一跳≈4000km、MUF/LUF 概念 ✓
+- `civil-defense` 模擬器：145.500 主頻、+600kHz 中繼、CTCSS 67/88.5/110.9/131.8 與課程一致 ✓
+- `power-circuit`：半波 PIV=2Vpk、橋式 PIV=Vpk ✓
+
+**已修正**
+- `power-circuit`：全波「中心抽頭」PIV 原標「等於峰值」→ 更正為 **2 倍峰值**（橋式才是 1 倍）。
+- `rf-glossary` PIV 卡：原把「全波/橋式」並列為 1 倍 → 區分中心抽頭(2倍)與橋式(1倍)。
+- `superhet-receiver`：鑑相器 → 鑑別器（用詞統一，FM 解調正確用詞）。
+
+**重要：回頭修正 Phase 1 的過度限縮**
+- `spectrum-viewer` 內含對 NCC 附表的完整轉寫，顯示 70cm **下段 430–432 與上段 432–440 對三等皆開放（25W）**。
+- 據此將三等 UHF 由 Phase 1 暫定的 430–432 **更正為 430–440**，並同步 `rf-data.js`／basic-radio／glossary，使全站與 spectrum-viewer 一致。
