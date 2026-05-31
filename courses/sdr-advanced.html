@@ -108,6 +108,7 @@
         <li><strong>第 2 層（CTCSS 亞音）：</strong>67–250Hz 之一，低於人耳舒適聽覺範圍</li>
         <li><strong>第 3 層（FM 載波）：</strong>145.500MHz，無線電的「傳輸馬路」</li>
       </ul>
+      <p style="margin:8px 0 0;font-size:13.5px"><a href="rf-glossary.html#ctcss">📖 白話手冊：CTCSS 是什麼（不用公式）→</a></p>
     </div>
 
     <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
@@ -468,6 +469,7 @@ CTCSS碼選擇建議（避免互調干擾）：
         <li>失配時，能量反射回去 → 駐波比（SWR）升高 → 發射效率急降</li>
         <li>天線完全損壞時，發射功率幾乎全部反射或耗散為熱</li>
       </ul>
+      <p style="margin:8px 0 0;font-size:13.5px"><a href="rf-glossary.html#wavelength">📖 白話手冊：波長與 λ/4 天線（不用公式）→</a></p>
     </div>
 
     <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
@@ -776,6 +778,18 @@ UHF 435MHz對講機：
     if (btn) btn.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // 支援以 #pN 深連結直接開啟對應情境（供白話手冊的「情境」標籤連入）
+  function openFromHash() {
+    var id = (location.hash || '').replace(/^#/, '');
+    if (!/^p[0-7]$/.test(id)) return;
+    var tabs = document.querySelectorAll('.tabs .tab');
+    for (var i = 0; i < tabs.length; i++) {
+      if ((tabs[i].getAttribute('onclick') || '').indexOf("'" + id + "'") >= 0) { go(id, tabs[i]); break; }
+    }
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
 </script>
 </body>
 </html>

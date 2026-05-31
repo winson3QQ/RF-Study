@@ -504,6 +504,18 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // 支援以 #intro/#operate/#exam/#sim 深連結直接開啟對應分頁
+  function openPartFromHash() {
+    var id = (location.hash || '').replace(/^#/, '');
+    if (!/^(intro|operate|exam|sim)$/.test(id)) return;
+    var tabs = document.querySelectorAll('.tabs .tab');
+    for (var i = 0; i < tabs.length; i++) {
+      if ((tabs[i].getAttribute('onclick') || '').indexOf("'" + id + "'") >= 0) { showPart(id, tabs[i]); break; }
+    }
+  }
+  window.addEventListener('hashchange', openPartFromHash);
+  openPartFromHash();
+
   /* ===== 情景模擬 ===== */
   function simOnShow(){ renderScenarios(); }
 

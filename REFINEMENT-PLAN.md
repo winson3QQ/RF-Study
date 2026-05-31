@@ -38,11 +38,12 @@
 - 已套用：basic-radio（channels／bands3deg／powerTable）、rf-glossary（smeter／swr）。
 - 站本即硬依賴 JS（nav.js／分頁／搜尋），故此法與既有架構一致。
 
-## Phase 3 — 交叉連結（手冊 ↔ 課程 ↔ 工具）
+## Phase 3 — 交叉連結（手冊 ↔ 課程 ↔ 工具）✅（完成）
 
-- 手冊每張卡的「情境X」標籤改為可點錨點，連到 SDR 課程對應情境。
-- SDR 課程術語反向連到手冊卡（已建 `#wavelength`、`#ctcss` 錨點作為起點）。
-- 術語連到對應互動工具（情境5 天線→swr-visualizer、情境2→superhet-receiver 等）。
+- 兩課程加入 **hash 深連結**：`sdr-advanced.html#p1`、`basic-radio.html#exam` 可直接開啟對應分頁。
+- 手冊「情境N」標籤自動轉為連結 → SDR 課程對應情境（單一 script，免逐卡改）。
+- 手冊相關術語卡加「延伸互動工具」連結：SWR→swr-visualizer、超外差→superhet-receiver、CTCSS→民防模擬器、干擾→interference-diagnosis、電離層→ionosphere-viewer。
+- SDR 課程反向連回手冊：情境1→`#ctcss`、情境5→`#wavelength`。
 
 ## Phase 4 — 用詞與標註制度化
 

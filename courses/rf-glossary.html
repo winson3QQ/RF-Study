@@ -1055,6 +1055,40 @@ function filterCat(tag, btn) {
     else { card.style.display = (card.dataset.tags && card.dataset.tags.indexOf(tag) !== -1) ? '' : 'none'; }
   });
 }
+
+/* ===== Phase 3 交叉連結 ===== */
+// 1) 把「情境N」標籤變成可點連結，連到 SDR 課程對應情境
+document.querySelectorAll('.ctag.scen').forEach(function (tag) {
+  var m = (tag.textContent || '').match(/情境\s*(\d)/);
+  if (!m) return;
+  var a = document.createElement('a');
+  a.href = 'sdr-advanced.html#p' + m[1];
+  a.className = tag.className;
+  a.title = '前往 SDR 課程 ' + tag.textContent;
+  a.style.textDecoration = 'none';
+  a.textContent = tag.textContent;
+  tag.parentNode.replaceChild(a, tag);
+});
+// 2) 為相關術語卡加上「延伸互動工具」連結
+var TOOL_MAP = {
+  '駐波比（SWR）': { href: '../tools/swr-visualizer.html', label: 'SWR 駐波互動視覺化' },
+  '超外差接收機': { href: '../tools/superhet-receiver.html', label: '超外差接收機互動解析' },
+  'CTCSS（亞音頻）': { href: '../simulators/civil-defense.html', label: '民防無線電參數模擬器' },
+  '干擾 / 捕捉效應': { href: '../tools/interference-diagnosis.html', label: '干擾診斷互動流程圖' },
+  '電離層分層（D / E / F 層）': { href: '../tools/ionosphere-viewer.html', label: '電離層傳播互動視覺化' }
+};
+document.querySelectorAll('.concept').forEach(function (card) {
+  var t = card.querySelector('.title');
+  var bd = card.querySelector('.concept-bd');
+  if (!t || !bd) return;
+  var info = TOOL_MAP[t.textContent.trim()];
+  if (!info) return;
+  var div = document.createElement('div');
+  div.className = 'gnote';
+  div.innerHTML = '🔧 延伸互動工具：<a href="' + info.href + '" style="font-weight:700">' + info.label + ' →</a>';
+  var tagrow = card.querySelector('.tagrow');
+  if (tagrow) bd.insertBefore(div, tagrow); else bd.appendChild(div);
+});
 </script>
 </body>
 </html>
