@@ -9,7 +9,7 @@ radio-site/
 ├── index.html              ← 首頁（從這裡進入所有內容）
 ├── courses/                ← 課程教材
 │   ├── basic-radio.html    基礎無線電使用（實機操作 + 考照準備）
-│   ├── sdr-advanced.html   SDR 深化課程（RF 理論）
+│   ├── sdr-advanced.html   進階無線電（RF 理論）
 │   └── rf-glossary.html    RF 術語白話手冊
 ├── tools/                  ← 互動工具（主軌：考照 + 點對點實務）
 │   ├── spectrum-viewer.html    業餘頻段互動頻譜
