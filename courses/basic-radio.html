@@ -16,20 +16,35 @@
   .zello-join{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
   .qr-placeholder{width:150px;height:150px;flex:0 0 auto;border:2px dashed var(--primary);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:13px;text-align:center;padding:8px;background:var(--primary-soft)}
   .zello-qr{width:160px;height:160px;flex:0 0 auto;border-radius:14px;border:1px solid var(--border);background:#fff;padding:6px}
-  .simgrid{display:grid;gap:16px;grid-template-columns:1fr}
-  @media(min-width:560px){.simgrid{grid-template-columns:1fr 1fr}}
-  .simcard{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
-  .simthumb{aspect-ratio:16/9;background:var(--bg-tint) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12.5px;border-bottom:1px solid var(--border)}
-  .simcard .cbody{padding:13px 15px;display:flex;flex-direction:column;gap:9px;flex:1}
-  .simcard .ctitle{font-weight:800;color:var(--ink);font-size:16px}
-  .sim-pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--primary-soft);color:var(--primary-ink);font-weight:700}
-  .simcard .brief{font-size:13.5px;color:var(--ink-2);line-height:1.55}
-  .simcard details{margin-top:auto;border-top:1px dashed var(--border);padding-top:9px}
-  .simcard summary{cursor:pointer;font-size:13.5px;color:var(--teal-ink);font-weight:700;list-style:none}
-  .simcard summary::-webkit-details-marker{display:none}
-  .simcard summary::before{content:"▸ "}
-  .simcard details[open] summary::before{content:"▾ "}
   .btn-sm{padding:9px 16px;font-size:14px}
+  /* 題庫列表 */
+  .scenlist{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .scenrow{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:10px 12px}
+  .scenthumb{width:58px;height:58px;flex:0 0 auto;border-radius:10px;background:var(--bg-tint) center/cover no-repeat;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--ink-3)}
+  .sceninfo{flex:1;min-width:0}
+  .scentitle{font-weight:800;color:var(--ink);font-size:15.5px;line-height:1.3}
+  .sceninfo details{margin-top:3px}
+  .sceninfo summary{cursor:pointer;font-size:12.5px;color:var(--teal-ink);font-weight:700;list-style:none}
+  .sceninfo summary::-webkit-details-marker{display:none}
+  .sceninfo summary::before{content:"▸ 備註"}
+  .sceninfo details[open] summary::before{content:"▾ 備註"}
+  .scennote{font-size:13px;color:var(--ink-2);line-height:1.55;white-space:pre-wrap;margin-top:4px}
+  .scenacts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .iconbtn{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--border-strong);background:var(--surface);color:var(--ink-2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+  .iconbtn:active{transform:scale(.94)}
+  .iconbtn.push{background:var(--primary);border-color:var(--primary);color:#fff}
+  .iconbtn.del:hover{border-color:var(--primary);color:var(--primary-ink)}
+  .iconbtn i{width:18px;height:18px}
+  .scenempty{color:var(--ink-3);font-size:14px;padding:18px;text-align:center;border:1px dashed var(--border-strong);border-radius:14px}
+  /* 編輯表單 */
+  .scenform{border:1px solid var(--border-strong);border-radius:16px;background:var(--bg-tint);padding:16px;margin-top:12px}
+  .scenform h3{margin:0 0 12px}
+  .scenform label{display:block;font-size:13.5px;font-weight:700;color:var(--ink-2);margin-bottom:12px}
+  .scenform input[type=text],.scenform textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;font-family:inherit;font-size:15px;padding:9px 12px;border:1.5px solid var(--border-strong);border-radius:10px;background:#fff;color:var(--ink)}
+  .scenform input:focus,.scenform textarea:focus{outline:none;border-color:var(--primary)}
+  .scenprev{margin-top:6px}
+  .scenprev img{max-height:140px;border-radius:10px;border:1px solid var(--border)}
+  .formrow{display:flex;gap:8px}
 </style>
 </head>
 <body>
@@ -431,7 +446,7 @@
 
       <div class="prose-card">
         <h2 style="margin-top:0">情景模擬練習</h2>
-        <p>用 <strong>Zello</strong>（手機 PTT App，模擬半雙工無線電）進行訊息傳遞演練：教練推一張情境圖到 Zello 群組，學員輪流按住 PTT 用正確格式回報，再點開「標準通報範例」對照講評。</p>
+        <p>用 <strong>Zello</strong>（手機 PTT App，模擬半雙工無線電）進行訊息傳遞演練：教練推一張情境圖到 Zello 群組，學員輪流按住 PTT 用正確格式回報，再依題目「備註」對照講評。</p>
         <div class="callout warn"><span class="ct"><i data-lucide="eye-off"></i>保密提醒</span>本頁只在主站、需 PIN，<strong>未同步到學員掃碼版（radio-101）</strong>。機密題請用下方「從相簿選圖推送」，圖不會上傳到網站。</div>
       </div>
 
@@ -458,90 +473,33 @@
         <tr><td><b>閉環確認</b></td><td>收訊方覆誦關鍵資訊（座標、數量、頻道），確保沒聽錯。</td></tr>
       </table>
 
-      <!-- 內建題庫 -->
-      <div class="sec-h"><i data-lucide="layout-grid"></i>情境題庫</div>
-      <p style="color:var(--ink-2);font-size:14px">點「推送到 Zello」會帶圖叫出手機分享選單，選 Zello 群組即送出。圖檔尚未放入者會顯示佔位，放進 <span class="readout">assets/img/</span> 後即顯示。</p>
-      <div class="simgrid">
-
-        <div class="simcard">
-          <div class="simthumb" data-img="../assets/img/sim-quake.jpg">情境圖待放：sim-quake.jpg</div>
-          <div class="cbody">
-            <span class="sim-pill">大量傷患・難</span>
-            <div class="ctitle">情境一：地震・教室倒塌</div>
-            <div class="brief">校舍教室天花板坍塌、起火，多名學生受困受傷。請以 SALUTE 格式回報現場。</div>
-            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-quake.jpg','情境一：地震教室')"><i data-lucide="send"></i> 推送到 Zello</button></div>
-            <details><summary>標準通報範例</summary>
-              <table class="tbl" style="margin-top:8px">
-                <tr><th>字母</th><th>內容</th></tr>
-                <tr><td><b>S</b> 數量</td><td>傷患 4 名，其中重傷 1（無意識）。</td></tr>
-                <tr><td><b>A</b> 活動</td><td>教室天花板坍塌、後方起火，傷患受困瓦礫。</td></tr>
-                <tr><td><b>L</b> 位置</td><td>○○國小 3 樓 305 教室（座標／樓層）。</td></tr>
-                <tr><td><b>U</b> 單位</td><td>本隊呼號 ○○○，現場 2 人。</td></tr>
-                <tr><td><b>T</b> 時間</td><td>地震後約 5 分鐘。</td></tr>
-                <tr><td><b>E</b> 裝備</td><td>需破壞器材、擔架、滅火器；現場有明火。</td></tr>
-              </table>
-            </details>
-          </div>
-        </div>
-
-        <div class="simcard">
-          <div class="simthumb" data-img="../assets/img/sim-ruins.jpg">情境圖待放：sim-ruins.jpg</div>
-          <div class="cbody">
-            <span class="sim-pill">搜索・中</span>
-            <div class="ctitle">情境二：廢墟搜尋・發現倒臥者</div>
-            <div class="brief">廢棄校區搜索，於中庭大樹下發現一名倒臥人員，意識不明。請回報發現位置與傷患狀況。</div>
-            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-ruins.jpg','情境二：廢墟搜尋')"><i data-lucide="send"></i> 推送到 Zello</button></div>
-            <details><summary>標準通報範例</summary>
-              <table class="tbl" style="margin-top:8px">
-                <tr><th>項目</th><th>內容</th></tr>
-                <tr><td>發現位置</td><td>「泉天」棟前中庭大樹下，自入口直行約 30 公尺。</td></tr>
-                <tr><td>傷患狀況</td><td>男性一名俯臥，呼喊無反應，疑似意識不清。</td></tr>
-                <tr><td>環境</td><td>地面碎石、樹上有蜂窩，接近需注意。</td></tr>
-                <tr><td>需求</td><td>請派 1 組攜擔架及急救包前來，本隊原地警戒。OVER。</td></tr>
-              </table>
-            </details>
-          </div>
-        </div>
-
-        <div class="simcard">
-          <div class="simthumb" data-img="../assets/img/sim-garage.jpg">情境圖待放：sim-garage.jpg</div>
-          <div class="cbody">
-            <span class="sim-pill">火警・難</span>
-            <div class="ctitle">情境三：地下停車場・車輛火警</div>
-            <div class="brief">地下停車場車輛起火、濃煙瀰漫，多名民眾倒地、有人吸入濃煙。請回報火勢、傷患與需求。</div>
-            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-garage.jpg','情境三：停車場火警')"><i data-lucide="send"></i> 推送到 Zello</button></div>
-            <details><summary>標準通報範例</summary>
-              <table class="tbl" style="margin-top:8px">
-                <tr><th>項目</th><th>內容</th></tr>
-                <tr><td>位置</td><td>○○大樓地下 2 樓停車場，近 B 區車道。</td></tr>
-                <tr><td>火勢</td><td>1 車全面燃燒、延燒鄰車，濃煙不易視物。</td></tr>
-                <tr><td>傷患</td><td>3 名：1 倒地無意識、1 吸入性嗆傷、1 下肢出血。</td></tr>
-                <tr><td>需求</td><td>消防＋救護，封閉車道、強制排煙；本隊先撤可動傷患。OVER。</td></tr>
-              </table>
-            </details>
-          </div>
-        </div>
-
-        <div class="simcard">
-          <div class="simthumb" data-img="../assets/img/sim-crash.jpg">情境圖待放：sim-crash.jpg</div>
-          <div class="cbody">
-            <span class="sim-pill">車禍・中</span>
-            <div class="ctitle">情境四：校門口・車禍追撞</div>
-            <div class="brief">小客車追撞貨櫃車，車頭全毀、漏油，車內外多名傷患。請回報事故與後送需求。</div>
-            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-crash.jpg','情境四：車禍追撞')"><i data-lucide="send"></i> 推送到 Zello</button></div>
-            <details><summary>標準通報範例</summary>
-              <table class="tbl" style="margin-top:8px">
-                <tr><th>項目</th><th>內容</th></tr>
-                <tr><td>位置</td><td>○○路校門口，自小客車追撞貨櫃車後方。</td></tr>
-                <tr><td>傷患</td><td>3 名：駕駛受困昏迷、後座 1 昏迷、1 名可行走受驚。</td></tr>
-                <tr><td>危害</td><td>車頭漏油（黃色油漬擴散），禁止明火、需交管。</td></tr>
-                <tr><td>需求</td><td>救護 ×2、消防破壞器材救出受困駕駛；請封路。OVER。</td></tr>
-              </table>
-            </details>
-          </div>
-        </div>
-
+      <!-- 內建題庫（教練本機管理） -->
+      <div class="sec-h"><i data-lucide="layout-list"></i>情境題庫</div>
+      <p style="color:var(--ink-2);font-size:14px">題庫存在<strong>你這台裝置的瀏覽器</strong>，不會上傳網站、學員看不到。可新增／編輯／刪除／排序，按 <i data-lucide="send" style="width:15px;height:15px;vertical-align:-2px"></i> 把圖推到 Zello 群組。</p>
+      <div style="margin:10px 0">
+        <button class="btn btn-primary btn-sm" onclick="scenAdd()"><i data-lucide="plus"></i> 新增情境</button>
       </div>
+
+      <!-- 新增／編輯表單 -->
+      <div id="scenForm" class="scenform" hidden>
+        <h3 id="scenFormTitle">新增情境</h3>
+        <label>標題
+          <input id="scenTitle" type="text" maxlength="40" placeholder="例：地震・教室倒塌">
+        </label>
+        <label>情境圖（選填）
+          <input id="scenImgFile" type="file" accept="image/*" onchange="scenPreview(this)">
+        </label>
+        <div id="scenPrev" class="scenprev"></div>
+        <label>備註／標準答案（選填，僅你看得到）
+          <textarea id="scenNote" rows="3" placeholder="講評時參考的標準通報重點…"></textarea>
+        </label>
+        <div class="formrow">
+          <button class="btn btn-primary btn-sm" onclick="scenSave()"><i data-lucide="check"></i> 儲存</button>
+          <button class="btn btn-ghost btn-sm" onclick="scenCancel()">取消</button>
+        </div>
+      </div>
+
+      <div id="scenList" class="scenlist"></div>
 
       <!-- 相簿選圖 -->
       <div class="sec-h"><i data-lucide="image-up"></i>從相簿選圖推送（機密題）</div>
@@ -588,26 +546,146 @@
   }
   function simReveal(){
     document.getElementById('simGate').hidden = true;
-    var body = document.getElementById('simBody');
-    body.hidden = false;
-    // 載入縮圖：圖檔存在才顯示，否則保留佔位文字
-    body.querySelectorAll('.simthumb[data-img]').forEach(function(el){
-      var src = el.getAttribute('data-img'); if(!src) return;
-      var im = new Image();
-      im.onload = function(){ el.style.backgroundImage = 'url("'+src+'")'; el.textContent=''; };
-      im.src = src;
-    });
+    document.getElementById('simBody').hidden = false;
+    renderScenarios();
   }
 
-  // 帶圖叫出系統分享選單（選 Zello）；不支援則退回下載
-  async function pushToZello(imgUrl, title){
-    try{
-      var res = await fetch(imgUrl);
-      if(!res.ok) throw new Error('找不到圖檔，請先放入 assets/img/');
-      var blob = await res.blob();
-      await shareBlob(blob, title);
-    }catch(e){ alert('推送失敗：' + e.message); }
+  /* ===== 題庫管理（存 localStorage，僅本機） ===== */
+  var SCEN_KEY = 'simScenarios';
+  var scenEditId = null;       // 編輯中的 id；null=新增
+  var scenPrevData = null;     // 表單暫存的圖片 dataURL
+
+  function scenLoad(){
+    var raw = localStorage.getItem(SCEN_KEY);
+    if (raw){ try { var v = JSON.parse(raw); if (Array.isArray(v)) return v; } catch(e){} }
+    var seed = scenSeed();
+    try { scenStore(seed); } catch(e){}   // 首次載入時固定 id，後續編輯/刪除才對得上
+    return seed;
   }
+  function scenSeed(){
+    return [
+      { id: scenId(), title: '地震・教室倒塌', img: '', note: '' },
+      { id: scenId(), title: '廢墟搜尋・發現倒臥者', img: '', note: '' },
+      { id: scenId(), title: '地下停車場・車輛火警', img: '', note: '' },
+      { id: scenId(), title: '校門口・車禍追撞', img: '', note: '' }
+    ];
+  }
+  function scenStore(list){ localStorage.setItem(SCEN_KEY, JSON.stringify(list)); }
+  function scenId(){ return 's' + (++scenSeq) + '_' + (window.performance ? Math.floor(performance.now()*1000) : scenSeq); }
+  var scenSeq = 0;
+
+  function esc(s){ return (s||'').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function renderScenarios(){
+    var list = scenLoad();
+    var box = document.getElementById('scenList');
+    if (!list.length){ box.innerHTML = '<div class="scenempty">尚無情境，點「新增情境」建立第一題。</div>'; return; }
+    box.innerHTML = list.map(function(s, i){
+      var thumb = s.img
+        ? '<div class="scenthumb" style="background-image:url(\'' + s.img + '\')"></div>'
+        : '<div class="scenthumb"><i data-lucide="image"></i></div>';
+      var note = s.note
+        ? '<details><summary></summary><div class="scennote">' + esc(s.note) + '</div></details>'
+        : '';
+      return '<div class="scenrow">' + thumb +
+        '<div class="sceninfo"><div class="scentitle">' + esc(s.title || '（未命名）') + '</div>' + note + '</div>' +
+        '<div class="scenacts">' +
+          '<button class="iconbtn push" title="推送到 Zello" onclick="scenPush(\'' + s.id + '\')"><i data-lucide="send"></i></button>' +
+          '<button class="iconbtn" title="上移" onclick="scenMove(\'' + s.id + '\',-1)"' + (i===0?' disabled style="opacity:.4"':'') + '><i data-lucide="chevron-up"></i></button>' +
+          '<button class="iconbtn" title="下移" onclick="scenMove(\'' + s.id + '\',1)"' + (i===list.length-1?' disabled style="opacity:.4"':'') + '><i data-lucide="chevron-down"></i></button>' +
+          '<button class="iconbtn" title="編輯" onclick="scenEdit(\'' + s.id + '\')"><i data-lucide="pencil"></i></button>' +
+          '<button class="iconbtn del" title="刪除" onclick="scenDelete(\'' + s.id + '\')"><i data-lucide="trash-2"></i></button>' +
+        '</div></div>';
+    }).join('');
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function scenAdd(){
+    scenEditId = null; scenPrevData = null;
+    document.getElementById('scenFormTitle').textContent = '新增情境';
+    document.getElementById('scenTitle').value = '';
+    document.getElementById('scenNote').value = '';
+    document.getElementById('scenImgFile').value = '';
+    document.getElementById('scenPrev').innerHTML = '';
+    document.getElementById('scenForm').hidden = false;
+  }
+  function scenEdit(id){
+    var s = scenLoad().filter(function(x){ return x.id===id; })[0];
+    if (!s) return;
+    scenEditId = id; scenPrevData = s.img || null;
+    document.getElementById('scenFormTitle').textContent = '編輯情境';
+    document.getElementById('scenTitle').value = s.title || '';
+    document.getElementById('scenNote').value = s.note || '';
+    document.getElementById('scenImgFile').value = '';
+    document.getElementById('scenPrev').innerHTML = s.img ? '<img src="' + s.img + '">' : '';
+    document.getElementById('scenForm').hidden = false;
+    document.getElementById('scenForm').scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  function scenCancel(){ document.getElementById('scenForm').hidden = true; }
+
+  function scenPreview(input){
+    var f = input.files && input.files[0];
+    if (!f) return;
+    downscale(f, function(dataUrl){
+      scenPrevData = dataUrl;
+      document.getElementById('scenPrev').innerHTML = '<img src="' + dataUrl + '">';
+    });
+  }
+  function scenSave(){
+    var title = (document.getElementById('scenTitle').value || '').trim();
+    var note  = (document.getElementById('scenNote').value || '').trim();
+    if (!title){ alert('請輸入標題'); return; }
+    var list = scenLoad();
+    if (scenEditId){
+      list = list.map(function(s){
+        return s.id===scenEditId ? { id:s.id, title:title, img:(scenPrevData||''), note:note } : s;
+      });
+    } else {
+      list.push({ id: scenId(), title:title, img:(scenPrevData||''), note:note });
+    }
+    try { scenStore(list); }
+    catch(e){ alert('儲存失敗：本機空間可能已滿，請刪除部分情境或改用較小的圖。'); return; }
+    document.getElementById('scenForm').hidden = true;
+    renderScenarios();
+  }
+  function scenDelete(id){
+    if (!confirm('確定刪除這個情境？')) return;
+    scenStore(scenLoad().filter(function(s){ return s.id!==id; }));
+    renderScenarios();
+  }
+  function scenMove(id, dir){
+    var list = scenLoad();
+    var i = list.findIndex(function(s){ return s.id===id; });
+    var j = i + dir;
+    if (i<0 || j<0 || j>=list.length) return;
+    var tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+    scenStore(list); renderScenarios();
+  }
+  async function scenPush(id){
+    var s = scenLoad().filter(function(x){ return x.id===id; })[0];
+    if (!s) return;
+    if (!s.img){ alert('這個情境還沒有圖片，請先「編輯」加入圖片。'); return; }
+    try {
+      var blob = await (await fetch(s.img)).blob();
+      await shareBlob(blob, s.title);
+    } catch(e){ alert('推送失敗：' + e.message); }
+  }
+
+  // 縮圖壓縮：長邊最大 1280，JPEG 0.82，控制 localStorage 容量
+  function downscale(file, cb){
+    var img = new Image();
+    img.onload = function(){
+      var max = 1280, w = img.width, h = img.height;
+      if (w > max || h > max){ var r = Math.min(max/w, max/h); w = Math.round(w*r); h = Math.round(h*r); }
+      var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(cv.toDataURL('image/jpeg', 0.82));
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = function(){ alert('讀取圖片失敗'); };
+    img.src = URL.createObjectURL(file);
+  }
+
   function pushFromFile(input){
     var f = input.files && input.files[0];
     if(!f) return;
