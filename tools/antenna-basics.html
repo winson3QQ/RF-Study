@@ -75,6 +75,41 @@
 .xlink { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13px; color: var(--teal-ink); text-decoration: none; background: var(--teal-soft); border: 1px solid #bfe3df; border-radius: var(--r-pill); padding: 6px 14px; }
 .xlink:hover { background: #c8ebe7; color: var(--teal-ink); }
 .xlink svg { width: 14px; height: 14px; }
+
+/* interactive radiation pattern */
+.pat-sel { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.pat-btn { font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 7px 14px; border: 1.5px solid var(--border-strong); border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.pat-btn.on, .pat-btn:hover { border-color: var(--teal); color: var(--teal-ink); background: var(--teal-soft); }
+.pat-wrap { display: grid; grid-template-columns: 240px 1fr; gap: 18px; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 12px; }
+@media (max-width: 560px) { .pat-wrap { grid-template-columns: 1fr; } }
+.pat-wrap svg { width: 100%; height: auto; display: block; }
+.pat-readout { display: flex; flex-direction: column; gap: 9px; }
+.pat-stat { background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--r-md); padding: 9px 13px; }
+.pat-stat .l { font-size: 11px; color: var(--ink-3); font-weight: 700; }
+.pat-stat .v { font-family: var(--font-mono); font-size: 17px; color: var(--teal-ink); font-weight: 700; }
+.pat-desc { font-size: 12.5px; color: var(--ink-2); line-height: 1.7; }
+
+/* polarization mismatch */
+.pm-tool { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 16px; box-shadow: var(--shadow-sm); margin-bottom: 12px; }
+.pm-row { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 14px; }
+.pm-col label { display: block; font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+.pm-opts { display: flex; gap: 6px; }
+.pm-opt { font-family: var(--font-sans); font-weight: 700; font-size: 13px; padding: 7px 14px; border: 1.5px solid var(--border-strong); border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); cursor: pointer; transition: all var(--dur) var(--ease); }
+.pm-opt.on { border-color: var(--honey); background: var(--honey-soft); color: var(--honey-ink); }
+.pm-result { border-radius: var(--r-md); padding: 14px; text-align: center; border: 1px solid var(--border); }
+.pm-result .big { font-family: var(--font-mono); font-size: 21px; font-weight: 700; }
+.pm-result .txt { font-size: 13px; margin-top: 5px; line-height: 1.6; color: var(--ink-2); }
+.pm-good { background: var(--leaf-soft); } .pm-good .big { color: var(--leaf-ink); }
+.pm-mid { background: var(--honey-soft); } .pm-mid .big { color: var(--honey-ink); }
+.pm-bad { background: var(--rose-soft); } .pm-bad .big { color: var(--rose-ink); }
+
+/* physical antenna figure */
+.ant-fig { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 560px) { .ant-fig { grid-template-columns: 1fr; } }
+.ant-fig figure { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px; box-shadow: var(--shadow-sm); text-align: center; margin: 0; }
+.ant-fig svg { width: 100%; height: auto; }
+.ant-fig figcaption { font-size: 12px; color: var(--ink-2); margin-top: 6px; line-height: 1.55; }
+.ant-fig figcaption b { color: var(--teal-ink); }
 </style>
 </head>
 <body>
@@ -99,10 +134,12 @@
 
   <!-- ═══ LENGTH TAB ═══ -->
   <div id="tab-len">
-    <div class="st">天線共振長度計算</div>
-    <div style="background:var(--surface-soft);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:var(--r-md);padding:13px;margin-bottom:14px;font-family:var(--font-mono);font-size:12.5px;line-height:1.8;">
-      <strong style="color:var(--teal-ink)">波長 λ(公尺) = 300 ÷ 頻率(MHz)</strong><br>
-      <span style="color:var(--ink-3)">天線長度要和波長「共振」才有效率。半波偶極取 λ/2、四分之一波長垂直取 λ/4。實體因端點效應約短 5%（速度因數 ≈ 0.95）。</span>
+    <div class="callout analogy"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>推鞦韆要抓對「推的節奏」才會越盪越高；天線也是——它的<strong>長度要跟電波合拍（共振）</strong>，才能有效率地把電變成電磁波。長度不對，能量就推不出去。所以<strong>不同頻率要配不同長度的天線</strong>。</div>
+
+    <div class="st">那要多長？先算波長，再取一段</div>
+    <div style="background:var(--surface-soft);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:var(--r-md);padding:13px;margin-bottom:14px;font-size:13px;line-height:1.8;">
+      電波一個完整起伏的長度叫<strong style="color:var(--teal-ink)">波長 λ</strong>，用 <span style="font-family:var(--font-mono)">λ(公尺) = 300 ÷ 頻率(MHz)</span> 算。<br>
+      天線常取波長的「一段」來共振：<strong style="color:var(--teal-ink)">半波偶極</strong>取 λ/2、<strong style="color:var(--teal-ink)">四分之一波長垂直</strong>取 λ/4。實際做出來，因為「端點效應」會比理論再短約 5%（速度因數 ≈ 0.95）。
     </div>
 
     <div class="len-calc">
@@ -128,6 +165,35 @@
       </div>
     </div>
 
+    <div class="st">這兩種長度長什麼樣子？</div>
+    <div class="ant-fig">
+      <figure>
+        <svg viewBox="0 0 220 92" aria-label="半波偶極示意">
+          <line x1="18" y1="42" x2="100" y2="42" stroke="#1F9E96" stroke-width="3.5"/>
+          <line x1="120" y1="42" x2="202" y2="42" stroke="#1F9E96" stroke-width="3.5"/>
+          <line x1="100" y1="42" x2="104" y2="58" stroke="#6B6157" stroke-width="1.5"/>
+          <line x1="120" y1="42" x2="116" y2="58" stroke="#6B6157" stroke-width="1.5"/>
+          <circle cx="110" cy="64" r="3" fill="#F2643C"/>
+          <text x="59" y="32" text-anchor="middle" font-size="11" fill="#126B65" font-weight="700">λ/4</text>
+          <text x="161" y="32" text-anchor="middle" font-size="11" fill="#126B65" font-weight="700">λ/4</text>
+          <text x="110" y="84" text-anchor="middle" font-size="9.5" fill="#A89C8C">中央饋電</text>
+        </svg>
+        <figcaption><b>半波偶極</b>：中間餵電，兩臂各 λ/4，合起來 λ/2。架在空中、不需地面。</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 220 92" aria-label="四分之一波長垂直示意">
+          <line x1="110" y1="14" x2="110" y2="62" stroke="#1F9E96" stroke-width="3.5"/>
+          <circle cx="110" cy="64" r="3" fill="#F2643C"/>
+          <line x1="110" y1="64" x2="66" y2="76" stroke="#6B6157" stroke-width="1.5"/>
+          <line x1="110" y1="64" x2="154" y2="76" stroke="#6B6157" stroke-width="1.5"/>
+          <line x1="110" y1="64" x2="110" y2="80" stroke="#6B6157" stroke-width="1.5"/>
+          <text x="122" y="40" font-size="11" fill="#126B65" font-weight="700">λ/4</text>
+          <text x="110" y="90" text-anchor="middle" font-size="9.5" fill="#A89C8C">地網（地面／車體）</text>
+        </svg>
+        <figcaption><b>¼λ 垂直（GP）</b>：豎一根 λ/4，靠下方地網當「鏡子」補出另一半。手持／車機常見。</figcaption>
+      </figure>
+    </div>
+
     <div class="st">常見業餘頻段天線長度</div>
     <table class="atbl">
       <thead><tr><th>頻段</th><th>頻率</th><th>λ/2 偶極（實體）</th><th>λ/4 垂直（實體）</th></tr></thead>
@@ -138,7 +204,9 @@
 
   <!-- ═══ GAIN TAB ═══ -->
   <div id="tab-gain" style="display:none">
-    <div class="st">dBi vs dBd — 天線增益的兩種基準</div>
+    <div class="callout analogy"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>天線是<strong>被動</strong>的，不會無中生有把功率變大。所謂「增益」其實是<strong>把能量集中</strong>——像把四面都亮的燈泡，收束成往前更亮的手電筒。「幾 dB」講的是<strong>比某支基準天線強多少</strong>，所以一定要先問：<strong>跟誰比？</strong></div>
+
+    <div class="st">dBi 還是 dBd — 差別只在「跟誰比」</div>
     <div class="gain-grid">
       <div class="gain-card">
         <div class="h">dBi</div>
@@ -188,58 +256,82 @@
 
   <!-- ═══ PATTERN / POLARIZATION TAB ═══ -->
   <div id="tab-pat" style="display:none">
-    <div class="st">輻射方向圖（俯視）</div>
-    <div class="pat-grid">
-      <div class="pat-card">
-        <svg viewBox="0 0 120 120" aria-label="等向性方向圖">
-          <line x1="60" y1="10" x2="60" y2="110" stroke="#ECDFCB" stroke-width="1"/>
-          <line x1="10" y1="60" x2="110" y2="60" stroke="#ECDFCB" stroke-width="1"/>
-          <circle cx="60" cy="60" r="38" fill="#1F9E9622" stroke="#1F9E96" stroke-width="2"/>
-          <circle cx="60" cy="60" r="3" fill="#126B65"/>
-        </svg>
-        <div class="pt">等向性 Isotropic</div>
-        <div class="pd">向四面八方均等輻射的理想點源（現實不存在）。</div>
-      </div>
-      <div class="pat-card">
-        <svg viewBox="0 0 120 120" aria-label="偶極天線方向圖">
-          <line x1="60" y1="10" x2="60" y2="110" stroke="#ECDFCB" stroke-width="1"/>
-          <line x1="10" y1="60" x2="110" y2="60" stroke="#ECDFCB" stroke-width="1"/>
-          <path d="M60 60 C20 25, 20 95, 60 60 C100 25, 100 95, 60 60 Z" fill="#6D3FC022" stroke="#6D3FC0" stroke-width="2"/>
-          <circle cx="60" cy="60" r="3" fill="#6D3FC0"/>
-        </svg>
-        <div class="pt">半波偶極 Dipole</div>
-        <div class="pd">「8 字形」雙瓣，垂直天線軸的方向最強、兩端最弱。</div>
-      </div>
-      <div class="pat-card">
-        <svg viewBox="0 0 120 120" aria-label="八木天線方向圖">
-          <line x1="60" y1="10" x2="60" y2="110" stroke="#ECDFCB" stroke-width="1"/>
-          <line x1="10" y1="60" x2="110" y2="60" stroke="#ECDFCB" stroke-width="1"/>
-          <path d="M60 60 C40 8, 80 8, 60 60 Z" fill="#F2643C22" stroke="#F2643C" stroke-width="2"/>
-          <path d="M60 60 C52 92, 68 92, 60 60 Z" fill="#F2643C18" stroke="#F2643C" stroke-width="1.5"/>
-          <circle cx="60" cy="60" r="3" fill="#B83A1F"/>
-        </svg>
-        <div class="pt">八木 Yagi（定向）</div>
-        <div class="pd">主瓣集中朝前，後方有小的「後瓣」，前後比越大越好。</div>
+    <div class="callout analogy"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>天線往哪個方向送得最強，就像「燈具」的光形：<strong>燈泡</strong>四面都亮、<strong>手電筒</strong>往前集中。下面選一種天線，看它把能量「灑成什麼形狀」——越往外圈代表那個方向越強。</div>
+
+    <div class="st">選一種天線，看它「往哪裡送」</div>
+    <div class="pat-sel" id="pat-sel">
+      <button class="pat-btn on" data-pat="iso">燈泡型・等向</button>
+      <button class="pat-btn" data-pat="dipole">甜甜圈・偶極</button>
+      <button class="pat-btn" data-pat="yagi3">手電筒・八木3</button>
+      <button class="pat-btn" data-pat="yagi5">窄光・八木5</button>
+    </div>
+    <div class="pat-wrap">
+      <svg id="patSvg" viewBox="0 0 260 260" aria-label="輻射方向圖">
+        <circle cx="130" cy="130" r="100" fill="none" stroke="#ECDFCB"/>
+        <circle cx="130" cy="130" r="70.7" fill="none" stroke="#ECDFCB" stroke-dasharray="3 3"/>
+        <circle cx="130" cy="130" r="31.6" fill="none" stroke="#ECDFCB" stroke-dasharray="3 3"/>
+        <line x1="130" y1="22" x2="130" y2="238" stroke="#F2EAD9"/>
+        <line x1="22" y1="130" x2="238" y2="130" stroke="#F2EAD9"/>
+        <text x="135" y="62" font-size="9" fill="#A89C8C">−3dB</text>
+        <text x="135" y="103" font-size="9" fill="#A89C8C">−10</text>
+        <path id="patPath" d="" fill="#1F9E9633" stroke="#1F9E96" stroke-width="2"/>
+        <circle cx="130" cy="130" r="3.5" fill="#6B6157"/>
+        <text x="130" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#6B6157">↑ 前方</text>
+      </svg>
+      <div class="pat-readout">
+        <div class="pat-stat"><div class="l">天線</div><div class="v" id="pat-name">—</div></div>
+        <div class="pat-stat"><div class="l">增益（越大越集中）</div><div class="v" id="pat-gain">—</div></div>
+        <div class="pat-stat"><div class="l">主瓣張開角度（−3dB 波束寬度）</div><div class="v" id="pat-bw">—</div></div>
+        <div class="pat-stat"><div class="l">前比後強多少（前後比）</div><div class="v" id="pat-fb">—</div></div>
+        <div class="pat-desc" id="pat-desc"></div>
       </div>
     </div>
-    <div class="trap"><i data-lucide="triangle-alert"></i><span>八木天線靠<strong>反射器（後）＋導向器（前）</strong>把能量集中向前，得到增益與方向性，並用<strong>前後比（F/B ratio）</strong>衡量抗後方干擾的能力。</span></div>
+    <div class="trap"><i data-lucide="triangle-alert"></i><span>八木（Yagi）靠後面的<strong>反射器</strong>＋前面的<strong>導向器</strong>把能量往前推：元素越多 → 主瓣越窄、增益越高、<strong>前後比</strong>越大（越能無視後方干擾），但也越需要「轉動對準」對方。「波束寬度」就是主瓣強度掉到一半（−3dB）時張開的角度。</span></div>
+    <div class="pat-desc" style="font-size:11.5px;color:var(--ink-3);margin-top:8px">＊圖是「從天線側面看」的相對強弱：最外圈＝最強，往內每圈代表變弱。嚴格講還分「水平面／垂直面」兩張圖，這裡先抓整體形狀的直覺。</div>
 
-    <div class="st">極化（Polarization）</div>
+    <div class="st">極化：電波「擺動的方向」</div>
+    <div class="callout analogy"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>抓著繩子一端、手<strong>上下</strong>抖，波就上下擺；手<strong>左右</strong>抖，波就左右擺。電波也有這個「擺動方向」，叫<strong>極化</strong>。接收天線像一道<strong>縫</strong>，縫的方向要對上波的擺動才收得進來——這就是為什麼手持機天線要<strong>立直</strong>拿（配合垂直極化的中繼台）。</div>
     <div class="pol-grid">
       <div class="pol-card">
         <div class="h">垂直極化</div>
-        <div class="d">天線與地面垂直。VHF/UHF 手持、車機、中繼台多用垂直極化。</div>
+        <div class="d">天線跟地面垂直（站直）。手持機、車機、中繼台幾乎都用它。</div>
       </div>
       <div class="pol-card">
         <div class="h">水平極化</div>
-        <div class="d">天線與地面平行。HF 的 SSB/CW、八木 DX 常用水平極化。</div>
+        <div class="d">天線跟地面平行（躺平）。HF 的 SSB／CW、八木打 DX 常用。</div>
       </div>
       <div class="pol-card">
         <div class="h">圓極化</div>
-        <div class="d">電場旋轉前進。衛星通訊常用，可降低法拉第旋轉造成的訊號起伏。</div>
+        <div class="d">擺動方向邊轉邊前進。衛星通訊常用，比較不怕訊號忽強忽弱。</div>
       </div>
     </div>
-    <div class="trap"><i data-lucide="triangle-alert"></i><span>考試重點：收發兩端<strong>極化要一致</strong>。垂直對水平（交叉極化）會有 20 dB 以上的損失——這也是為什麼大家都把手持機天線立直拿。</span></div>
+
+    <div class="st">試試看：兩支天線「縫」對得上嗎？</div>
+    <div class="pm-tool">
+      <div class="pm-row">
+        <div class="pm-col">
+          <label>發射天線的極化</label>
+          <div class="pm-opts" id="pm-tx">
+            <button class="pm-opt on" data-pol="垂直">垂直</button>
+            <button class="pm-opt" data-pol="水平">水平</button>
+            <button class="pm-opt" data-pol="圓">圓</button>
+          </div>
+        </div>
+        <div class="pm-col">
+          <label>接收天線的極化</label>
+          <div class="pm-opts" id="pm-rx">
+            <button class="pm-opt on" data-pol="垂直">垂直</button>
+            <button class="pm-opt" data-pol="水平">水平</button>
+            <button class="pm-opt" data-pol="圓">圓</button>
+          </div>
+        </div>
+      </div>
+      <div class="pm-result pm-good" id="pm-result">
+        <div class="big" id="pm-db">—</div>
+        <div class="txt" id="pm-txt"></div>
+      </div>
+    </div>
+    <div class="trap"><i data-lucide="triangle-alert"></i><span>考試重點：收發兩端<strong>極化要一致</strong>。垂直對水平（交叉極化）損失 <strong>20 dB 以上</strong>，幾乎收不到——把手持機天線立直，就是為了對上中繼台的垂直極化。</span></div>
   </div>
 
   <!-- ═══ TYPES TAB ═══ -->
@@ -348,6 +440,92 @@ function buildExam(){
   });
 }
 
+// ── interactive radiation pattern ──────────────────────────
+const PAT_META = {
+  iso:    { name: '等向（理論）',  gain: '−2.15 dBd · 0 dBi',     color: '#1F9E96', n: 0,   b: 0,    m: 0,  desc: '四面八方一樣強——只當作「比較基準」，現實中不存在。' },
+  dipole: { name: '半波偶極',      gain: '0 dBd · 2.15 dBi',      color: '#6D3FC0', n: 0,   b: 0,    m: 0,  desc: '甜甜圈／8 字形：兩側最強、順著天線的兩端最弱。最基本的全向天線。' },
+  yagi3:  { name: '八木 3 元素',   gain: '~7.5 dBd · ~9.7 dBi',   color: '#F2643C', n: 5,   b: 0.18, m: 6,  desc: '像手電筒往前集中，後方明顯變弱，要轉動天線對準對方。' },
+  yagi5:  { name: '八木 5 元素',   gain: '~10 dBd · ~12.15 dBi',  color: '#F2643C', n: 8.5, b: 0.10, m: 10, desc: '元素更多，光束更窄、打得更遠，但對準要更精準。' },
+};
+let curPat = 'iso';
+
+function patR(type, a){ // a in radians, 0 = forward (up). returns 0..1
+  if (type === 'iso') return 1;
+  if (type === 'dipole') return Math.abs(Math.cos(a));
+  const p = PAT_META[type];
+  const fwd = Math.pow((1 + Math.cos(a)) / 2, p.n);
+  const back = p.b * Math.pow((1 - Math.cos(a)) / 2, p.m);
+  return Math.max(fwd, back);
+}
+
+function drawPat(){
+  const meta = PAT_META[curPat];
+  const cx = 130, cy = 130, R = 100, N = 240;
+  let d = '';
+  for (let i = 0; i <= N; i++){
+    const a = i / N * 2 * Math.PI;
+    const r = patR(curPat, a);
+    const x = cx + R * r * Math.sin(a), y = cy - R * r * Math.cos(a);
+    d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+  }
+  d += 'Z';
+  const path = document.getElementById('patPath');
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', meta.color);
+  path.setAttribute('fill', meta.color + '33');
+  document.getElementById('pat-name').textContent = meta.name;
+  document.getElementById('pat-gain').textContent = meta.gain;
+  // −3dB beamwidth (scan from forward)
+  let bw;
+  if (curPat === 'iso') { bw = '360°（全向）'; }
+  else {
+    let th = null;
+    for (let deg = 1; deg <= 180; deg++){ if (patR(curPat, deg * Math.PI / 180) < 0.7071){ th = deg; break; } }
+    bw = th === null ? '—' : (curPat === 'dipole' ? (2 * th) + '°（每瓣）' : (2 * th) + '°');
+  }
+  document.getElementById('pat-bw').textContent = bw;
+  // front-to-back
+  let fb;
+  if (curPat === 'iso' || curPat === 'dipole') fb = '—（非定向）';
+  else fb = (20 * Math.log10(1 / patR(curPat, Math.PI))).toFixed(0) + ' dB';
+  document.getElementById('pat-fb').textContent = fb;
+  document.getElementById('pat-desc').textContent = meta.desc;
+}
+document.querySelectorAll('#pat-sel .pat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    curPat = btn.dataset.pat;
+    document.querySelectorAll('#pat-sel .pat-btn').forEach(b => b.classList.toggle('on', b === btn));
+    drawPat();
+  });
+});
+
+// ── polarization mismatch ──────────────────────────────────
+let pmTx = '垂直', pmRx = '垂直';
+function pmLoss(tx, rx){
+  if (tx === rx) return { db: '0 dB', cls: 'pm-good', txt: tx === '圓' ? '同向圓極化，完全對上（假設旋向相同），沒有極化損失。' : '極化一致，「縫」完全對準，沒有極化損失。' };
+  const lin = ['垂直', '水平'];
+  if (lin.includes(tx) && lin.includes(rx)) return { db: '≈ −20 dB 以上', cls: 'pm-bad', txt: '垂直⊥水平＝交叉極化，「縫」差 90°，幾乎收不到（理論上完全收不到，實務殘留 20dB 以上損失）。' };
+  return { db: '≈ −3 dB', cls: 'pm-mid', txt: '線極化對圓極化，固定少掉約一半功率（−3dB）——還能通，但變弱。' };
+}
+function renderPm(){
+  const r = pmLoss(pmTx, pmRx);
+  const box = document.getElementById('pm-result');
+  box.className = 'pm-result ' + r.cls;
+  document.getElementById('pm-db').textContent = r.db;
+  document.getElementById('pm-txt').textContent = r.txt;
+}
+function wirePm(rowId, set){
+  document.querySelectorAll('#' + rowId + ' .pm-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      set(btn.dataset.pol);
+      document.querySelectorAll('#' + rowId + ' .pm-opt').forEach(b => b.classList.toggle('on', b === btn));
+      renderPm();
+    });
+  });
+}
+wirePm('pm-tx', v => pmTx = v);
+wirePm('pm-rx', v => pmRx = v);
+
 function switchTab(name){
   ['len','gain','pat','types','exam'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
@@ -365,6 +543,8 @@ calcLen();
 buildBandRows();
 calcGain('dbi');
 buildExam();
+drawPat();
+renderPm();
 icons();
 </script>
 </body>
