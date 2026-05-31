@@ -6,6 +6,30 @@
 <title>基礎無線電使用：實機操作入門</title>
 <link rel="icon" href="../assets/logo-mark.svg">
 <link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  /* 情景模擬分頁 */
+  .sim-gate{max-width:430px;margin:30px auto;text-align:center}
+  .sim-gate .lock{width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+  .sim-gate input{font-family:var(--font-mono);font-size:20px;padding:11px 16px;border:2px solid var(--border-strong);border-radius:12px;text-align:center;letter-spacing:6px;width:190px}
+  .sim-gate input:focus{outline:none;border-color:var(--primary)}
+  .sim-err{color:var(--primary-ink);font-size:13.5px;min-height:18px;margin-top:8px}
+  .zello-join{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .qr-placeholder{width:150px;height:150px;flex:0 0 auto;border:2px dashed var(--primary);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:13px;text-align:center;padding:8px;background:var(--primary-soft)}
+  .simgrid{display:grid;gap:16px;grid-template-columns:1fr}
+  @media(min-width:560px){.simgrid{grid-template-columns:1fr 1fr}}
+  .simcard{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+  .simthumb{aspect-ratio:16/9;background:var(--bg-tint) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12.5px;border-bottom:1px solid var(--border)}
+  .simcard .cbody{padding:13px 15px;display:flex;flex-direction:column;gap:9px;flex:1}
+  .simcard .ctitle{font-weight:800;color:var(--ink);font-size:16px}
+  .sim-pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--primary-soft);color:var(--primary-ink);font-weight:700}
+  .simcard .brief{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+  .simcard details{margin-top:auto;border-top:1px dashed var(--border);padding-top:9px}
+  .simcard summary{cursor:pointer;font-size:13.5px;color:var(--teal-ink);font-weight:700;list-style:none}
+  .simcard summary::-webkit-details-marker{display:none}
+  .simcard summary::before{content:"▸ "}
+  .simcard details[open] summary::before{content:"▾ "}
+  .btn-sm{padding:9px 16px;font-size:14px}
+</style>
 </head>
 <body>
 <script>window.SITE_SECTION = 'courses';</script>
@@ -27,6 +51,7 @@
     <button class="tab active" onclick="showPart('intro', this)"><i data-lucide="book-open"></i> 課程介紹</button>
     <button class="tab" onclick="showPart('operate', this)"><i data-lucide="radio"></i> 實機操作篇</button>
     <button class="tab" onclick="showPart('exam', this)"><i data-lucide="graduation-cap"></i> 考照準備篇</button>
+    <button class="tab" onclick="showPart('sim', this)"><i data-lucide="siren"></i> 情景模擬</button>
   </div>
 
   <!-- ============ 課程介紹 ============ -->
@@ -385,6 +410,150 @@
 
   </div>
 
+  <!-- ============ 情景模擬（教練端，需密碼） ============ -->
+  <div id="sim" class="scenario">
+
+    <!-- 密碼門 -->
+    <div id="simGate" class="prose-card sim-gate">
+      <div class="lock"><i data-lucide="lock"></i></div>
+      <h2 style="margin:0 0 6px">情景模擬・教練專區</h2>
+      <p style="color:var(--ink-2);font-size:14px">此區為上課推送情境用，請輸入 PIN 解鎖。</p>
+      <div>
+        <input id="simPin" type="password" inputmode="numeric" maxlength="12" placeholder="PIN" autocomplete="off" onkeydown="if(event.key==='Enter')simUnlock()">
+      </div>
+      <div class="sim-err" id="simErr"></div>
+      <button class="btn btn-primary" style="margin-top:6px" onclick="simUnlock()"><i data-lucide="unlock"></i> 解鎖</button>
+    </div>
+
+    <!-- 解鎖後內容 -->
+    <div id="simBody" hidden>
+
+      <div class="prose-card">
+        <h2 style="margin-top:0">情景模擬練習</h2>
+        <p>用 <strong>Zello</strong>（手機 PTT App，模擬半雙工無線電）進行訊息傳遞演練：教練推一張情境圖到 Zello 群組，學員輪流按住 PTT 用正確格式回報，再點開「標準通報範例」對照講評。</p>
+        <div class="callout warn"><span class="ct"><i data-lucide="eye-off"></i>保密提醒</span>本頁只在主站、需 PIN，<strong>未同步到學員掃碼版（radio-101）</strong>。機密題請用下方「從相簿選圖推送」，圖不會上傳到網站。</div>
+      </div>
+
+      <!-- 加入 Zello -->
+      <div class="sec-h"><i data-lucide="users"></i>加入 Zello 群組</div>
+      <div class="prose-card">
+        <div class="zello-join">
+          <div class="qr-placeholder">Zello 群組 QR<br>（待放）</div>
+          <div>
+            <p style="margin:0 0 6px">群組名稱：<strong>（待填）</strong></p>
+            <p style="margin:0 0 6px">群組密碼：<span class="readout">（待填）</span></p>
+            <p style="margin:0;font-size:13.5px;color:var(--ink-2)">學員：安裝 Zello → 搜尋群組名稱 → 輸入密碼加入，或掃左側 QR。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 半雙工規則 -->
+      <div class="sec-h"><i data-lucide="repeat"></i>半雙工通聯規則（開練前複習）</div>
+      <table class="tbl">
+        <tr><th>規則</th><th>說明</th></tr>
+        <tr><td><b>一次一人</b></td><td>同時只有一人能發話，別人按住時你只能聽。搶話會互相蓋掉。</td></tr>
+        <tr><td><b>先按再講</b></td><td>按住 PTT 停一下再開口，講完停一下再放開，避免吃掉頭尾。</td></tr>
+        <tr><td><b>講完說 OVER</b></td><td>「OVER」＝我說完請回覆；「OUT」＝結束通話。</td></tr>
+        <tr><td><b>閉環確認</b></td><td>收訊方覆誦關鍵資訊（座標、數量、頻道），確保沒聽錯。</td></tr>
+      </table>
+
+      <!-- 內建題庫 -->
+      <div class="sec-h"><i data-lucide="layout-grid"></i>情境題庫</div>
+      <p style="color:var(--ink-2);font-size:14px">點「推送到 Zello」會帶圖叫出手機分享選單，選 Zello 群組即送出。圖檔尚未放入者會顯示佔位，放進 <span class="readout">assets/img/</span> 後即顯示。</p>
+      <div class="simgrid">
+
+        <div class="simcard">
+          <div class="simthumb" data-img="../assets/img/sim-quake.jpg">情境圖待放：sim-quake.jpg</div>
+          <div class="cbody">
+            <span class="sim-pill">大量傷患・難</span>
+            <div class="ctitle">情境一：地震・教室倒塌</div>
+            <div class="brief">校舍教室天花板坍塌、起火，多名學生受困受傷。請以 SALUTE 格式回報現場。</div>
+            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-quake.jpg','情境一：地震教室')"><i data-lucide="send"></i> 推送到 Zello</button></div>
+            <details><summary>標準通報範例</summary>
+              <table class="tbl" style="margin-top:8px">
+                <tr><th>字母</th><th>內容</th></tr>
+                <tr><td><b>S</b> 數量</td><td>傷患 4 名，其中重傷 1（無意識）。</td></tr>
+                <tr><td><b>A</b> 活動</td><td>教室天花板坍塌、後方起火，傷患受困瓦礫。</td></tr>
+                <tr><td><b>L</b> 位置</td><td>○○國小 3 樓 305 教室（座標／樓層）。</td></tr>
+                <tr><td><b>U</b> 單位</td><td>本隊呼號 ○○○，現場 2 人。</td></tr>
+                <tr><td><b>T</b> 時間</td><td>地震後約 5 分鐘。</td></tr>
+                <tr><td><b>E</b> 裝備</td><td>需破壞器材、擔架、滅火器；現場有明火。</td></tr>
+              </table>
+            </details>
+          </div>
+        </div>
+
+        <div class="simcard">
+          <div class="simthumb" data-img="../assets/img/sim-ruins.jpg">情境圖待放：sim-ruins.jpg</div>
+          <div class="cbody">
+            <span class="sim-pill">搜索・中</span>
+            <div class="ctitle">情境二：廢墟搜尋・發現倒臥者</div>
+            <div class="brief">廢棄校區搜索，於中庭大樹下發現一名倒臥人員，意識不明。請回報發現位置與傷患狀況。</div>
+            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-ruins.jpg','情境二：廢墟搜尋')"><i data-lucide="send"></i> 推送到 Zello</button></div>
+            <details><summary>標準通報範例</summary>
+              <table class="tbl" style="margin-top:8px">
+                <tr><th>項目</th><th>內容</th></tr>
+                <tr><td>發現位置</td><td>「泉天」棟前中庭大樹下，自入口直行約 30 公尺。</td></tr>
+                <tr><td>傷患狀況</td><td>男性一名俯臥，呼喊無反應，疑似意識不清。</td></tr>
+                <tr><td>環境</td><td>地面碎石、樹上有蜂窩，接近需注意。</td></tr>
+                <tr><td>需求</td><td>請派 1 組攜擔架及急救包前來，本隊原地警戒。OVER。</td></tr>
+              </table>
+            </details>
+          </div>
+        </div>
+
+        <div class="simcard">
+          <div class="simthumb" data-img="../assets/img/sim-garage.jpg">情境圖待放：sim-garage.jpg</div>
+          <div class="cbody">
+            <span class="sim-pill">火警・難</span>
+            <div class="ctitle">情境三：地下停車場・車輛火警</div>
+            <div class="brief">地下停車場車輛起火、濃煙瀰漫，多名民眾倒地、有人吸入濃煙。請回報火勢、傷患與需求。</div>
+            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-garage.jpg','情境三：停車場火警')"><i data-lucide="send"></i> 推送到 Zello</button></div>
+            <details><summary>標準通報範例</summary>
+              <table class="tbl" style="margin-top:8px">
+                <tr><th>項目</th><th>內容</th></tr>
+                <tr><td>位置</td><td>○○大樓地下 2 樓停車場，近 B 區車道。</td></tr>
+                <tr><td>火勢</td><td>1 車全面燃燒、延燒鄰車，濃煙不易視物。</td></tr>
+                <tr><td>傷患</td><td>3 名：1 倒地無意識、1 吸入性嗆傷、1 下肢出血。</td></tr>
+                <tr><td>需求</td><td>消防＋救護，封閉車道、強制排煙；本隊先撤可動傷患。OVER。</td></tr>
+              </table>
+            </details>
+          </div>
+        </div>
+
+        <div class="simcard">
+          <div class="simthumb" data-img="../assets/img/sim-crash.jpg">情境圖待放：sim-crash.jpg</div>
+          <div class="cbody">
+            <span class="sim-pill">車禍・中</span>
+            <div class="ctitle">情境四：校門口・車禍追撞</div>
+            <div class="brief">小客車追撞貨櫃車，車頭全毀、漏油，車內外多名傷患。請回報事故與後送需求。</div>
+            <div class="pushrow"><button class="btn btn-primary btn-sm" onclick="pushToZello('../assets/img/sim-crash.jpg','情境四：車禍追撞')"><i data-lucide="send"></i> 推送到 Zello</button></div>
+            <details><summary>標準通報範例</summary>
+              <table class="tbl" style="margin-top:8px">
+                <tr><th>項目</th><th>內容</th></tr>
+                <tr><td>位置</td><td>○○路校門口，自小客車追撞貨櫃車後方。</td></tr>
+                <tr><td>傷患</td><td>3 名：駕駛受困昏迷、後座 1 昏迷、1 名可行走受驚。</td></tr>
+                <tr><td>危害</td><td>車頭漏油（黃色油漬擴散），禁止明火、需交管。</td></tr>
+                <tr><td>需求</td><td>救護 ×2、消防破壞器材救出受困駕駛；請封路。OVER。</td></tr>
+              </table>
+            </details>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 相簿選圖 -->
+      <div class="sec-h"><i data-lucide="image-up"></i>從相簿選圖推送（機密題）</div>
+      <div class="prose-card">
+        <p>圖不上傳網站，直接從手機相簿選一張推到 Zello 群組——適合臨時或不公開的題目。</p>
+        <input id="simFile" type="file" accept="image/*" hidden onchange="pushFromFile(this)">
+        <button class="btn btn-ghost" onclick="document.getElementById('simFile').click()"><i data-lucide="folder-open"></i> 從相簿選圖並推送</button>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>怎麼運作</span>點按後選圖 → 手機跳出分享選單 → 選 <strong>Zello</strong> → 選群組送出。不支援直接分享的裝置會改為下載，請手動在 Zello 傳送。</div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -396,7 +565,67 @@
     var el = document.getElementById(id);
     if (el) el.classList.add('active');
     if (btn) btn.classList.add('active');
+    if (id === 'sim') simOnShow();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ===== 情景模擬 ===== */
+  // ★ 上課前請改成你的 PIN（純前端軟保護，擋誤入用）
+  var SIM_PIN = '1234';
+
+  function simOnShow(){
+    if (sessionStorage.getItem('simUnlocked') === '1') simReveal();
+  }
+  function simUnlock(){
+    var v = (document.getElementById('simPin').value || '').trim();
+    if (v === SIM_PIN){
+      sessionStorage.setItem('simUnlocked','1');
+      simReveal();
+    } else {
+      document.getElementById('simErr').textContent = 'PIN 不正確，請再試一次。';
+    }
+  }
+  function simReveal(){
+    document.getElementById('simGate').hidden = true;
+    var body = document.getElementById('simBody');
+    body.hidden = false;
+    // 載入縮圖：圖檔存在才顯示，否則保留佔位文字
+    body.querySelectorAll('.simthumb[data-img]').forEach(function(el){
+      var src = el.getAttribute('data-img'); if(!src) return;
+      var im = new Image();
+      im.onload = function(){ el.style.backgroundImage = 'url("'+src+'")'; el.textContent=''; };
+      im.src = src;
+    });
+  }
+
+  // 帶圖叫出系統分享選單（選 Zello）；不支援則退回下載
+  async function pushToZello(imgUrl, title){
+    try{
+      var res = await fetch(imgUrl);
+      if(!res.ok) throw new Error('找不到圖檔，請先放入 assets/img/');
+      var blob = await res.blob();
+      await shareBlob(blob, title);
+    }catch(e){ alert('推送失敗：' + e.message); }
+  }
+  function pushFromFile(input){
+    var f = input.files && input.files[0];
+    if(!f) return;
+    shareBlob(f, f.name.replace(/\.[^.]+$/, ''));
+    input.value = '';
+  }
+  async function shareBlob(blob, title){
+    var name = (title || 'scenario').replace(/[\\/:*?"<>|]/g,'') + '.jpg';
+    var type = blob.type && blob.type.indexOf('image/') === 0 ? blob.type : 'image/jpeg';
+    var file = new File([blob], name, { type: type });
+    if (navigator.canShare && navigator.canShare({ files:[file] })){
+      try{ await navigator.share({ files:[file], title: title || '情境', text: title || '' }); return; }
+      catch(e){ if(e && e.name === 'AbortError') return; /* 取消不算錯 */ }
+    }
+    // 退回下載
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    alert('此裝置不支援直接分享，已改為下載圖片，請手動在 Zello 群組傳送。');
   }
 </script>
 </body>
