@@ -21,6 +21,7 @@ radio-site/
 └── assets/                 ← 共用資源（設計系統）
     ├── css/style.css        統一設計 token 與元件樣式（暖色學習風）
     ├── js/nav.js            依路徑深度自動注入導覽列與頁尾
+    ├── js/rf-data.js        RF 參考數據單一資料源（頻段/功率/CTCSS/S表/SWR）
     └── logo-mark.svg        網站圖示
 ```
 

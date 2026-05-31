@@ -109,13 +109,8 @@
       <div class="concept-bd">
         <div class="explain">接收到的信號有多強，用 S1 到 S9 表示，S9 最強。通訊報告常用 <strong>RST 制</strong>，「你的信號是<strong>五九</strong>」指的是<strong>可讀度（R）5 ＋ 信號強度（S）9</strong>——又清楚又強，不是「S5、S9 取最高」。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像手機的格數。1格=S3，2格=S5，3格=S7，4格=S9。格數越多，訊號越強，通話越清晰。</div>
-        <table class="tbl">
+        <table class="tbl" data-rf="smeter">
           <tr><th>S 值</th><th>強度*</th><th>說明</th></tr>
-          <tr><td><b>S1</b></td><td><span class="readout">−121 dBm</span></td><td>幾乎聽不到</td></tr>
-          <tr><td><b>S3</b></td><td><span class="readout">−115 dBm</span></td><td>很弱</td></tr>
-          <tr><td><b>S5</b></td><td><span class="readout">−109 dBm</span></td><td>勉強可聽</td></tr>
-          <tr><td><b>S7</b></td><td><span class="readout">−103 dBm</span></td><td>中等清晰</td></tr>
-          <tr><td><b>S9</b></td><td><span class="readout">−97 dBm</span></td><td>很強</td></tr>
         </table>
         <div class="gnote">每增加 1 個 S 值 ≈ 強 6 dB（約 4 倍功率）。*為簡化示意值；IARU 標準 VHF/UHF 定義 S9 = −93 dBm、HF S9 = −73 dBm，實機刻度可能不同。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「59 報告」＝可讀度與信號都滿分，是說對方信號最完美的方式，就像給 5 顆星的評價！</div>
@@ -492,14 +487,8 @@
       <div class="concept-bd">
         <div class="explain">衡量天線和電纜「配合度」的數字。SWR=1 是完美，SWR 越高代表越多能量被「反射回來」而浪費掉，沒有真正發射出去。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你用水管澆花，水管有個彎折處（天線和電纜接頭不匹配）。一部分水能出來澆花（信號發出），一部分被擠回來（反射能量）浪費了。SWR=1 就是水管筆直，完全沒阻礙。</div>
-        <table class="tbl">
+        <table class="tbl" data-rf="swr">
           <tr><th>SWR</th><th>判讀</th></tr>
-          <tr><td><span class="readout">1.0</span></td><td>完美匹配（理論值）</td></tr>
-          <tr><td><span class="readout">1.0–1.5</span></td><td>優良（通訊設備標準）</td></tr>
-          <tr><td><span class="readout">1.5–2.0</span></td><td>可接受（輕微損失）</td></tr>
-          <tr><td><span class="readout">2.0–3.0</span></td><td>需調整（10–25% 功率損失）</td></tr>
-          <tr><td><span class="readout">&gt; 3.0</span></td><td>嚴重問題（天線可能損壞）</td></tr>
-          <tr><td>無限大</td><td>開路（斷線）或短路</td></tr>
         </table>
         <div class="tagrow"><span class="ctag adv">進階</span><span class="ctag scen">情境5</span></div>
       </div>
@@ -1048,6 +1037,7 @@
 
 <script>window.SITE_SECTION = 'glossary';</script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/rf-data.js"></script>
 <script src="../assets/js/nav.js?v=3"></script>
 <script>
 function doSearch() {

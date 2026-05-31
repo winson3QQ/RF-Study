@@ -31,13 +31,12 @@
 6. **情境6 標籤（橙）**：RSSI→距離加「僅供量級參考」；捕捉效應 6dB 註明為保守教學門檻（實機 1–3dB）。
 7. **來源標註**：功率表、頻段、緊急頻率加上 NCC 出處與「以最新公告為準」。
 
-## Phase 2 — 單一資料源（Single Source of Truth）
+## Phase 2 — 單一資料源（Single Source of Truth）✅（完成）
 
-目標：頻段／功率／CTCSS 38 碼／S 表／SWR 判讀，目前在多頁硬編碼，易再漂移。
-
-- 建 `assets/js/rf-data.js`（或 `data/rf-reference.json`）集中存放這些表格資料。
-- 各頁以小段 script 注入，移除重複硬編碼。
-- 風險：需改動多頁；建議單獨一個 commit、逐頁驗證。
+- 已建 `assets/js/rf-data.js`，集中存放頻段、功率、CTCSS 38 碼、S 表、SWR、緊急頻率、F1–F4 頻道。
+- 任何 `<table class="tbl" data-rf="KEY">` 只需保留表頭，資料列由模組自動填入。
+- 已套用：basic-radio（channels／bands3deg／powerTable）、rf-glossary（smeter／swr）。
+- 站本即硬依賴 JS（nav.js／分頁／搜尋），故此法與既有架構一致。
 
 ## Phase 3 — 交叉連結（手冊 ↔ 課程 ↔ 工具）
 
