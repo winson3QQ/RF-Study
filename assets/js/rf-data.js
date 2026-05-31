@@ -13,6 +13,23 @@
   var RF_DATA = {
     source: SOURCE,
 
+    // ── 物理常數（事實）──────────────────────────────
+    // 供 Link Budget／接收機鏈路／傳播工具共用，集中一處避免各檔各寫
+    constants: {
+      c: 3e8,            // 光速 m/s
+      k: 1.380649e-23,   // 波茲曼常數 J/K
+      T0: 290,           // 標準參考溫度 K
+      ktb0: -174         // 10·log10(k·T0) ＝ −174 dBm/Hz（290K 熱雜訊密度）
+    },
+
+    // ── Link Budget／傳播工具預設（推論／量級）────────
+    // 環境額外損耗為經驗量級值（非精確），雨衰不納入（VHF/UHF 可忽略）
+    linkEnv: [
+      { id: 'free',  name: '自由空間 LOS', extraLossDb: 0,  note: '理想視距，無遮蔽' },
+      { id: 'rural', name: '郊區',         extraLossDb: 6,  note: '少量樹木/地物，量級參考' },
+      { id: 'urban', name: '市區',         extraLossDb: 16, note: '建物遮蔽/多徑，量級參考' }
+    ],
+
     // 呼叫／緊急救難頻率（107 年起 UHF 由 431 改為 433）
     emergency: { vhf: '145.000', uhf: '433.000', changedNote: '107 年起 UHF 由 431 改為 433' },
 
