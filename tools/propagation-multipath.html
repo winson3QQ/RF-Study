@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>傳播與多徑視覺化（雙射線 + 菲涅耳區）— 點對點無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; }
+canvas { width: 100%; display: block; background: #08080e; border-radius: var(--r-sm); }
+.ctrl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 540px) { .ctrl-grid { grid-template-columns: 1fr; } }
+.cg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); }
+.cg-label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.cg-label span { color: var(--teal-ink); font-family: var(--font-mono); font-size: 13px; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; margin-bottom: 7px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: var(--shadow-sm); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: var(--primary); cursor: pointer; }
+.cg-sublabel { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+.status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+@media (max-width: 540px) { .status-grid { grid-template-columns: 1fr 1fr; } }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 10px; text-align: center; box-shadow: var(--shadow-sm); }
+.metric-label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 5px; }
+.metric-val { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--ink); }
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.8; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: var(--teal-ink); }
+.formula { font-family: var(--font-mono); font-size: 12px; background: var(--bg-tint); border-radius: var(--r-md); padding: 13px 15px; color: var(--ink-2); line-height: 1.8; white-space: pre-wrap; margin-bottom: 12px; }
+.challenge { display: flex; align-items: flex-start; gap: 9px; background: var(--honey-soft); border: 1px solid #f0dcae; border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 13px 15px; font-size: 13px; color: var(--ink-2); line-height: 1.8; margin-bottom: 12px; }
+.challenge svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; color: var(--honey-ink); }
+.challenge b { color: var(--honey-ink); }
+.xlink { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.xlink a { font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--teal-ink); text-decoration: none; }
+.xlink a:hover { border-color: var(--teal); background: var(--teal-soft); }
+.tag-est { font-family: var(--font-mono); font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--honey-soft); color: var(--honey-ink); }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">傳播與多徑視覺化</div>
+  <p class="tool-sub">電波不是只走一條直線。<strong>雙射線模型（直射＋地面反射）</strong>解釋了為什麼「看得到卻時強時弱」；<strong>菲涅耳區</strong>則告訴你地形要留多少淨空。拖滑桿即時看天線高度、距離、頻率怎麼改變收訊。</p>
+
+  <div class="insight">
+    <strong>兩個一起看：</strong>直射波與地面反射波抵達時有路徑差 → 兩波相加時而互相<strong>加強</strong>、時而<strong>抵消</strong>（這就是多徑衰落）。而第一<strong>菲涅耳區</strong>是電波能量主要走的「橢圓管」，地形若伸進這個管子超過約 40%，即使「看得到」也會嚴重衰減。
+  </div>
+
+  <div class="st">鏈路參數</div>
+  <div class="ctrl-grid">
+    <div class="cg">
+      <div class="cg-label">頻率 f <span id="lbl-freq">145 MHz</span></div>
+      <input type="range" id="sl-freq" min="50" max="440" value="145" step="1" oninput="redraw()">
+      <div class="cg-sublabel">頻率越高，波長越短、菲涅耳區越細</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">距離 d <span id="lbl-dist">5.0 km</span></div>
+      <input type="range" id="sl-dist" min="0.2" max="30" value="5" step="0.1" oninput="redraw()">
+      <div class="cg-sublabel">兩端水平距離</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">發射天線高 h<sub>t</sub> <span id="lbl-ht">10 m</span></div>
+      <input type="range" id="sl-ht" min="1" max="100" value="10" step="1" oninput="redraw()">
+      <div class="cg-sublabel">架高天線可改善地面反射相位</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">接收天線高 h<sub>r</sub> <span id="lbl-hr">10 m</span></div>
+      <input type="range" id="sl-hr" min="1" max="100" value="10" step="1" oninput="redraw()">
+      <div class="cg-sublabel">兩端高度共同決定反射幾何</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">中點障礙物高 h<sub>obs</sub> <span id="lbl-obs">0 m</span></div>
+      <input type="range" id="sl-obs" min="0" max="120" value="0" step="1" oninput="redraw()">
+      <div class="cg-sublabel">測試地形伸進菲涅耳區的影響</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">模型 <span class="tag-est">量級參考</span></div>
+      <div class="cg-sublabel" style="margin-top:6px">雙射線為平地理想模型；真實地形更複雜，此處用於建立直覺，非精確預測。</div>
+    </div>
+  </div>
+
+  <div class="status-grid">
+    <div class="metric"><div class="metric-label">第一菲涅耳半徑（中點）</div><div class="metric-val" id="m-fr">—</div></div>
+    <div class="metric"><div class="metric-label">障礙物淨空</div><div class="metric-val" id="m-clear">—</div></div>
+    <div class="metric"><div class="metric-label">雙射線 vs 自由空間</div><div class="metric-val" id="m-tworay">—</div></div>
+    <div class="metric"><div class="metric-label">收訊判定</div><div class="metric-val" id="m-verdict">—</div></div>
+  </div>
+
+  <div class="viz-card">
+    <div class="viz-head">側視圖：直射波（綠）＋地面反射波（橙）＋第一菲涅耳區（虛線橢圓）</div>
+    <canvas id="c-geo" height="220"></canvas>
+  </div>
+
+  <div class="viz-card">
+    <div class="viz-head">雙射線收訊強度 vs 距離（注意波峰波谷＝多徑衰落）</div>
+    <canvas id="c-curve" height="170"></canvas>
+  </div>
+
+  <div class="challenge">
+    <i data-lucide="flask-conical"></i>
+    <div><b>實驗挑戰：</b>把中點障礙物高度慢慢拉高，找出「淨空剛好低於第一菲涅耳半徑 60%」的那一刻——超過後收訊判定怎麼變？再固定障礙=0，只把接收天線高度從 5m 拉到 30m，觀察下方曲線的波峰波谷如何移動。用 1–2 句寫下你的觀察。</div>
+  </div>
+
+  <div class="st">公式（攤開給你看）</div>
+  <div class="formula" id="formula"></div>
+
+  <div class="st">延伸學習</div>
+  <div class="xlink">
+    <a href="../courses/sdr-advanced.html#p7"><i data-lucide="arrow-right"></i> SDR 課程・情境7 中繼台與菲涅耳區</a>
+    <a href="../courses/rf-glossary.html#fresnel">📖 手冊：菲涅耳區 / 視距</a>
+    <a href="../courses/rf-glossary.html#scatter">📖 手冊：散射 / 顫抖訊號</a>
+    <a href="link-budget-sim.html"><i data-lucide="route"></i> Link Budget 模擬器</a>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/rf-data.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+var C = (window.RF_DATA && RF_DATA.constants && RF_DATA.constants.c) || 3e8;
+function val(id){ return parseFloat(document.getElementById(id).value); }
+
+// 第一菲涅耳區半徑（一般點）r = sqrt(λ·d1·d2/(d1+d2))，單位 m
+function fresnel(lambda, d1, d2){ return Math.sqrt(lambda*d1*d2/(d1+d2)); }
+// 雙射線接收功率相對自由空間（dB）：|1 + Γ·e^{jΔφ}|²，平地 Γ≈−1（掠射）
+function tworayRelDb(f, d, ht, hr){
+  var lambda = C/(f*1e6);
+  var dlos = Math.sqrt(d*d + (ht-hr)*(ht-hr));
+  var dref = Math.sqrt(d*d + (ht+hr)*(ht+hr));
+  var dphi = 2*Math.PI*(dref - dlos)/lambda;
+  // Γ = -1 （水平掠射近似）
+  var re = 1 + (-1)*Math.cos(dphi);
+  var im = 0 + (-1)*Math.sin(dphi);
+  var mag2 = re*re + im*im; // 相對自由空間的功率倍數
+  return 10*Math.log10(Math.max(mag2, 1e-6));
+}
+
+function compute(){
+  var f=val('sl-freq'), dKm=val('sl-dist'), ht=val('sl-ht'), hr=val('sl-hr'), obs=val('sl-obs');
+  var d=dKm*1000, lambda=C/(f*1e6);
+  var fr = fresnel(lambda, d/2, d/2); // 中點
+  // 視線在中點高度（兩端天線高內插）
+  var losMid = (ht+hr)/2;
+  var clearance = losMid - obs; // 障礙物頂端到視線的淨空（正＝視線在障礙上方）
+  var clearRatio = clearance / fr; // 相對第一菲涅耳半徑
+  var rel = tworayRelDb(f, d, ht, hr);
+  return { f:f, dKm:dKm, d:d, ht:ht, hr:hr, obs:obs, lambda:lambda, fr:fr, losMid:losMid, clearance:clearance, clearRatio:clearRatio, rel:rel };
+}
+
+function redraw(){
+  var r = compute();
+  document.getElementById('lbl-freq').textContent = r.f+' MHz';
+  document.getElementById('lbl-dist').textContent = r.dKm.toFixed(1)+' km';
+  document.getElementById('lbl-ht').textContent = r.ht+' m';
+  document.getElementById('lbl-hr').textContent = r.hr+' m';
+  document.getElementById('lbl-obs').textContent = r.obs+' m';
+
+  document.getElementById('m-fr').textContent = r.fr.toFixed(1)+' m';
+  document.getElementById('m-clear').textContent = (r.clearance>=0?'+':'')+r.clearance.toFixed(1)+' m';
+  document.getElementById('m-tworay').textContent = (r.rel>=0?'+':'')+r.rel.toFixed(1)+' dB';
+
+  var v = document.getElementById('m-verdict');
+  // 0.6·F1 淨空為常用工程門檻
+  if (r.obs>0 && r.clearRatio < 0.6){ v.textContent='地形阻擋'; v.style.color='var(--rose-ink)'; }
+  else if (r.rel < -6){ v.textContent='多徑深衰'; v.style.color='var(--honey-ink)'; }
+  else { v.textContent='良好'; v.style.color='var(--leaf-ink)'; }
+
+  document.getElementById('formula').textContent =
+    '波長 λ = c/f = '+r.lambda.toFixed(2)+' m   （事實）\n\n'+
+    '第一菲涅耳半徑（中點）：\n'+
+    '  r₁ = √(λ·d₁·d₂/(d₁+d₂)),  d₁=d₂='+(r.d/2).toFixed(0)+'m\n'+
+    '     = '+r.fr.toFixed(1)+' m\n'+
+    '  工程門檻：障礙物淨空 ≥ 0.6·r₁ 才算暢通\n'+
+    '  目前淨空/r₁ = '+r.clearRatio.toFixed(2)+(r.clearRatio<0.6&&r.obs>0?'  ← 不足！':'')+'\n\n'+
+    '雙射線（直射＋地面反射，Γ≈−1）：\n'+
+    '  相對自由空間功率 = |1 + Γ·e^{jΔφ}|²\n'+
+    '  Δφ = 2π(d_反射 − d_直射)/λ\n'+
+    '  目前 = '+(r.rel>=0?'+':'')+r.rel.toFixed(1)+' dB（量級參考）';
+
+  drawGeo(r); drawCurve(r);
+  if (window.lucide) lucide.createIcons();
+}
+
+function drawGeo(r){
+  var cv=document.getElementById('c-geo'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=220;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var ground=H-26, padL=40, padR=W-30;
+  var maxH=Math.max(r.ht,r.hr,r.obs,30)*1.25;
+  function Y(h){ return ground - h/maxH*(ground-20); }
+  function X(frac){ return padL + frac*(padR-padL); }
+  // ground
+  ctx.fillStyle='#2a2118'; ctx.fillRect(0,ground,W,H-ground);
+  ctx.strokeStyle='rgba(255,255,255,.15)'; ctx.beginPath(); ctx.moveTo(0,ground); ctx.lineTo(W,ground); ctx.stroke();
+  var txTop=Y(r.ht), rxTop=Y(r.hr);
+  // towers
+  ctx.strokeStyle='#A89C8C'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(padL,ground); ctx.lineTo(padL,txTop); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(padR,ground); ctx.lineTo(padR,rxTop); ctx.stroke();
+  // fresnel ellipse around LOS
+  var midX=(padL+padR)/2, losYmid=(txTop+rxTop)/2;
+  var frPix = r.fr/maxH*(ground-20);
+  ctx.save();
+  var ang=Math.atan2(rxTop-txTop, padR-padL);
+  ctx.translate(midX, losYmid); ctx.rotate(ang);
+  ctx.strokeStyle='rgba(31,158,150,.6)'; ctx.setLineDash([5,4]); ctx.lineWidth=1.3;
+  var halfLen=Math.sqrt((padR-padL)*(padR-padL)+(rxTop-txTop)*(rxTop-txTop))/2;
+  ctx.beginPath(); ctx.ellipse(0,0,halfLen,Math.min(frPix,80),0,0,2*Math.PI); ctx.stroke();
+  ctx.setLineDash([]); ctx.restore();
+  // LOS direct ray
+  ctx.strokeStyle='#3DA35D'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(padL,txTop); ctx.lineTo(padR,rxTop); ctx.stroke();
+  // ground-reflected ray (to mirror point on ground)
+  var reflX = padL + (padR-padL)*r.ht/(r.ht+r.hr);
+  ctx.strokeStyle='#E89A1C'; ctx.lineWidth=1.6; ctx.beginPath();
+  ctx.moveTo(padL,txTop); ctx.lineTo(reflX,ground); ctx.lineTo(padR,rxTop); ctx.stroke();
+  // obstacle
+  if (r.obs>0){
+    var oTop=Y(r.obs);
+    ctx.fillStyle = (r.clearRatio<0.6)?'rgba(229,84,75,.55)':'rgba(168,156,140,.45)';
+    ctx.beginPath(); ctx.moveTo(midX-14,ground); ctx.lineTo(midX,oTop); ctx.lineTo(midX+14,ground); ctx.closePath(); ctx.fill();
+  }
+  // labels
+  ctx.fillStyle='#A89C8C'; ctx.font='10px "Space Mono",monospace';
+  ctx.fillText('Tx '+r.ht+'m', padL-8, txTop-6);
+  ctx.fillText('Rx '+r.hr+'m', padR-44, rxTop-6);
+  ctx.fillStyle='#1F9E96'; ctx.fillText('F1 ±'+r.fr.toFixed(0)+'m', midX-26, losYmid-Math.min(frPix,80)-4);
+}
+
+function drawCurve(r){
+  var cv=document.getElementById('c-curve'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=170;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var padL=44, padR=W-16, top=14, bot=H-26;
+  // y range fixed -25..+8 dB
+  function Y(db){ return top + (8-db)/(8-(-25))*(bot-top); }
+  function X(frac){ return padL + frac*(padR-padL); }
+  // grid + 0dB line
+  ctx.strokeStyle='rgba(255,255,255,.08)';
+  [8,0,-8,-16,-25].forEach(function(db){ var y=Y(db); ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padR,y); ctx.stroke();
+    ctx.fillStyle='#A89C8C'; ctx.font='9px "Space Mono",monospace'; ctx.fillText(db+'dB', 6, y+3); });
+  // curve over distance 0.2..current d (sweep)
+  ctx.strokeStyle='#F2643C'; ctx.lineWidth=2; ctx.beginPath();
+  var N=240, dMax=r.dKm*1000;
+  for (var i=0;i<=N;i++){
+    var dd = 50 + (dMax-50)*i/N; // from 50m
+    var rel = tworayRelDb(r.f, dd, r.ht, r.hr);
+    rel = Math.max(-25, Math.min(8, rel));
+    var x=X(i/N), y=Y(rel);
+    if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // current distance marker
+  ctx.fillStyle='#F6ECDD'; ctx.font='10px "Space Mono",monospace';
+  ctx.fillText('→ '+r.dKm.toFixed(1)+'km：'+(r.rel>=0?'+':'')+r.rel.toFixed(1)+'dB', padR-130, top+10);
+}
+
+window.addEventListener('resize', redraw);
+redraw();
+</script>
+</body>
+</html>
