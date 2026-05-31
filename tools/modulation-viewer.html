@@ -151,6 +151,7 @@
   <button class="tab active" onclick="switchTab('compare')"><i data-lucide="table"></i> 各模式比較</button>
   <button class="tab" onclick="switchTab('exam')"><i data-lucide="graduation-cap"></i> 考試速查</button>
   <button class="tab" onclick="switchTab('nfm')"><i data-lucide="calculator"></i> NFM 頻偏計算</button>
+  <button class="tab" onclick="switchTab('iq')"><i data-lucide="scatter-chart"></i> 星座圖 IQ</button>
 </div>
 
 <!-- COMPARE TABLE -->
@@ -204,6 +205,32 @@
     <div class="cv-label">FM 頻偏視覺化</div>
     <canvas id="c-nfm" height="120"></canvas>
   </div>
+</div>
+
+<!-- IQ / CONSTELLATION -->
+<div id="tab-iq" style="display:none">
+  <div class="st">星座圖：把數位調變「畫成點」</div>
+  <div class="panel" style="font-size:13px;line-height:1.85;color:var(--ink-2);margin-bottom:14px">
+    <strong style="color:var(--teal-ink)">星座圖（Constellation）</strong>把每個符號用一個 <b>I（同相）/ Q（正交）</b> 平面上的點表示：點的<strong>角度＝相位</strong>、<strong>半徑＝振幅</strong>。數位調變就是在這張圖上「跳點」傳資料。先從業餘最常見的 <b>FSK / PSK</b> 看起。
+    <div style="margin-top:8px;font-size:12px;color:var(--ink-3)">想看 16QAM、OFDM 子載波、眼圖等更進階的，請到「<a href="adv-constellation-eye.html" style="color:var(--teal-ink);font-weight:700">進階・星座與眼圖實驗室</a>」。</div>
+  </div>
+
+  <div class="sr" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+    <button class="tab iqmode active" onclick="setIq('bfsk')">2-FSK</button>
+    <button class="tab iqmode" onclick="setIq('bpsk')">BPSK</button>
+    <button class="tab iqmode" onclick="setIq('qpsk')">QPSK</button>
+  </div>
+
+  <div class="cv-card">
+    <div class="cv-label" id="iq-label">星座圖</div>
+    <canvas id="c-iq" height="240"></canvas>
+  </div>
+  <div class="cv-card">
+    <div class="cv-label">對應時域波形（I 通道）</div>
+    <canvas id="c-iqwave" height="110"></canvas>
+  </div>
+
+  <div class="panel" id="iq-note" style="font-size:12.5px;line-height:1.8;color:var(--ink-2)"></div>
 </div>
 
 </div><!-- /wrap -->
@@ -842,19 +869,85 @@ function setupMouse(cvId,crId,type){
 }
 
 function switchTab(name){
-  ['compare','exam','nfm'].forEach(t=>{
+  ['compare','exam','nfm','iq'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===name?'':'none';
   });
-  document.querySelectorAll('.tabs .tab').forEach((el,i)=>{
-    el.classList.toggle('active',['compare','exam','nfm'][i]===name);
+  document.querySelectorAll('.tabs > .tab').forEach((el,i)=>{
+    el.classList.toggle('active',['compare','exam','nfm','iq'][i]===name);
   });
   if(name==='nfm') calcNfm();
+  if(name==='iq') drawIq();
+}
+
+// ══════════════════════════════════════════════
+// 星座圖 / IQ（FSK / BPSK / QPSK）
+// ══════════════════════════════════════════════
+var iqMode='bfsk';
+var IQDEF = {
+  bfsk: { label:'2-FSK 星座（兩個頻率＝兩個旋轉點）',
+    pts:[{i:1,q:0,b:'0'},{i:-1,q:0,b:'1'}],
+    note:'<b>2-FSK</b>：用兩個頻率代表 0/1。嚴格說 FSK 的能量在不同頻率上旋轉，這裡用兩個對稱點示意「兩個狀態」。FSK 振幅固定、抗雜訊好，用於 RTTY／封包／APRS。' },
+  bpsk: { label:'BPSK 星座（相位 0° / 180°）',
+    pts:[{i:1,q:0,b:'0'},{i:-1,q:0,b:'1'}],
+    note:'<b>BPSK</b>：用相位反轉（0°/180°）代表 0/1，每符號 1 bit。兩點離得最遠 → 最耐雜訊，弱訊號數位模式（如部分信標）愛用。' },
+  qpsk: { label:'QPSK 星座（四個相位，每符號 2 bit）',
+    pts:[{i:1,q:1,b:'00'},{i:-1,q:1,b:'01'},{i:-1,q:-1,b:'11'},{i:1,q:-1,b:'10'}],
+    note:'<b>QPSK</b>：四個相位、每符號 2 bit，相同頻寬下資料率是 BPSK 兩倍。代價：點變密 → 較不耐雜訊。再往上就是 16QAM（見進階實驗室）。' }
+};
+function setIq(m){
+  iqMode=m;
+  var order=['bfsk','bpsk','qpsk'];
+  document.querySelectorAll('.iqmode').forEach(function(b,i){ b.classList.toggle('active', order[i]===m); });
+  drawIq();
+}
+function drawIq(){
+  var def=IQDEF[iqMode];
+  document.getElementById('iq-label').textContent=def.label;
+  document.getElementById('iq-note').innerHTML=def.note;
+  // constellation
+  var cv=document.getElementById('c-iq'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=240;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var cx=W/2, cy=H/2, R=Math.min(W,H)/2-30;
+  // axes
+  ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(cx-R-10,cy); ctx.lineTo(cx+R+10,cy); ctx.moveTo(cx,cy-R-10); ctx.lineTo(cx,cy+R+10); ctx.stroke();
+  // unit circle
+  ctx.strokeStyle='rgba(31,158,150,.35)'; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.arc(cx,cy,R*0.78,0,7); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#A89C8C'; ctx.font='11px "Space Mono",monospace';
+  ctx.fillText('I', cx+R+0, cy+14); ctx.fillText('Q', cx+6, cy-R-2);
+  // points
+  def.pts.forEach(function(p){
+    var x=cx+p.i*R*0.78, y=cy-p.q*R*0.78;
+    ctx.fillStyle='#F2643C'; ctx.beginPath(); ctx.arc(x,y,7,0,7); ctx.fill();
+    ctx.strokeStyle='rgba(242,100,60,.4)'; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();
+    ctx.fillStyle='#F6ECDD'; ctx.font='bold 11px "Space Mono",monospace'; ctx.textAlign='center';
+    ctx.fillText(p.b, x, y-12);
+    ctx.textAlign='left';
+  });
+  // I-channel time wave (symbol stream)
+  var cw=document.getElementById('c-iqwave'); cw.width=cw.clientWidth*dpr; cw.height=110*dpr;
+  var c2=cw.getContext('2d'); c2.scale(dpr,dpr); var WW=cw.clientWidth, HH=110;
+  c2.clearRect(0,0,WW,HH);
+  c2.strokeStyle='rgba(255,255,255,.1)'; c2.beginPath(); c2.moveTo(0,HH/2); c2.lineTo(WW,HH/2); c2.stroke();
+  var seq=def.pts.concat(def.pts.slice().reverse()); // a sample symbol stream
+  var sw=WW/seq.length;
+  c2.strokeStyle='#1F9E96'; c2.lineWidth=2; c2.beginPath();
+  seq.forEach(function(p,i){
+    var y=HH/2 - p.i*(HH/2-14);
+    c2.moveTo(i*sw, y); c2.lineTo((i+1)*sw, y);
+    if(i<seq.length-1){ var ny=HH/2 - seq[i+1].i*(HH/2-14); c2.lineTo((i+1)*sw, ny); }
+  });
+  c2.stroke();
+  c2.fillStyle='#A89C8C'; c2.font='9px "Space Mono",monospace';
+  c2.fillText('I 通道（符號序列示意）', 6, 12);
 }
 
 // ══════════════════════════════════════════════
 // START
 // ══════════════════════════════════════════════
 init();
+if ((location.hash||'').replace('#','')==='iq') switchTab('iq');
 </script>
 </body>
 </html>
