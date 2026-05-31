@@ -114,6 +114,8 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; b
   <div class="tool-title">電離層傳播互動視覺化</div>
   <p class="tool-sub">對應「無線電系統原理」題庫 · 拖動滑桿改變頻率／仰角／時間，觀察天波訊號路徑與反射層變化。</p>
 
+  <div class="callout analogy"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>電離層是高空一層被太陽曬出來的「帶電空氣」，對短波（HF）來說<strong>像天上一面鏡子</strong>：電波打上去會被<strong>折回地面</strong>，於是能繞過地球的弧度傳到幾千公里外——這就是「天波」。但這面鏡子<strong>白天／晚上、太陽活躍與否都會變</strong>，所以同一個頻率有時通、有時不通。下面拖滑桿就能看出差別。</div>
+
   <div class="tabs">
     <button class="tab on" onclick="switchTab('viz')"><i data-lucide="radio-tower"></i> 互動視覺化</button>
     <button class="tab" onclick="switchTab('layers')"><i data-lucide="layers"></i> 各層詳解</button>
@@ -270,6 +272,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; b
     </div>
 
     <div class="st">MUF / LUF / 臨界角</div>
+    <p style="font-size:12.5px;color:var(--ink-2);line-height:1.7;margin:-4px 0 12px;">白話：這面「天空鏡子」能反射的頻率有個<strong>上限 MUF</strong> 和<strong>下限 LUF</strong>——頻率<strong>太高會穿透</strong>飛向太空、<strong>太低會被低層吸收</strong>掉。實務上挑「稍低於 MUF」的頻率最好用。</p>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;" class="muf-grid">
       <div class="info-card" style="border-left:3px solid var(--honey)">
         <div class="ic-title" style="color:var(--honey-ink)">MUF 最高可用頻率</div>
@@ -288,6 +291,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; b
     <div class="st">NVIS 近垂直入射天波</div>
     <div class="info-card" style="border-left:3px solid var(--leaf);margin-bottom:12px;">
       <div style="font-size:12.5px;line-height:1.8;color:var(--ink-2)">
+        想蓋住自己附近那圈「<strong>地波到不了、又離得太近</strong>」的盲區？把電波<strong>幾乎垂直往上打</strong>，讓它打到電離層後再落回來罩住四周——這招就叫 NVIS。<br><br>
         <strong style="color:var(--leaf-ink)">NVIS（Near Vertical Incidence Skywave）</strong>：以極高仰角（接近垂直）發射，訊號幾乎垂直打到電離層後折返，覆蓋發射點周圍 0~600km 範圍。<br><br>
         適用場合：災難通訊、山區通聯（不需長距離，但地波又到不了）<br>
         使用頻率：MF/HF 低頻段（3.5~10 MHz）<br>

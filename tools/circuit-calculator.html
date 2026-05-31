@@ -100,6 +100,8 @@ input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; bord
 <div class="cpanel active" id="panel-ohm">
   <div class="panel-title">歐姆定律與功率計算</div>
 
+  <div class="callout info"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>把電路想成<strong>水管</strong>：<strong>電壓 V</strong>＝水壓（推力多大）、<strong>電流 I</strong>＝水流量（每秒流多少）、<strong>電阻 R</strong>＝水管多細（越細越擋水）、<strong>功率 P</strong>＝每秒做多少工（燈多亮、多熱）。下面幾條式子只是把這四個量綁在一起——知道任兩個，就能推出其餘兩個。</div>
+
   <div class="formula-box">
     <div class="formula-label">核心公式</div>
     <div class="formula">V = I × R &nbsp;|&nbsp; P = V × I &nbsp;|&nbsp; P = I² × R &nbsp;|&nbsp; P = V² / R</div>
@@ -158,6 +160,8 @@ input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; bord
 <!-- ═══ dB ═══ -->
 <div class="cpanel" id="panel-db">
   <div class="panel-title">分貝 dB 換算</div>
+
+  <div class="callout info"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>無線電的功率動輒差好幾百萬倍，數字太長記不住。<strong>dB 就是把「差幾倍」壓成好記的小數字</strong>：<strong>+3dB≈功率加倍</strong>、<strong>+10dB=10倍</strong>，負的就是變小。這也是為什麼用 log——它把「乘除幾倍」變成「加減幾 dB」。公式先別怕，下面那張速查表才是真正要背的。</div>
 
   <div class="formula-box">
     <div class="formula-label">功率分貝公式</div>
@@ -228,6 +232,8 @@ input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; bord
 <div class="cpanel" id="panel-rlc">
   <div class="panel-title">R / L / C 串並聯計算</div>
 
+  <div class="callout info"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div><strong>串聯</strong>＝接成一長條，電流只有一條路可走；<strong>並聯</strong>＝並排好幾條路，電流會分流。電阻<strong>串起來變大</strong>（路更長更難走）、<strong>並起來變小</strong>（多開幾條路更好走）。<strong>電容剛好相反</strong>——記「電容並聯像把板子加大 → 變大」就能反推另一邊。</div>
+
   <div class="formula-box">
     <div class="formula-label">公式</div>
     <div class="formula">串聯R: Rtotal = R1+R2+…&nbsp;&nbsp;並聯R: 1/Rtotal = 1/R1+1/R2+…</div>
@@ -283,6 +289,8 @@ input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; bord
 <!-- ═══ TRANSFORMER ═══ -->
 <div class="cpanel" id="panel-transformer">
   <div class="panel-title">變壓器計算</div>
+
+  <div class="callout info"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>變壓器像兩個咬在一起的<strong>齒輪</strong>：圈數多的一邊「電壓高、電流小」，圈數少的一邊「電壓低、電流大」，但<strong>兩邊功率一樣</strong>（不會無中生有變多）。<strong>圈數比＝電壓比</strong>；拿來做「阻抗匹配」時，比例要再平方一次。</div>
 
   <div class="formula-box">
     <div class="formula-label">變壓器公式</div>
@@ -341,6 +349,8 @@ input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; bord
 <div class="cpanel" id="panel-antenna">
   <div class="panel-title">天線長度計算</div>
 
+  <div class="callout info"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>天線長度要跟電波「合拍（共振）」才有效率，就像<strong>推鞦韆要抓對節奏</strong>——所以<strong>長度由頻率決定</strong>。先用 λ=300/f 算出波長，天線再取其中一段（半波 λ/2、¼波 λ/4）。頻率越高 → 波長越短 → 天線越短。</div>
+
   <div class="formula-box">
     <div class="formula-label">天線長度公式</div>
     <div class="formula">λ = 300 / f(MHz) &nbsp;|&nbsp; 半波偶極 L = 142.5 / f(MHz) 公尺</div>
@@ -384,6 +394,8 @@ input[type=range]::-moz-range-thumb { width:16px; height:16px; border:none; bord
 <!-- ═══ PEP / RMS ═══ -->
 <div class="cpanel" id="panel-pep">
   <div class="panel-title">PEP 峰值波封功率 / RMS</div>
+
+  <div class="callout info"><div class="ct"><i data-lucide="lightbulb"></i> 先抓直覺</div>SSB 講話時功率忽大忽小，<strong>PEP 就是「講最大聲那一瞬間」的功率</strong>——執照的功率上限就是用它在管的。<strong>RMS</strong> 則是「等效有效值」（跟家用電講 110V 是同個意思）。下面把示波器在 50Ω 假負載量到的電壓代進去就能算。</div>
 
   <div class="formula-box">
     <div class="formula-label">關鍵公式</div>
