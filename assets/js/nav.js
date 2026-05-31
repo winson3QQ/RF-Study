@@ -10,14 +10,15 @@
 
   var links = [
     { key: 'courses',    label: '課程', href: root + 'courses/basic-radio.html' },
-    { key: 'tools',      label: '工具', href: root + 'tools/spectrum-viewer.html' },
+    { key: 'map',        label: '學習地圖', href: root + 'learning-map.html' },
     { key: 'simulators', label: '模擬器', href: root + 'simulators/civil-defense.html' },
     { key: 'glossary',   label: '白話手冊', href: root + 'courses/rf-glossary.html' }
   ];
 
   var navLinks = links.map(function (l) {
-    var active = l.key === section ? ' class="active"' : '';
-    return '<a href="' + l.href + '"' + active + '>' + l.label + '</a>';
+    /* tool pages declare section 'tools'; they live under the 學習地圖 (map) hub */
+    var isActive = l.key === section || (l.key === 'map' && section === 'tools');
+    return '<a href="' + l.href + '"' + (isActive ? ' class="active"' : '') + '>' + l.label + '</a>';
   }).join('');
 
   var header = document.createElement('div');
