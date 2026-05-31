@@ -623,14 +623,23 @@
     var tmp = list[i]; list[i] = list[j]; list[j] = tmp;
     scenStore(list); renderScenarios();
   }
-  async function scenPush(id){
+  function scenPush(id){
     var s = scenLoad().filter(function(x){ return x.id===id; })[0];
     if (!s) return;
     if (!s.img){ alert('這個情境還沒有圖片，請先「編輯」加入圖片。'); return; }
     try {
-      var blob = await (await fetch(s.img)).blob();
-      await shareBlob(blob, s.title);
+      // 同步把 dataURL 轉成檔案再分享：iOS Safari 要求 share() 在點擊當下同步呼叫，
+      // 不能先 await（否則會被當成非使用者觸發而擋掉分享選單）。
+      shareBlob(dataURLToBlob(s.img), s.title);
     } catch(e){ alert('推送失敗：' + e.message); }
+  }
+  function dataURLToBlob(durl){
+    var parts = String(durl).split(',');
+    var mime = (parts[0].match(/:(.*?);/) || [])[1] || 'image/jpeg';
+    var bin = atob(parts[1]);
+    var arr = new Uint8Array(bin.length);
+    for (var i=0; i<bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: mime });
   }
 
   // 縮圖壓縮：長邊最大 1280，JPEG 0.82，控制 localStorage 容量
