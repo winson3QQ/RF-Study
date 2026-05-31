@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>接收機鏈路 NF / MDS / 動態範圍計算器 — 點對點無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; }
+canvas { width: 100%; display: block; background: #08080e; border-radius: var(--r-sm); }
+.status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+@media (max-width: 560px) { .status-grid { grid-template-columns: 1fr 1fr; } }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 10px; text-align: center; box-shadow: var(--shadow-sm); }
+.metric-label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 5px; }
+.metric-val { font-family: var(--font-mono); font-size: 17px; font-weight: 700; color: var(--ink); }
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.8; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: var(--teal-ink); }
+.formula { font-family: var(--font-mono); font-size: 12px; background: var(--bg-tint); border-radius: var(--r-md); padding: 13px 15px; color: var(--ink-2); line-height: 1.8; white-space: pre-wrap; margin-bottom: 12px; }
+.stage-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 12px; }
+.stage-tbl th { padding: 8px 9px; text-align: center; font-family: var(--font-display); font-size: 11.5px; color: var(--teal-ink); background: var(--teal-soft); }
+.stage-tbl td { padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: center; color: var(--ink-2); }
+.stage-tbl td:first-child { text-align: left; font-weight: 700; color: var(--ink); }
+.stage-tbl input { width: 56px; background: var(--surface-soft); border: 1.5px solid var(--border-strong); border-radius: 7px; padding: 5px 6px; font-family: var(--font-mono); font-size: 13px; text-align: center; color: var(--ink); outline: none; }
+.stage-tbl input:focus { border-color: var(--primary); }
+.row-btn { font-family: var(--font-sans); font-weight:700; font-size:12px; padding:7px 13px; border:1.5px solid var(--border-strong); border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); cursor:pointer; }
+.row-btn:hover { border-color: var(--teal); color: var(--teal-ink); }
+.del { color: var(--rose-ink); cursor: pointer; font-weight: 700; }
+.challenge { display: flex; align-items: flex-start; gap: 9px; background: var(--honey-soft); border: 1px solid #f0dcae; border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 13px 15px; font-size: 13px; color: var(--ink-2); line-height: 1.8; margin-bottom: 12px; }
+.challenge svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; color: var(--honey-ink); }
+.challenge b { color: var(--honey-ink); }
+.xlink { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.xlink a { font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--teal-ink); text-decoration: none; }
+.xlink a:hover { border-color: var(--teal); background: var(--teal-soft); }
+.warn { display:flex; align-items:flex-start; gap:8px; background: var(--rose-soft); border:1px solid #f3c9c5; border-left:4px solid var(--rose); border-radius: var(--r-md); padding:12px 15px; font-size:12.5px; color: var(--ink-2); line-height:1.8; margin-bottom:12px; }
+.warn svg { width:16px; height:16px; flex-shrink:0; margin-top:2px; color: var(--rose-ink); }
+.warn b { color: var(--rose-ink); }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">接收機鏈路 NF / MDS 計算器</div>
+  <p class="tool-sub">把 LNA、混波器、IF 放大等各級串起來，算出整台接收機的<strong>總增益、總雜訊指數（NF）、可聽到的最弱訊號（MDS）與動態範圍（SFDR）</strong>，並指出瓶頸在哪一級——比背 Friis 公式有感多了。</p>
+
+  <div class="insight">
+    <strong>這台工具想讓你「親手感覺」一個張力：</strong>把增益放在最前面（LNA 先行）→ <strong style="color:var(--teal-ink)">總 NF 變好</strong>（雜訊式：前級增益會壓低後級雜訊貢獻）；但增益放太前面 → <strong style="color:var(--rose-ink)">大訊號更早把後級推進非線性</strong>（IIP3 變差）。<strong>NF 與線性度互相拉扯</strong>，這就是接收機設計的核心。
+  </div>
+
+  <div class="st">接收鏈各級（由天線往內，可改數值／增刪）</div>
+  <table class="stage-tbl" id="stage-tbl"></table>
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="row-btn" onclick="addStage()"><i data-lucide="plus" style="width:14px;height:14px;vertical-align:-2px"></i> 加一級</button>
+    <button class="row-btn" onclick="loadPreset('lna-first')">範例：LNA 在前</button>
+    <button class="row-btn" onclick="loadPreset('lna-last')">範例：LNA 在後</button>
+  </div>
+
+  <div class="status-grid">
+    <div class="metric"><div class="metric-label">總增益</div><div class="metric-val" id="m-gain" style="color:var(--teal-ink)">—</div></div>
+    <div class="metric"><div class="metric-label">總 NF</div><div class="metric-val" id="m-nf" style="color:var(--honey-ink)">—</div></div>
+    <div class="metric"><div class="metric-label">MDS（最小可測）</div><div class="metric-val" id="m-mds">—</div></div>
+    <div class="metric"><div class="metric-label">SFDR</div><div class="metric-val" id="m-sfdr" style="color:var(--leaf-ink)">—</div></div>
+  </div>
+
+  <div class="st">各級對「總雜訊」的貢獻（瓶頸在哪一級？）</div>
+  <div class="viz-card">
+    <div class="viz-head" id="vh-bar">越高＝這一級對總 NF 拖累越大</div>
+    <canvas id="c-bar" height="170"></canvas>
+  </div>
+
+  <div class="st">頻寬與門檻</div>
+  <table class="stage-tbl" id="bw-tbl"></table>
+
+  <div class="challenge">
+    <i data-lucide="flask-conical"></i>
+    <div><b>實驗挑戰：</b>先用「LNA 在前」範例，記下總 NF；再用「LNA 在後」，看總 NF 變好還是變壞？接著把第一級 LNA 增益從 20dB 一路加大，觀察總 NF 改善的同時 <b>IIP3（總線性度）</b>怎麼變。用 1–2 句寫下你發現的取捨。</div>
+  </div>
+
+  <div class="st">公式（攤開給你看）</div>
+  <div class="formula" id="formula"></div>
+
+  <div class="warn">
+    <i data-lucide="triangle-alert"></i>
+    <div><b>Friis 兩式別混：</b>這裡用的是 <b>Friis 雜訊式</b>（算串接 NF）；<a href="link-budget-sim.html" style="color:var(--teal-ink);font-weight:700">Link Budget</a> 用的是 <b>Friis 傳輸式</b>（算路徑功率衰減）。同名、不同公式、不同用途。</div>
+  </div>
+
+  <div class="st">延伸學習</div>
+  <div class="xlink">
+    <a href="../courses/sdr-advanced.html#p2"><i data-lucide="arrow-right"></i> SDR 課程・情境2 RF 增益與靈敏度</a>
+    <a href="../courses/rf-glossary.html#sensitivity">📖 手冊：靈敏度</a>
+    <a href="../courses/rf-glossary.html#noisefloor">📖 手冊：底噪 / SNR</a>
+    <a href="link-budget-sim.html"><i data-lucide="route"></i> Link Budget 模擬器</a>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/rf-data.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+var KTB0 = (window.RF_DATA && RF_DATA.constants && RF_DATA.constants.ktb0) || -174;
+
+// 各級：增益 dB、雜訊指數 NF dB、輸入三階截點 IIP3 dBm
+var PRESETS = {
+  'lna-first': [
+    { name:'LNA',     g:20, nf:1.5, iip3:-5 },
+    { name:'混波器',  g:-7, nf:7,   iip3:10 },
+    { name:'IF 放大', g:30, nf:5,   iip3:5 }
+  ],
+  'lna-last': [
+    { name:'濾波器',  g:-2, nf:2,   iip3:50 },
+    { name:'混波器',  g:-7, nf:7,   iip3:10 },
+    { name:'IF 放大', g:30, nf:5,   iip3:5 }
+  ]
+};
+var stages = JSON.parse(JSON.stringify(PRESETS['lna-first']));
+var BW_KHZ = 12.5, SNR_MIN = 10;
+
+function dB2lin(x){ return Math.pow(10, x/10); }
+function lin2dB(x){ return 10*Math.log10(x); }
+
+// Friis 雜訊串接（線性 F）: F = F1 + (F2-1)/G1 + (F3-1)/(G1G2) + ...
+// IIP3 串接（線性，input-referred）: 1/IIP3 = 1/IIP3_1 + G1/IIP3_2 + G1G2/IIP3_3 + ...
+function cascade(){
+  var totG = 0, F = 0, invIip3 = 0, gAccum = 1; // gAccum=之前各級線性增益乘積
+  var contrib = [];
+  for (var i=0;i<stages.length;i++){
+    var s = stages[i];
+    var Fi = dB2lin(s.nf), Gi = dB2lin(s.g), iip3i = dB2lin(s.iip3); // iip3 in mW
+    var fTerm = (i===0) ? Fi : (Fi - 1) / gAccum;
+    F += fTerm;
+    // input-referred IIP3 contribution
+    invIip3 += gAccum / iip3i;
+    contrib.push({ name:s.name, fTerm:fTerm });
+    gAccum *= Gi;
+    totG += s.g;
+  }
+  var NF = lin2dB(F);
+  var IIP3 = lin2dB(1/invIip3); // dBm input-referred
+  // 各級對「F−1」總額的占比（F1 的貢獻含 1，扣掉基準 1 後比較）
+  var fExcess = F - 1;
+  contrib.forEach(function(c,i){
+    var ex = (i===0) ? (dB2lin(stages[0].nf)-1) : c.fTerm;
+    c.pct = fExcess>0 ? ex/fExcess*100 : 0;
+  });
+  var thermal = KTB0 + 10*Math.log10(BW_KHZ*1000); // dBm
+  var MDS = thermal + NF + SNR_MIN;
+  var noiseFloor = thermal + NF;
+  var SFDR = (2/3)*(IIP3 - noiseFloor); // dB
+  return { totG:totG, NF:NF, IIP3:IIP3, MDS:MDS, SFDR:SFDR, noiseFloor:noiseFloor, thermal:thermal, contrib:contrib };
+}
+
+function renderStages(){
+  var t = document.getElementById('stage-tbl');
+  var head = '<tr><th>級（訊號流向 →）</th><th>增益 dB</th><th>NF dB</th><th>IIP3 dBm</th><th></th></tr>';
+  var rows = stages.map(function(s,i){
+    return '<tr>'+
+      '<td>'+(i+1)+'. '+s.name+'</td>'+
+      '<td><input type="number" step="1" value="'+s.g+'" oninput="upd('+i+',\'g\',this.value)"></td>'+
+      '<td><input type="number" step="0.5" value="'+s.nf+'" oninput="upd('+i+',\'nf\',this.value)"></td>'+
+      '<td><input type="number" step="1" value="'+s.iip3+'" oninput="upd('+i+',\'iip3\',this.value)"></td>'+
+      '<td>'+(stages.length>1?'<span class="del" onclick="delStage('+i+')">✕</span>':'')+'</td>'+
+    '</tr>';
+  }).join('');
+  t.innerHTML = head + rows;
+}
+function renderBW(){
+  document.getElementById('bw-tbl').innerHTML =
+    '<tr><th>接收頻寬 B</th><th>解調所需 SNR</th><th>熱雜訊底（kTB）</th></tr>'+
+    '<tr><td><input type="number" step="0.5" value="'+BW_KHZ+'" oninput="updBW(\'bw\',this.value)"> kHz</td>'+
+    '<td><input type="number" step="1" value="'+SNR_MIN+'" oninput="updBW(\'snr\',this.value)"> dB</td>'+
+    '<td>'+(KTB0 + 10*Math.log10(BW_KHZ*1000)).toFixed(1)+' dBm</td></tr>';
+}
+
+function upd(i,k,v){ stages[i][k]=parseFloat(v)||0; recompute(); }
+function updBW(k,v){ if(k==='bw') BW_KHZ=parseFloat(v)||12.5; else SNR_MIN=parseFloat(v)||0; recompute(); renderBW(); }
+function delStage(i){ stages.splice(i,1); renderStages(); recompute(); }
+function addStage(){ stages.push({ name:'新增級', g:10, nf:5, iip3:10 }); renderStages(); recompute(); }
+function loadPreset(id){ stages = JSON.parse(JSON.stringify(PRESETS[id])); renderStages(); recompute(); }
+
+function recompute(){
+  var r = cascade();
+  document.getElementById('m-gain').textContent = r.totG.toFixed(1)+' dB';
+  document.getElementById('m-nf').textContent = r.NF.toFixed(2)+' dB';
+  document.getElementById('m-mds').textContent = r.MDS.toFixed(1)+' dBm';
+  document.getElementById('m-sfdr').textContent = r.SFDR.toFixed(1)+' dB';
+  document.getElementById('formula').textContent =
+    'Friis 雜訊式（線性 F）：\n'+
+    '  F = F₁ + (F₂−1)/G₁ + (F₃−1)/(G₁G₂) + …\n'+
+    '  總 NF = 10·log₁₀(F) = '+r.NF.toFixed(2)+' dB\n\n'+
+    'IIP3 串接（輸入端參考）：\n'+
+    '  1/IIP3 = 1/IIP3₁ + G₁/IIP3₂ + G₁G₂/IIP3₃ + …\n'+
+    '  總 IIP3 = '+r.IIP3.toFixed(1)+' dBm\n\n'+
+    'MDS = −174 + 10·log₁₀(B_Hz) + NF + SNR_min\n'+
+    '    = '+r.thermal.toFixed(1)+' + '+r.NF.toFixed(2)+' + '+SNR_MIN+' = '+r.MDS.toFixed(1)+' dBm\n\n'+
+    'SFDR ≈ ⅔·(IIP3 − 雜訊底) = ⅔·('+r.IIP3.toFixed(1)+' − ('+r.noiseFloor.toFixed(1)+')) = '+r.SFDR.toFixed(1)+' dB';
+  drawBars(r);
+  if (window.lucide) lucide.createIcons();
+}
+
+function drawBars(r){
+  var cv = document.getElementById('c-bar');
+  var dpr = window.devicePixelRatio||1, W=cv.clientWidth, H=170;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var n=r.contrib.length, bw=(W-50)/n*0.6, gap=(W-50)/n;
+  var maxPct=Math.max.apply(null, r.contrib.map(function(c){return c.pct;}).concat([1]));
+  r.contrib.forEach(function(c,i){
+    var x=30+i*gap+ (gap-bw)/2;
+    var h=(c.pct/maxPct)*(H-44);
+    var isMax = c.pct===maxPct;
+    ctx.fillStyle = isMax ? '#E5544B' : '#1F9E96';
+    ctx.fillRect(x, H-28-h, bw, h);
+    ctx.fillStyle = isMax ? '#E5544B' : '#A89C8C';
+    ctx.font='bold 11px "Space Mono",monospace'; ctx.textAlign='center';
+    ctx.fillText(c.pct.toFixed(0)+'%', x+bw/2, H-32-h);
+    ctx.fillStyle='#A89C8C'; ctx.font='10px "Space Mono",monospace';
+    ctx.fillText((i+1)+'.'+c.name, x+bw/2, H-12);
+  });
+  ctx.textAlign='left';
+  document.getElementById('vh-bar').textContent = '紅色＝對總雜訊拖累最大的一級（瓶頸）。注意：第一級雜訊幾乎原封不動進入總和——所以 LNA 要好、要在前。';
+}
+
+renderStages(); renderBW(); recompute();
+window.addEventListener('resize', function(){ drawBars(cascade()); });
+</script>
+</body>
+</html>
