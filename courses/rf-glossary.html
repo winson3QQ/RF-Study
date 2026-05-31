@@ -1187,9 +1187,14 @@ function filterCat(tag, btn) {
   document.querySelectorAll('.fbtn').forEach(function (b) { b.classList.remove('active'); });
   btn.classList.add('active');
   doSearch(); // 套用分類 + 既有搜尋字
-  // 切類後捲回內容頂端（吸頂列下方）
+  // 切類後捲到內容頂端，但要扣掉吸頂列高度（否則標題會被吸頂列蓋住、截掉）
   var anchor = document.querySelector('.cat-title:not(.cat-empty)');
-  if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (anchor) {
+    var bar = document.querySelector('.sticky-filter');
+    var offset = (bar ? bar.getBoundingClientRect().height : 0) + 12; // 吸頂列高 + 緩衝
+    var y = anchor.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  }
 }
 // 在每個分類按鈕注入數量徽章
 (function injectCounts() {
