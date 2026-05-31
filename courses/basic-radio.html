@@ -15,6 +15,7 @@
   .sim-err{color:var(--primary-ink);font-size:13.5px;min-height:18px;margin-top:8px}
   .zello-join{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
   .qr-placeholder{width:150px;height:150px;flex:0 0 auto;border:2px dashed var(--primary);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:13px;text-align:center;padding:8px;background:var(--primary-soft)}
+  .zello-qr{width:160px;height:160px;flex:0 0 auto;border-radius:14px;border:1px solid var(--border);background:#fff;padding:6px}
   .simgrid{display:grid;gap:16px;grid-template-columns:1fr}
   @media(min-width:560px){.simgrid{grid-template-columns:1fr 1fr}}
   .simcard{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
@@ -438,11 +439,11 @@
       <div class="sec-h"><i data-lucide="users"></i>加入 Zello 群組</div>
       <div class="prose-card">
         <div class="zello-join">
-          <div class="qr-placeholder">Zello 群組 QR<br>（待放）</div>
+          <img class="zello-qr" src="../assets/img/zello-qrcode.png" alt="基礎無線電 Channel 加入 QR">
           <div>
-            <p style="margin:0 0 6px">群組名稱：<strong>（待填）</strong></p>
-            <p style="margin:0 0 6px">群組密碼：<span class="readout">（待填）</span></p>
-            <p style="margin:0;font-size:13.5px;color:var(--ink-2)">學員：安裝 Zello → 搜尋群組名稱 → 輸入密碼加入，或掃左側 QR。</p>
+            <p style="margin:0 0 6px">群組名稱：<strong>基礎無線電 Channel</strong></p>
+            <p style="margin:0 0 6px">加入連結：<a href="https://zello.me/k/jnJpX" target="_blank" rel="noopener" class="readout">zello.me/k/jnJpX</a></p>
+            <p style="margin:0;font-size:13.5px;color:var(--ink-2)">學員：安裝 Zello → <strong>掃左側 QR</strong> 或點上方連結 → 自動加入頻道（免密碼）。</p>
           </div>
         </div>
       </div>
