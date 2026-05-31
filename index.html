@@ -6,6 +6,21 @@
 <title>無線電學習站 — 用最白話的方式學無線電</title>
 <link rel="icon" href="assets/logo-mark.svg">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* homepage: 二等考照 學習地圖 feature banner */
+.map-feature { display: grid; grid-template-columns: 1.25fr 1fr; gap: 26px; align-items: center; background: linear-gradient(135deg, #FFF6EC, #FFFFFF); border: 1px solid var(--border); border-left: 5px solid var(--teal); border-radius: var(--r-xl); padding: 28px 30px; box-shadow: var(--shadow-md); text-decoration: none; color: inherit; transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+.map-feature:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-left-color: var(--teal-strong); }
+.map-feature .mf-badge { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; color: var(--teal-ink); background: var(--teal-soft); border-radius: var(--r-pill); padding: 4px 12px; font-weight: 700; margin-bottom: 12px; }
+.map-feature h2 { font-family: var(--font-display); font-weight: 800; font-size: clamp(22px, 3vw, 28px); color: var(--ink); margin-bottom: 10px; line-height: 1.2; }
+.map-feature p { font-size: 15px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
+.map-feature .mf-cta { display: inline-flex; align-items: center; gap: 7px; font-weight: 800; color: var(--teal-ink); }
+.map-feature .mf-cta svg { width: 18px; height: 18px; }
+.mf-strip { display: flex; flex-direction: column; gap: 8px; }
+.mf-step { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 9px 14px; font-weight: 700; font-size: 14px; color: var(--ink); box-shadow: var(--shadow-sm); }
+.mf-step .d { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+.mf-step small { font-weight: 600; color: var(--ink-3); font-size: 11.5px; margin-left: auto; }
+@media (max-width: 640px) { .map-feature { grid-template-columns: 1fr; padding: 22px; } }
+</style>
 </head>
 <body>
 
@@ -17,26 +32,27 @@
     <h1>用最白話的方式，<br>把<span class="hl">無線電</span>學起來</h1>
     <p>不用背公式、不用怕英文縮寫。我們用生活比喻、圖解和互動工具，把對講機、SDR 和民防通訊講到你「查了就懂」。</p>
     <div class="hero-actions">
-      <a class="btn btn-primary" href="courses/basic-radio.html">開始上第一課 <i data-lucide="arrow-right"></i></a>
-      <a class="btn btn-ghost" href="learning-map.html"><i data-lucide="map"></i> 看學習地圖</a>
+      <a class="btn btn-primary" href="courses/basic-radio.html"><i data-lucide="radio"></i> 從基礎開始學</a>
+      <a class="btn btn-primary" href="learning-map.html" style="background:var(--teal)"><i data-lucide="map"></i> 我要考二等・學習地圖</a>
       <a class="btn btn-ghost" href="courses/rf-glossary.html"><i data-lucide="book-open"></i> 翻白話手冊</a>
     </div>
     <div class="stats">
       <a class="stat" href="#courses" onclick="event.preventDefault();document.getElementById('courses').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--primary)"></span><span class="num">2</span><span class="lab">套課程</span></a>
-      <a class="stat" href="#tools" onclick="event.preventDefault();document.getElementById('tools').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--teal)"></span><span class="num">15</span><span class="lab">個互動工具</span></a>
-      <a class="stat" href="#advanced" onclick="event.preventDefault();document.getElementById('advanced').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#6D3FC0"></span><span class="num">4</span><span class="lab">進階實驗室</span></a>
-      <a class="stat" href="#sims" onclick="event.preventDefault();document.getElementById('sims').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--sky)"></span><span class="num">1</span><span class="lab">套模擬器</span></a>
+      <a class="stat" href="learning-map.html"><span class="dot" style="background:var(--teal)"></span><span class="num">15</span><span class="lab">個互動工具</span></a>
+      <a class="stat" href="#extra" onclick="event.preventDefault();document.getElementById('extra').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#6D3FC0"></span><span class="num">4</span><span class="lab">進階實驗室</span></a>
+      <a class="stat" href="#extra" onclick="event.preventDefault();document.getElementById('extra').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--sky)"></span><span class="num">1</span><span class="lab">套模擬器</span></a>
       <a class="stat" href="courses/rf-glossary.html"><span class="dot" style="background:var(--honey)"></span><span class="num">79</span><span class="lab">白話術語</span></a>
     </div>
   </section>
 
-  <!-- 課程教材 -->
+  <!-- ① 無線電課程 -->
   <div class="section-label" id="courses">
     <span class="ico"><i data-lucide="book-open"></i></span>
-    <h2>無線電課程教材</h2>
+    <h2>① 無線電課程 — 從零開始學</h2>
     <span class="rule"></span>
-    <span class="count">2 courses · 1 手冊</span>
+    <span class="count">2 課程 · 1 手冊</span>
   </div>
+  <p style="font-size:14px;color:var(--ink-2);margin:-6px 0 18px;max-width:680px">敘事式學習，不限考照：從第一次拿對講機，到 RF 理論與 SDR 驗證；遇到生字隨時翻白話手冊。</p>
   <div class="cards">
 
     <a class="ccard accent-coral" href="courses/basic-radio.html">
@@ -65,145 +81,39 @@
 
   </div>
 
-  <!-- 互動工具 -->
-  <div class="section-label" id="tools">
-    <span class="ico"><i data-lucide="sliders-horizontal"></i></span>
-    <h2>二等業餘無線電 — 輔助學習工具</h2>
+  <!-- ② 二等考照：RF 學習地圖 -->
+  <div class="section-label" id="exam">
+    <span class="ico"><i data-lucide="map"></i></span>
+    <h2>② 二等考照 — RF 學習地圖</h2>
     <span class="rule"></span>
-    <span class="count">15 tools</span>
+    <span class="count">15 工具 · 沿訊號旅程</span>
   </div>
-  <div class="cards">
+  <p style="font-size:14px;color:var(--ink-2);margin:-6px 0 18px;max-width:680px">考二等就走這條線：15 個互動工具排成「<strong>發射機 → 通道 → 接收機</strong>」一條訊號旅程，從地基到操作法規分五層。先看地圖全貌，再逐站下鑽。</p>
 
-    <a class="ccard accent-teal" href="tools/link-budget-sim.html">
-      <span class="badge">TOOL · 鏈路預算</span>
-      <span class="ico"><i data-lucide="route"></i></span>
-      <h3>Link Budget 鏈路預算模擬器</h3>
-      <p>發射→天線→路徑損耗→接收一條鏈路走完，即時看接收功率與餘裕（Fade Margin）夠不夠通。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
+  <a class="map-feature" href="learning-map.html">
+    <div>
+      <span class="mf-badge">START HERE · 考照主軸</span>
+      <h2>訊號的旅程：從零到二等</h2>
+      <p>一張圖看懂訊號怎麼從發射機、越過通道、被接收機還原；每一站都標清「學什麼、用哪個工具、一句自我檢查」。15 個工具全部歸位在這裡。</p>
+      <span class="mf-cta">進入學習地圖 <i data-lucide="arrow-right"></i></span>
+    </div>
+    <div class="mf-strip">
+      <div class="mf-step"><span class="d" style="background:#E89A1C"></span>地基 <small>頻率·波長·dB</small></div>
+      <div class="mf-step"><span class="d" style="background:#F2643C"></span>發射機 TX <small>調變·功率·電源</small></div>
+      <div class="mf-step"><span class="d" style="background:#1F9E96"></span>通道 Channel <small>天線·傳播</small></div>
+      <div class="mf-step"><span class="d" style="background:#3B86C9"></span>接收機 RX <small>超外差·解調</small></div>
+      <div class="mf-step"><span class="d" style="background:#3DA35D"></span>操作・法規 <small>呼號·Q簡語</small></div>
+    </div>
+  </a>
 
-    <a class="ccard accent-teal" href="tools/receiver-chain.html">
-      <span class="badge">TOOL · 接收機鏈路</span>
-      <span class="ico"><i data-lucide="git-merge"></i></span>
-      <h3>接收機 NF / MDS 串接計算器</h3>
-      <p>串接 LNA／混波器／IF，算總增益、總 NF、MDS 與 SFDR，指出瓶頸級——親手感覺 NF 與線性度的取捨。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-teal" href="tools/propagation-multipath.html">
-      <span class="badge">TOOL · 傳播多徑</span>
-      <span class="ico"><i data-lucide="radio-tower"></i></span>
-      <h3>傳播與多徑視覺化</h3>
-      <p>雙射線（直射＋地面反射）＋菲涅耳區，看天線高度／距離／頻率如何造成多徑衰落與地形阻擋。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-sky" href="tools/spectrum-viewer.html">
-      <span class="badge">TOOL · 頻譜</span>
-      <span class="ico"><i data-lucide="signal"></i></span>
-      <h3>業餘頻段互動頻譜</h3>
-      <p>視覺化瀏覽台灣業餘無線電各頻段分配，互動查詢頻率範圍與用途。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-sky" href="tools/modulation-viewer.html">
-      <span class="badge">TOOL · 調變</span>
-      <span class="ico"><i data-lucide="audio-waveform"></i></span>
-      <h3>調變方式視覺化</h3>
-      <p>AM、FM、SSB、CW 等調變方式的波形動態比較，理解訊號本質。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-teal" href="tools/circuit-calculator.html">
-      <span class="badge">TOOL · 電路</span>
-      <span class="ico"><i data-lucide="zap"></i></span>
-      <h3>電路計算互動工具</h3>
-      <p>歐姆定律、功率、阻抗計算，備考實用，輸入參數即時得出結果。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-honey" href="tools/callsign-decoder.html">
-      <span class="badge">TOOL · 呼號</span>
-      <span class="ico"><i data-lucide="search"></i></span>
-      <h3>台灣業餘電台呼號解碼器</h3>
-      <p>輸入呼號自動解析地區、等級與類型，搭配地圖視覺化顯示電台位置。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-teal" href="tools/ionosphere-viewer.html">
-      <span class="badge">TOOL · 傳播</span>
-      <span class="ico"><i data-lucide="satellite"></i></span>
-      <h3>電離層傳播互動視覺化</h3>
-      <p>拖動頻率／仰角／時間，看天波訊號如何被電離層反射，理解 MUF、跳躍距離與 NVIS。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-honey" href="tools/qcode-trainer.html">
-      <span class="badge">TOOL · Q簡語</span>
-      <span class="ico"><i data-lucide="messages-square"></i></span>
-      <h3>Q 簡語情境訓練</h3>
-      <p>在對話情境中學 Q 碼，搭配閃卡、速查與易混淆配對，不只是死背代碼。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-sky" href="tools/superhet-receiver.html">
-      <span class="badge">TOOL · 接收機</span>
-      <span class="ico"><i data-lucide="radio-receiver"></i></span>
-      <h3>超外差接收機互動解析</h3>
-      <p>點擊方塊圖各級看功能，附本振／中頻／鏡像頻率計算，與 SWR、dBi／dBd 計算機。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-teal" href="tools/antenna-basics.html">
-      <span class="badge">TOOL · 天線</span>
-      <span class="ico"><i data-lucide="radio-tower"></i></span>
-      <h3>天線基礎互動工具</h3>
-      <p>算 λ/4・λ/2 共振長度、換算 dBi／dBd 增益、看極化與方向圖，認識常見天線型式。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-teal" href="tools/swr-visualizer.html">
-      <span class="badge">TOOL · 駐波</span>
-      <span class="ico"><i data-lucide="waves"></i></span>
-      <h3>SWR 駐波互動視覺化</h3>
-      <p>動畫呈現入射波、反射波與駐波，拖動阻抗看 SWR、反射係數與功率反射比即時變化。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-rose" href="tools/interference-diagnosis.html">
-      <span class="badge">TOOL · 干擾診斷</span>
-      <span class="ico"><i data-lucide="stethoscope"></i></span>
-      <h3>干擾診斷互動流程圖</h3>
-      <p>從症狀一步步問診找出干擾原因與解法，附聲音辨識、概念速查與 EMC 考題。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-leaf" href="tools/rf-safety.html">
-      <span class="badge">TOOL · 安全防護</span>
-      <span class="ico"><i data-lucide="shield-check"></i></span>
-      <h3>RF 安全防護互動工具</h3>
-      <p>拖動功率／增益／工作週期看 RF 曝露安全距離，附工作週期、電氣安全速查與全 26 題。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-    <a class="ccard accent-sky" href="tools/power-circuit.html">
-      <span class="badge">TOOL · 電源電路</span>
-      <span class="ico"><i data-lucide="circuit-board"></i></span>
-      <h3>電源電路互動圖解</h3>
-      <p>整流電路圖＋動態波形、二極體／電容／電晶體元件辨識，與系統原理電源題速查。</p>
-      <span class="arrow"><i data-lucide="arrow-right"></i></span>
-    </a>
-
-  </div>
-
-  <!-- 進階實驗室（選修） -->
-  <div class="section-label" id="advanced">
+  <!-- ③ 延伸與練習（選修） -->
+  <div class="section-label" id="extra">
     <span class="ico"><i data-lucide="flask-conical"></i></span>
-    <h2>進階實驗室 — 選修・工程/SDR</h2>
+    <h2>③ 延伸與練習 — 選修</h2>
     <span class="rule"></span>
-    <span class="count">4 labs · 超出考照範圍</span>
+    <span class="count">4 實驗室 · 1 模擬器</span>
   </div>
-  <p style="font-size:14px;color:var(--ink-2);margin:-6px 0 18px;max-width:680px">這些主題<strong>不在 NCC 業餘考照範圍</strong>，給想往通訊工程／SDR 深入的人。建議先讀完上方主軌工具再來。</p>
+  <p style="font-size:14px;color:var(--ink-2);margin:-6px 0 18px;max-width:680px">進階實驗室<strong>不在 NCC 業餘考照範圍</strong>，給想往通訊工程／SDR 深入的人，建議讀完上方主軌再來；民防模擬器則用來練情境通訊。</p>
   <div class="cards">
 
     <a class="ccard accent-pur" href="tools/adv-constellation-eye.html">
@@ -237,17 +147,6 @@
       <p>能量 vs 門檻的取捨：誤警與漏檢永遠對立，拖滑桿體會認知無線電的核心。</p>
       <span class="arrow"><i data-lucide="arrow-right"></i></span>
     </a>
-
-  </div>
-
-  <!-- 模擬器 -->
-  <div class="section-label" id="sims">
-    <span class="ico"><i data-lucide="shield"></i></span>
-    <h2>模擬器</h2>
-    <span class="rule"></span>
-    <span class="count">1 simulator</span>
-  </div>
-  <div class="cards">
 
     <a class="ccard accent-rose" href="simulators/civil-defense.html">
       <span class="badge">SIMULATOR · 民防</span>
