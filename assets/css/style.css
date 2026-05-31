@@ -126,6 +126,22 @@ a:hover { color: var(--primary-strong); }
 .nav-links a:hover { background: var(--surface-soft); color: var(--ink); }
 .nav-links a.active { background: var(--primary-soft); color: var(--primary-ink); }
 
+/* journey breadcrumb (injected by nav.js on main-track tool pages) */
+.journey-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--jc, var(--teal)); border-radius: var(--r-pill); padding: 8px 16px; margin: 4px 0 2px; box-shadow: var(--shadow-sm); font-size: 13px; }
+.journey-bar .jb-map { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.journey-bar .jb-map:hover { color: var(--primary-ink); }
+.journey-bar .jb-map svg { width: 15px; height: 15px; }
+.journey-bar .jb-sep { color: var(--ink-3); }
+.journey-bar .jb-here { font-weight: 800; color: var(--jc, var(--teal-ink)); }
+.journey-bar .jb-steps { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.journey-bar .jb-step { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 12.5px; color: var(--ink-2); text-decoration: none; background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--r-pill); padding: 4px 12px; white-space: nowrap; transition: all var(--dur) var(--ease); }
+.journey-bar .jb-step:hover { border-color: var(--jc, var(--teal)); color: var(--ink); }
+.journey-bar .jb-step svg { width: 13px; height: 13px; }
+@media (max-width: 560px) {
+  .journey-bar { font-size: 12px; padding: 8px 13px; }
+  .journey-bar .jb-steps { width: 100%; margin-left: 0; margin-top: 2px; }
+}
+
 .foot { margin-top: 56px; padding: 26px 0 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
 .foot .l { font-weight: 700; font-size: 13px; color: var(--ink-2); }
 .foot .r { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天線基礎互動工具 — 二等業餘無線電</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: var(--teal); border-radius: 3px; flex-shrink: 0; }
+
+/* length calculator */
+.len-calc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+.len-out { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+@media (max-width: 560px) { .len-out { grid-template-columns: 1fr; } }
+.len-cell { background: var(--surface-soft); border: 1px solid var(--border); border-top: 3px solid var(--teal); border-radius: var(--r-md); padding: 14px 16px; text-align: center; }
+.len-cell .l { font-size: 12px; color: var(--ink-2); font-weight: 700; margin-bottom: 6px; }
+.len-cell .v { font-family: var(--font-mono); font-size: 22px; color: var(--teal-ink); font-weight: 700; }
+.len-cell .u { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.len-cell .sub { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); margin-top: 4px; }
+
+/* dBi/dBd grid */
+.gain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 560px) { .gain-grid { grid-template-columns: 1fr; } }
+.gain-card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--r-md); padding: 15px; box-shadow: var(--shadow-sm); }
+.gain-card .h { font-family: var(--font-display); font-weight: 800; font-size: 15px; color: var(--teal-ink); margin-bottom: 6px; }
+.gain-card .d { font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+.gain-card .n { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); margin-top: 7px; }
+
+/* input row */
+.irow-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .irow-wrap { grid-template-columns: 1fr; } }
+.ig label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); display: block; margin-bottom: 5px; }
+.ig .irow { display: flex; align-items: center; background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--r-md); transition: all var(--dur) var(--ease); }
+.ig .irow:focus-within { border-color: var(--primary); box-shadow: var(--ring); }
+.ig .irow input { flex: 1; background: transparent; border: none; outline: none; color: var(--ink); font-family: var(--font-mono); font-size: 17px; padding: 11px 13px; min-width: 0; }
+.ig .irow .unit { padding: 11px 13px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); border-left: 1px solid var(--border); }
+
+/* radiation patterns */
+.pat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 560px) { .pat-grid { grid-template-columns: 1fr; } }
+.pat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); text-align: center; }
+.pat-card svg { width: 100%; height: auto; display: block; }
+.pat-card .pt { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--ink); margin: 8px 0 4px; }
+.pat-card .pd { font-size: 12px; color: var(--ink-2); line-height: 1.6; }
+
+/* polarization */
+.pol-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 560px) { .pol-grid { grid-template-columns: 1fr; } }
+.pol-card { background: var(--surface-soft); border: 1px solid var(--border); border-top: 3px solid var(--honey); border-radius: var(--r-md); padding: 14px 16px; }
+.pol-card .h { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--honey-ink); margin-bottom: 6px; }
+.pol-card .d { font-size: 12.5px; color: var(--ink-2); line-height: 1.65; }
+
+/* tables */
+.atbl { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.atbl th { padding: 9px 12px; text-align: left; font-family: var(--font-display); font-size: 12px; color: var(--teal-ink); background: var(--teal-soft); font-weight: 700; border-bottom: 1px solid var(--border); }
+.atbl td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink-2); }
+.atbl tr:last-child td { border-bottom: none; }
+.atbl tbody tr:nth-child(even) td { background: var(--surface-soft); }
+.atbl td.k { color: var(--teal-ink); font-family: var(--font-mono); font-weight: 700; }
+
+/* exam cards */
+.exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 600px) { .exam-grid { grid-template-columns: 1fr; } }
+.ecard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 13px 14px; box-shadow: var(--shadow-sm); }
+.eq { font-size: 13px; color: var(--ink); margin-bottom: 7px; line-height: 1.6; font-weight: 600; }
+.ea { font-family: var(--font-mono); font-size: 12px; color: var(--leaf-ink); border-top: 1px solid var(--border); padding-top: 7px; line-height: 1.6; }
+.ekw { color: var(--teal-ink); font-weight: 700; }
+
+.trap { display: flex; align-items: flex-start; gap: 8px; background: var(--rose-soft); border: 1px solid #f3c9c5; border-left: 4px solid var(--rose); border-radius: var(--r-md); padding: 11px 14px; font-size: 12.5px; color: var(--ink-2); line-height: 1.75; margin-top: 10px; }
+.trap svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--rose-ink); }
+.trap strong { color: var(--rose-ink); }
+
+.xlink { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13px; color: var(--teal-ink); text-decoration: none; background: var(--teal-soft); border: 1px solid #bfe3df; border-radius: var(--r-pill); padding: 6px 14px; }
+.xlink:hover { background: #c8ebe7; color: var(--teal-ink); }
+.xlink svg { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="tool-title">天線基礎互動工具</div>
+  <p class="tool-sub">對應「無線電系統原理」題庫 · 算共振長度、換算 dBi／dBd 增益、看極化與方向圖，認識常見天線型式。天線把發射機的電變成電磁波送出去，也是接收的第一關。</p>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="len"><i data-lucide="ruler"></i> 長度計算</button>
+    <button class="tab" data-tab="gain"><i data-lucide="trending-up"></i> 增益 dBi/dBd</button>
+    <button class="tab" data-tab="pat"><i data-lucide="radio-tower"></i> 極化與方向</button>
+    <button class="tab" data-tab="types"><i data-lucide="list"></i> 常見天線</button>
+    <button class="tab" data-tab="exam"><i data-lucide="graduation-cap"></i> 考試速查</button>
+  </div>
+
+  <!-- ═══ LENGTH TAB ═══ -->
+  <div id="tab-len">
+    <div class="st">天線共振長度計算</div>
+    <div style="background:var(--surface-soft);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:var(--r-md);padding:13px;margin-bottom:14px;font-family:var(--font-mono);font-size:12.5px;line-height:1.8;">
+      <strong style="color:var(--teal-ink)">波長 λ(公尺) = 300 ÷ 頻率(MHz)</strong><br>
+      <span style="color:var(--ink-3)">天線長度要和波長「共振」才有效率。半波偶極取 λ/2、四分之一波長垂直取 λ/4。實體因端點效應約短 5%（速度因數 ≈ 0.95）。</span>
+    </div>
+
+    <div class="len-calc">
+      <div class="ig">
+        <label>工作頻率</label>
+        <div class="irow"><input type="number" id="freq" value="145" step="0.1" oninput="calcLen()"><div class="unit">MHz</div></div>
+      </div>
+      <div class="len-out">
+        <div class="len-cell">
+          <div class="l">全波長 λ</div>
+          <div class="v" id="o-full">—</div><div class="u">公尺</div>
+        </div>
+        <div class="len-cell">
+          <div class="l">半波偶極 λ/2（實體）</div>
+          <div class="v" id="o-half">—</div><div class="u">公尺</div>
+          <div class="sub" id="o-half-e">電氣長 — m</div>
+        </div>
+        <div class="len-cell">
+          <div class="l">¼ 波垂直（實體）</div>
+          <div class="v" id="o-quarter">—</div><div class="u">公尺</div>
+          <div class="sub" id="o-quarter-e">電氣長 — m</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="st">常見業餘頻段天線長度</div>
+    <table class="atbl">
+      <thead><tr><th>頻段</th><th>頻率</th><th>λ/2 偶極（實體）</th><th>λ/4 垂直（實體）</th></tr></thead>
+      <tbody id="band-rows"></tbody>
+    </table>
+    <div class="trap"><i data-lucide="triangle-alert"></i><span>考試重點：頻率<strong>越高、波長越短、天線越短</strong>。145MHz 的 λ/4 約 49cm，所以 2m 手持機天線很短；7MHz 的 λ/2 偶極長達約 20 公尺。電線長度公式也常考英制：λ/2 偶極(英尺) ≈ <strong>468 ÷ f(MHz)</strong>。</span></div>
+  </div>
+
+  <!-- ═══ GAIN TAB ═══ -->
+  <div id="tab-gain" style="display:none">
+    <div class="st">dBi vs dBd — 天線增益的兩種基準</div>
+    <div class="gain-grid">
+      <div class="gain-card">
+        <div class="h">dBi</div>
+        <div class="d">以<strong style="color:var(--teal-ink)">等向性天線</strong>（Isotropic，向所有方向均等輻射的理想點源）為基準。現實中不存在，是純理論參考。</div>
+        <div class="n">0 dBi = 等向性天線</div>
+      </div>
+      <div class="gain-card" style="border-left-color:#6D3FC0;">
+        <div class="h" style="color:#6D3FC0">dBd</div>
+        <div class="d">以<strong style="color:#6D3FC0">半波偶極天線</strong>（Dipole）為基準。最常見的實際參考天線，工程現場常用。</div>
+        <div class="n">0 dBd = 半波偶極天線</div>
+      </div>
+    </div>
+
+    <div style="background:var(--honey-soft);border:1px solid #f0dcae;border-radius:var(--r-md);padding:13px;margin-bottom:12px;font-family:var(--font-mono);font-size:14px;text-align:center;color:var(--honey-ink);font-weight:700;">
+      dBi = dBd + 2.15 dB &nbsp;|&nbsp; dBd = dBi − 2.15 dB
+    </div>
+
+    <div class="len-calc" style="margin-bottom:12px;">
+      <div style="font-family:var(--font-sans);font-weight:700;font-size:13px;color:var(--ink);margin-bottom:12px;">dBi ↔ dBd 換算</div>
+      <div class="irow-wrap">
+        <div class="ig">
+          <label>輸入 dBi 值</label>
+          <div class="irow"><input type="number" id="g-dbi" value="6.15" step="0.1" oninput="calcGain('dbi')"><div class="unit">dBi</div></div>
+        </div>
+        <div class="ig">
+          <label>換算 dBd 值</label>
+          <div class="irow"><input type="number" id="g-dbd" value="4.0" step="0.1" oninput="calcGain('dbd')"><div class="unit">dBd</div></div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3);margin-top:10px;" id="g-note">半波偶極 = 2.15 dBi = 0 dBd</div>
+    </div>
+
+    <div class="st">常見天線增益參考</div>
+    <table class="atbl">
+      <thead><tr><th>天線類型</th><th>dBd</th><th>dBi</th><th>特性</th></tr></thead>
+      <tbody>
+        <tr><td class="k">等向性（理論）</td><td>−2.15</td><td>0</td><td>全向均等，不存在</td></tr>
+        <tr><td class="k">半波偶極</td><td>0</td><td>2.15</td><td>基準天線，最常用</td></tr>
+        <tr><td class="k">¼ 波長垂直（GP）</td><td>~0</td><td>~2.15</td><td>需地面作反射面</td></tr>
+        <tr><td class="k">⅝ 波長垂直</td><td>~3</td><td>~5.15</td><td>車機常用，低仰角增益佳</td></tr>
+        <tr><td class="k">3 元素八木</td><td>~7.5</td><td>~9.7</td><td>定向，有前後比</td></tr>
+        <tr><td class="k">5 元素八木</td><td>~10</td><td>~12.15</td><td>增益更高，波束更窄</td></tr>
+      </tbody>
+    </table>
+    <div class="trap"><i data-lucide="triangle-alert"></i><span>考試陷阱：同一支天線用 dBi 標示時，數字會<strong>比 dBd 大 2.15</strong>。廠商廣告愛用 dBi，讓增益看起來更漂亮。天線是<strong>被動元件</strong>，「增益」是把能量集中到某方向，不是憑空放大功率。</span></div>
+  </div>
+
+  <!-- ═══ PATTERN / POLARIZATION TAB ═══ -->
+  <div id="tab-pat" style="display:none">
+    <div class="st">輻射方向圖（俯視）</div>
+    <div class="pat-grid">
+      <div class="pat-card">
+        <svg viewBox="0 0 120 120" aria-label="等向性方向圖">
+          <line x1="60" y1="10" x2="60" y2="110" stroke="#ECDFCB" stroke-width="1"/>
+          <line x1="10" y1="60" x2="110" y2="60" stroke="#ECDFCB" stroke-width="1"/>
+          <circle cx="60" cy="60" r="38" fill="#1F9E9622" stroke="#1F9E96" stroke-width="2"/>
+          <circle cx="60" cy="60" r="3" fill="#126B65"/>
+        </svg>
+        <div class="pt">等向性 Isotropic</div>
+        <div class="pd">向四面八方均等輻射的理想點源（現實不存在）。</div>
+      </div>
+      <div class="pat-card">
+        <svg viewBox="0 0 120 120" aria-label="偶極天線方向圖">
+          <line x1="60" y1="10" x2="60" y2="110" stroke="#ECDFCB" stroke-width="1"/>
+          <line x1="10" y1="60" x2="110" y2="60" stroke="#ECDFCB" stroke-width="1"/>
+          <path d="M60 60 C20 25, 20 95, 60 60 C100 25, 100 95, 60 60 Z" fill="#6D3FC022" stroke="#6D3FC0" stroke-width="2"/>
+          <circle cx="60" cy="60" r="3" fill="#6D3FC0"/>
+        </svg>
+        <div class="pt">半波偶極 Dipole</div>
+        <div class="pd">「8 字形」雙瓣，垂直天線軸的方向最強、兩端最弱。</div>
+      </div>
+      <div class="pat-card">
+        <svg viewBox="0 0 120 120" aria-label="八木天線方向圖">
+          <line x1="60" y1="10" x2="60" y2="110" stroke="#ECDFCB" stroke-width="1"/>
+          <line x1="10" y1="60" x2="110" y2="60" stroke="#ECDFCB" stroke-width="1"/>
+          <path d="M60 60 C40 8, 80 8, 60 60 Z" fill="#F2643C22" stroke="#F2643C" stroke-width="2"/>
+          <path d="M60 60 C52 92, 68 92, 60 60 Z" fill="#F2643C18" stroke="#F2643C" stroke-width="1.5"/>
+          <circle cx="60" cy="60" r="3" fill="#B83A1F"/>
+        </svg>
+        <div class="pt">八木 Yagi（定向）</div>
+        <div class="pd">主瓣集中朝前，後方有小的「後瓣」，前後比越大越好。</div>
+      </div>
+    </div>
+    <div class="trap"><i data-lucide="triangle-alert"></i><span>八木天線靠<strong>反射器（後）＋導向器（前）</strong>把能量集中向前，得到增益與方向性，並用<strong>前後比（F/B ratio）</strong>衡量抗後方干擾的能力。</span></div>
+
+    <div class="st">極化（Polarization）</div>
+    <div class="pol-grid">
+      <div class="pol-card">
+        <div class="h">垂直極化</div>
+        <div class="d">天線與地面垂直。VHF/UHF 手持、車機、中繼台多用垂直極化。</div>
+      </div>
+      <div class="pol-card">
+        <div class="h">水平極化</div>
+        <div class="d">天線與地面平行。HF 的 SSB/CW、八木 DX 常用水平極化。</div>
+      </div>
+      <div class="pol-card">
+        <div class="h">圓極化</div>
+        <div class="d">電場旋轉前進。衛星通訊常用，可降低法拉第旋轉造成的訊號起伏。</div>
+      </div>
+    </div>
+    <div class="trap"><i data-lucide="triangle-alert"></i><span>考試重點：收發兩端<strong>極化要一致</strong>。垂直對水平（交叉極化）會有 20 dB 以上的損失——這也是為什麼大家都把手持機天線立直拿。</span></div>
+  </div>
+
+  <!-- ═══ TYPES TAB ═══ -->
+  <div id="tab-types" style="display:none">
+    <div class="st">常見天線型式</div>
+    <table class="atbl">
+      <thead><tr><th>天線</th><th>典型增益</th><th>極化</th><th>用途／特性</th></tr></thead>
+      <tbody>
+        <tr><td class="k">橡皮鴨（Rubber Duck）</td><td>負增益 ~ 0 dBd</td><td>垂直</td><td>手持機原配，短小方便但效率低</td></tr>
+        <tr><td class="k">¼ 波長 GP</td><td>~0 dBd</td><td>垂直</td><td>車頂／基地台，需地網或車體當地面</td></tr>
+        <tr><td class="k">½ 波長偶極</td><td>0 dBd（基準）</td><td>視架設</td><td>最基本全向天線，不需地面</td></tr>
+        <tr><td class="k">⅝ 波長垂直</td><td>~3 dBd</td><td>垂直</td><td>低仰角增益佳，VHF/UHF 車機熱門</td></tr>
+        <tr><td class="k">八木（Yagi）</td><td>7~15 dBd</td><td>視架設</td><td>定向高增益，DX／中繼、需旋轉對準</td></tr>
+        <tr><td class="k">J 型／端饋</td><td>~0 dBd</td><td>垂直</td><td>免地網全向，常見手作 VHF 天線</td></tr>
+      </tbody>
+    </table>
+
+    <div class="st">饋線與匹配（往下一站）</div>
+    <div style="background:var(--surface-soft);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;font-size:13px;line-height:1.8;color:var(--ink-2);">
+      天線把電變成電磁波，但要先讓<strong style="color:var(--teal-ink)">天線阻抗</strong>與<strong style="color:var(--teal-ink)">饋線特性阻抗（通常 50Ω）</strong>匹配，否則能量會反射回來形成<strong style="color:var(--teal-ink)">駐波（SWR）</strong>。
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <a class="xlink" href="swr-visualizer.html"><i data-lucide="waves"></i> 去 SWR 駐波視覺化</a>
+        <a class="xlink" href="superhet-receiver.html"><i data-lucide="radio-receiver"></i> 接收端怎麼用天線</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ EXAM TAB ═══ -->
+  <div id="tab-exam" style="display:none">
+    <div class="st">系統原理 — 天線 考試題速查</div>
+    <div class="exam-grid" id="exam-grid"></div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=4"></script>
+<script>
+function icons(){ if (window.lucide) lucide.createIcons(); }
+const VF = 0.95; // velocity / end-effect factor for wire antennas
+
+function calcLen(){
+  const f = parseFloat(document.getElementById('freq').value) || 0;
+  if (f <= 0) return;
+  const lam = 300 / f;            // full wavelength (m)
+  const halfE = lam / 2;          // electrical half-wave
+  const quarterE = lam / 4;       // electrical quarter-wave
+  const half = halfE * VF;        // physical
+  const quarter = quarterE * VF;  // physical
+  document.getElementById('o-full').textContent = lam.toFixed(3);
+  document.getElementById('o-half').textContent = half.toFixed(3);
+  document.getElementById('o-half-e').textContent = '電氣長 ' + halfE.toFixed(3) + ' m';
+  document.getElementById('o-quarter').textContent = quarter.toFixed(3);
+  document.getElementById('o-quarter-e').textContent = '電氣長 ' + quarterE.toFixed(3) + ' m';
+}
+
+const BANDS = [
+  { name: '80m', f: 3.6 }, { name: '40m', f: 7.05 }, { name: '20m', f: 14.2 },
+  { name: '2m', f: 145 }, { name: '70cm', f: 433 },
+];
+function buildBandRows(){
+  const tb = document.getElementById('band-rows');
+  tb.innerHTML = '';
+  BANDS.forEach(b => {
+    const lam = 300 / b.f;
+    const half = (lam / 2 * VF);
+    const quarter = (lam / 4 * VF);
+    const fmt = x => x >= 1 ? x.toFixed(2) + ' m' : (x * 100).toFixed(1) + ' cm';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="k">${b.name}</td><td>${b.f} MHz</td><td>${fmt(half)}</td><td>${fmt(quarter)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function calcGain(from){
+  const dbiEl = document.getElementById('g-dbi'), dbdEl = document.getElementById('g-dbd'), note = document.getElementById('g-note');
+  if (from === 'dbi'){
+    const dbi = parseFloat(dbiEl.value) || 0;
+    dbdEl.value = (dbi - 2.15).toFixed(2);
+    note.textContent = `${dbi} dBi = ${(dbi - 2.15).toFixed(2)} dBd（相對半波偶極）`;
+  } else {
+    const dbd = parseFloat(dbdEl.value) || 0;
+    dbiEl.value = (dbd + 2.15).toFixed(2);
+    note.textContent = `${dbd} dBd = ${(dbd + 2.15).toFixed(2)} dBi（相對等向性天線）`;
+  }
+}
+
+const EXAM_QA = [
+  { q: '半波偶極天線的增益是多少 dBd？多少 dBi？', a: '0 dBd（基準）= 2.15 dBi' },
+  { q: 'dBi 與 dBd 相差多少？哪個數字較大？', a: 'dBi = dBd + 2.15；dBi 數字較大' },
+  { q: '頻率升高時，共振天線會變長還是變短？', a: '變短（波長 = 300 ÷ 頻率，頻率越高波長越短）' },
+  { q: '¼ 波長垂直天線為什麼需要地網（地面）？', a: '地面當作鏡像反射面，等效成半波天線才能正常輻射' },
+  { q: '八木天線靠什麼得到方向性與增益？', a: '反射器（後）＋導向器（前）把能量集中向前' },
+  { q: '衡量定向天線抗後方干擾能力的指標是什麼？', a: '前後比（Front-to-Back ratio）' },
+  { q: '收發兩端極化不一致（垂直對水平）會怎樣？', a: '交叉極化損失很大（可達 20 dB 以上）' },
+  { q: 'VHF/UHF 手持與車機常用哪種極化？', a: '垂直極化' },
+  { q: '天線是主動還是被動元件？「增益」的本質是什麼？', a: '被動元件；增益是把能量集中到特定方向，不是放大功率' },
+  { q: '2m（145MHz）的 λ/4 垂直天線大約多長？', a: '約 49 cm（300/145/4 ≈ 0.517m，實體再短約 5%）' },
+];
+function buildExam(){
+  const g = document.getElementById('exam-grid');
+  EXAM_QA.forEach(q => {
+    const div = document.createElement('div'); div.className = 'ecard';
+    div.innerHTML = `<div class="eq">${q.q}</div><div class="ea">→ <span class="ekw">${q.a}</span></div>`;
+    g.appendChild(div);
+  });
+}
+
+function switchTab(name){
+  ['len','gain','pat','types','exam'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
+  });
+  document.querySelectorAll('.tabs .tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === name);
+  });
+}
+document.querySelectorAll('.tabs .tab').forEach(el => {
+  el.addEventListener('click', () => switchTab(el.dataset.tab));
+});
+
+// init
+calcLen();
+buildBandRows();
+calcGain('dbi');
+buildExam();
+icons();
+</script>
+</body>
+</html>
