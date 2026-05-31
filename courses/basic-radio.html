@@ -8,11 +8,6 @@
 <link rel="stylesheet" href="../assets/css/style.css">
 <style>
   /* 情景模擬分頁 */
-  .sim-gate{max-width:430px;margin:30px auto;text-align:center}
-  .sim-gate .lock{width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
-  .sim-gate input{font-family:var(--font-mono);font-size:20px;padding:11px 16px;border:2px solid var(--border-strong);border-radius:12px;text-align:center;letter-spacing:6px;width:190px}
-  .sim-gate input:focus{outline:none;border-color:var(--primary)}
-  .sim-err{color:var(--primary-ink);font-size:13.5px;min-height:18px;margin-top:8px}
   .zello-join{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
   .qr-placeholder{width:150px;height:150px;flex:0 0 auto;border:2px dashed var(--primary);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:13px;text-align:center;padding:8px;background:var(--primary-soft)}
   .zello-qr{width:160px;height:160px;flex:0 0 auto;border-radius:14px;border:1px solid var(--border);background:#fff;padding:6px}
@@ -438,28 +433,15 @@
 
   </div>
 
-  <!-- ============ 情景模擬（教練端，需密碼） ============ -->
+  <!-- ============ 情景模擬（教練端） ============ -->
   <div id="sim" class="scenario">
 
-    <!-- 密碼門 -->
-    <div id="simGate" class="prose-card sim-gate">
-      <div class="lock"><i data-lucide="lock"></i></div>
-      <h2 style="margin:0 0 6px">情景模擬・教練專區</h2>
-      <p style="color:var(--ink-2);font-size:14px">此區為上課推送情境用，請輸入 PIN 解鎖。</p>
-      <div>
-        <input id="simPin" type="password" inputmode="numeric" maxlength="12" placeholder="PIN" autocomplete="off" onkeydown="if(event.key==='Enter')simUnlock()">
-      </div>
-      <div class="sim-err" id="simErr"></div>
-      <button class="btn btn-primary" style="margin-top:6px" onclick="simUnlock()"><i data-lucide="unlock"></i> 解鎖</button>
-    </div>
-
-    <!-- 解鎖後內容 -->
-    <div id="simBody" hidden>
+    <div id="simBody">
 
       <div class="prose-card">
         <h2 style="margin-top:0">情景模擬練習</h2>
         <p>用 <strong>Zello</strong>（手機 PTT App，模擬半雙工無線電）進行訊息傳遞演練：教練推一張情境圖到 Zello 群組，學員輪流按住 PTT 用正確格式回報，再依題目「備註」對照講評。</p>
-        <div class="callout warn"><span class="ct"><i data-lucide="eye-off"></i>保密提醒</span>本頁只在主站、需 PIN，<strong>未同步到學員掃碼版（radio-101）</strong>。機密題請用下方「從相簿選圖推送」，圖不會上傳到網站。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="eye-off"></i>保密說明</span>題庫（圖與答案）只存在<strong>你這台裝置的瀏覽器</strong>、不會上傳網站，也<strong>未同步到學員掃碼版（radio-101）</strong>——學員看不到。機密題也可用下方「從相簿選圖推送」，圖完全不經過網站。</div>
       </div>
 
       <!-- 半雙工規則 -->
@@ -528,26 +510,7 @@
   }
 
   /* ===== 情景模擬 ===== */
-  // ★ 上課前請改成你的 PIN（純前端軟保護，擋誤入用）
-  var SIM_PIN = '1234';
-
-  function simOnShow(){
-    if (sessionStorage.getItem('simUnlocked') === '1') simReveal();
-  }
-  function simUnlock(){
-    var v = (document.getElementById('simPin').value || '').trim();
-    if (v === SIM_PIN){
-      sessionStorage.setItem('simUnlocked','1');
-      simReveal();
-    } else {
-      document.getElementById('simErr').textContent = 'PIN 不正確，請再試一次。';
-    }
-  }
-  function simReveal(){
-    document.getElementById('simGate').hidden = true;
-    document.getElementById('simBody').hidden = false;
-    renderScenarios();
-  }
+  function simOnShow(){ renderScenarios(); }
 
   /* ===== 題庫管理（存 localStorage，僅本機） ===== */
   var SCEN_KEY = 'simScenarios';
