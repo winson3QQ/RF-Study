@@ -717,11 +717,34 @@ UHF 435MHz對講機：
 
     <div class="sec-h"><i data-lucide="key-round"></i>CTCSS 在中繼台的應用</div>
     <div class="prose-card">
-      <p>很多中繼台需要「鑰匙」才肯轉發——這把鑰匙就是 <strong>CTCSS 亞音頻</strong>。你發射時必須同時送出中繼台指定的 CTCSS 碼，中繼台收到正確的亞音頻才會「開啟」並轉發你的訊號。</p>
-      <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>使用中繼台要設三樣：<strong>頻率</strong>（如 145.500）＋<strong>偏移</strong>（如 +600kHz）＋<strong>發射 CTCSS（Tone / T）</strong>。少設 CTCSS，按了發話鍵中繼台也不會動。</div>
-      <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>中繼台的 CTCSS 是「存取碼（開門用）」，和情境 1 用 CTCSS「選聽分隊」目的不同——但原理一樣：都是用亞音頻控制「要不要打開」。它一樣<strong>不是加密</strong>，無設 CTCSS 的人仍聽得到中繼台轉發的內容。</div>
-      <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>中繼台像一台「公用擴音器」，但要先刷對門禁卡（CTCSS）它才幫你廣播；刷錯卡或不刷，喊破喉嚨它也不理你。</div>
+      <p>中繼台架在高處、收訊靈敏、涵蓋極廣。若只靠單純的<strong>載波靜噪（Carrier Squelch）</strong>，很容易被遠端雜訊、非法電波或隔壁縣市的同頻訊號觸發，導致中繼台無故啟動、持續發射（俗稱<strong>空轉、拉尾巴</strong>）。<strong>CTCSS 亞音頻</strong>就是中繼台的「鑰匙＋門禁」——核心目的有二：<strong>防止干擾</strong>與<strong>控制轉播權限</strong>。</p>
+      <p>發話時，對講機會在語音下方疊加一個聽不太到的低頻連續音（<strong>67.0–250.3 Hz</strong>）。中繼台內部 CPU 濾波解碼後，<strong>只有 Tone 碼完全吻合才會啟動發射機轉播</strong>；不帶碼或帶錯碼的訊號一律被過濾、不予理會。</p>
     </div>
+
+    <div class="prose-card">
+      <p><strong>應用一　上行鎖定：控制轉播啟動（最常見）</strong></p>
+      <p>中繼台在<strong>接收端（上行 Uplink）</strong>設一組 CTCSS（如 88.5 Hz）。使用者按 PTT 發話時帶上此 Tone，碼吻合 → 中繼台啟動轉播；沒帶碼的雜訊與同頻干擾全被擋掉。</p>
+      <p style="margin-top:10px"><strong>應用二　下行鎖定：減少使用端收訊干擾</strong></p>
+      <p>中繼台<strong>發射端（下行 Downlink）</strong>可選擇要不要也送 Tone：</p>
+      <ul style="margin:4px 0 0 20px">
+        <li><strong>只開上行</strong>：使用者只需開「發射 Tone（T）」即可觸發中繼，轉播出來的訊號不帶 Tone。</li>
+        <li><strong>雙向開啟</strong>：中繼台轉播時也疊加 Tone，使用者再開「接收 Tone（R）」→ 喇叭只在中繼台真正轉播時才打開，徹底隔絕環境雜訊與其他同頻對講機的直通干擾。</li>
+      </ul>
+      <p style="margin-top:10px"><strong>應用三　同頻不同 Tone：頻率重複利用</strong></p>
+      <p>頻率資源緊張時，有地理阻隔的兩隊可共用同一中繼頻率：A 隊中繼台設 100.0 Hz、B 隊設 141.3 Hz。收發頻率一模一樣，但內碼不同 → A 隊說話絕不會觸發 B 隊的中繼台，反之亦然，大幅提升頻道利用率。</p>
+    </div>
+
+    <table class="tbl">
+      <tr><th>狀態</th><th>落在中繼台接收頻率？</th><th>帶正確 CTCSS？</th><th>中繼台反應</th></tr>
+      <tr><td>正常通話</td><td>是</td><td>是（正確）</td><td>啟動轉播，擴大通訊範圍</td></tr>
+      <tr><td>同頻干擾</td><td>是</td><td>否／錯誤</td><td>拒絕轉播，保持靜音、不干擾</td></tr>
+      <tr><td>環境雜訊</td><td>否（落於盲區）</td><td>否</td><td>拒絕轉播，完全屏蔽</td></tr>
+    </table>
+    <div class="gnote">三種情況只有「頻率對 + Tone 對」才會啟動轉播——這就是 CTCSS 既擋干擾、又能讓多隊共用同頻的關鍵。</div>
+
+    <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>使用中繼台要設三樣：<strong>頻率</strong>（如 145.500）＋<strong>偏移</strong>（如 +600kHz）＋<strong>發射 CTCSS（Tone / T）</strong>。少設 CTCSS，按了發話鍵中繼台也不會動。</div>
+    <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>中繼台的 CTCSS 是「存取碼（開門用）」，和情境 1 用 CTCSS「選聽分隊」目的不同——但原理一樣：都是用亞音頻控制「要不要打開」。它一樣<strong>不是加密</strong>，沒設 CTCSS 的人仍聽得到中繼台轉發的內容。</div>
+    <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>中繼台像一台「公用擴音器」，但要先刷對門禁卡（CTCSS）它才幫你廣播；刷錯卡或不刷，喊破喉嚨它也不理你。</div>
 
     <div class="sec-h"><i data-lucide="clipboard-list"></i>現場應急應用</div>
     <table class="tbl">
