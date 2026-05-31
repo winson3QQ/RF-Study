@@ -48,6 +48,8 @@
     <h2><i data-lucide="book-open" style="width:24px;height:24px;vertical-align:-4px"></i> 課程導讀</h2>
     <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>核心理念</span>不只教「怎麼用」，更教「為什麼這樣用」及背後的物理和數學原理。</div>
 
+    <div class="callout info"><span class="ct"><i data-lucide="info"></i>數據標註約定</span>本課公式與數字分三級標註：<strong>（事實）</strong>＝可查證的規格／物理常數；<strong>（推論）</strong>＝由公式推導的結果；<strong>（量級參考）</strong>＝受功率／天線／地形影響的粗略估計，不可當精確值。法規數字一律以 NCC 最新公告為準。</div>
+
     <div class="sec-h"><i data-lucide="target"></i>五層深化學習模式</div>
     <table class="tbl">
       <tr><th>層</th><th>學什麼</th></tr>
@@ -61,7 +63,7 @@
     <div class="sec-h"><i data-lucide="lightbulb"></i>為何需要 RF 理論深化？</div>
     <table class="tbl">
       <tr><th>問題</th><th>傳統教學</th><th>RF 深化學習</th></tr>
-      <tr><td>CTCSS</td><td>「是 67-250Hz 的亞音」</td><td>推導 FM 調制方程 + 看 FFT 峰值驗證</td></tr>
+      <tr><td>CTCSS</td><td>「是 67-250Hz 的亞音」</td><td>推導 FM 調變方程 + 看 FFT 峰值驗證</td></tr>
       <tr><td>RF 增益</td><td>「越高越好」</td><td>計算靈敏度公式 + 測 SNR 找最佳點</td></tr>
       <tr><td>頻寬</td><td>死背 12.5kHz</td><td>算能量密度 + FFT 波寬對比理解原因</td></tr>
       <tr><td>天線故障</td><td>只知道「沒信號」</td><td>FFT 全底噪 → 2 分鐘定位是天線還是設定問題</td></tr>
@@ -83,7 +85,7 @@
     <div class="sec-h"><i data-lucide="clipboard-list"></i>課程總覽：七大情境 × RF 理論 × SDR 工具</div>
     <table class="tbl">
       <tr><th>情境</th><th>核心困難</th><th>RF 參數</th><th>關鍵公式</th><th>SDR 工具</th></tr>
-      <tr><td>1：CTCSS</td><td>5 隊搶 1 頻</td><td>亞音頻調制</td><td>FM 調制指數 β=Δf/f_m</td><td>GQRX 音頻 FFT</td></tr>
+      <tr><td>1：CTCSS</td><td>5 隊搶 1 頻</td><td>亞音頻調變</td><td>FM 調變指數 β=Δf/f_m</td><td>GQRX 音頻 FFT</td></tr>
       <tr><td>2：RF 增益</td><td>山區弱信號</td><td>接收靈敏度</td><td>S=-174+10lg(B)+NF+SNR</td><td>GQRX SNR 測量</td></tr>
       <tr><td>3：頻寬</td><td>直聯距離短</td><td>頻譜效率</td><td>PSD=P/B，Carson 規則</td><td>FFT 波寬對比</td></tr>
       <tr><td>4：層級</td><td>40 人指揮混亂</td><td>CTCSS 分層</td><td>碼間距 ≥20Hz</td><td>瀑布圖時間軸</td></tr>
@@ -108,13 +110,14 @@
         <li><strong>第 2 層（CTCSS 亞音）：</strong>67–250Hz 之一，低於人耳舒適聽覺範圍</li>
         <li><strong>第 3 層（FM 載波）：</strong>145.500MHz，無線電的「傳輸馬路」</li>
       </ul>
+      <p style="margin:8px 0 0;font-size:13.5px"><a href="rf-glossary.html#ctcss">📖 白話手冊：CTCSS 是什麼（不用公式）→</a></p>
     </div>
 
     <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
-    <div class="formula">FM調制基本方程：
+    <div class="formula">FM調變基本方程：
   s(t) = A·cos( 2π·f_c·t + (Δf/f_m)·sin(2π·f_m·t) )
 
-混合後的調制信號：
+混合後的調變信號：
   m(t) = V_語音(t) + V_CTCSS(t)
 
   V_語音(t)  = 語音成分（300–3000Hz帶寬）
@@ -127,14 +130,18 @@ CTCSS 38個標準頻率（EIA規格）：
   156.7, 162.2, 167.9, 173.8, 179.9, 186.2, 192.8, 203.5,
   210.7, 218.1, 225.7, 233.6, 241.8, 250.3 Hz
 
-FM調制指數：
-  β = Δf / f_m
+FM調變指數：
+  β = Δf / f_m   （Δf＝頻率偏移，f_m＝調變訊號頻率）
 
-  對語音(f_m≈1000Hz)：β ≈ 3         →窄帶FM
-  對CTCSS(f_m≈100Hz)：β ≈ 30        →寬帶效應
+  窄帶語音(Δf≈±2.5kHz, f_m≈3kHz)：β ≈ 0.8  →窄帶FM(NBFM)
+  CTCSS亞音：刻意用「很小的偏移」(約±0.5kHz以下)疊加
 
-結論：β越大，低頻信號的能量分布越廣，傳輸越穩定
-這正是CTCSS即使在低頻（67Hz）仍能被可靠檢測的原因</div>
+重點（更正常見誤解）：
+  CTCSS 偏移刻意壓到系統峰值偏移的約15%以下，
+  只在語音下方佔一小塊頻率，不影響語音可懂度。
+
+  CTCSS 能被可靠解碼，靠的是接收端的「窄帶濾波＋連續音判別」，
+  與 β 大小無關——β 越大只代表佔用頻寬越寬，並不等於越穩定。</div>
 
     <div class="sec-h"><i data-lucide="microscope"></i>SDR 驗證實驗</div>
     <div class="callout info"><span class="ct"><i data-lucide="microscope"></i>工具 — GQRX + RTL-SDR + 2 支對講機</span>
@@ -464,6 +471,7 @@ CTCSS碼選擇建議（避免互調干擾）：
         <li>失配時，能量反射回去 → 駐波比（SWR）升高 → 發射效率急降</li>
         <li>天線完全損壞時，發射功率幾乎全部反射或耗散為熱</li>
       </ul>
+      <p style="margin:8px 0 0;font-size:13.5px"><a href="rf-glossary.html#wavelength">📖 白話手冊：波長與 λ/4 天線（不用公式）→</a></p>
     </div>
 
     <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
@@ -551,7 +559,8 @@ UHF 435MHz對講機：
 
     <div class="sec-h"><i data-lucide="ruler"></i>數學公式推導</div>
     <div class="formula">FM捕捉效應（Capture Effect）：
-  當S1/S2 > 6dB（約4倍功率差）時
+  當S1/S2 > 6dB（約4倍功率差）時（6dB 為保守教學門檻，
+  品質好的接收機「捕捉比」可低到 1–3dB）
   接收機傾向「捕捉」強信號，弱信號被抑制
 
   → 若干擾信號比我方信號強 > 6dB：
@@ -569,7 +578,8 @@ UHF 435MHz對講機：
 
   最大路徑損耗 = 37 + 0 - (-100) = 137dB
 
-  自由空間距離估算（145MHz）：
+  自由空間距離估算（145MHz，僅供量級參考）：
+  ※ 實際距離受發射功率、天線、地形影響甚大，下表只是粗略量級
   RSSI S9（強）→ 約 300m–1km
   RSSI S7（中）→ 約 1–3km
   RSSI S5（弱）→ 約 3–8km
@@ -770,6 +780,18 @@ UHF 435MHz對講機：
     if (btn) btn.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // 支援以 #pN 深連結直接開啟對應情境（供白話手冊的「情境」標籤連入）
+  function openFromHash() {
+    var id = (location.hash || '').replace(/^#/, '');
+    if (!/^p[0-7]$/.test(id)) return;
+    var tabs = document.querySelectorAll('.tabs .tab');
+    for (var i = 0; i < tabs.length; i++) {
+      if ((tabs[i].getAttribute('onclick') || '').indexOf("'" + id + "'") >= 0) { go(id, tabs[i]); break; }
+    }
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
 </script>
 </body>
 </html>

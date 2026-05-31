@@ -60,8 +60,8 @@
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像廣播電台一樣，「台北廣播 FM 98.1」就是在 98.1MHz 這個頻率上。你把對講機「調到 145.500MHz」，就是在聽那個頻率上的對話，就像調廣播電台。</div>
         <table class="tbl">
           <tr><th>頻段</th><th>範圍</th><th>用途</th></tr>
-          <tr><td><b>VHF</b></td><td><span class="readout">144–148 MHz</span></td><td>對講機常用（145.500）</td></tr>
-          <tr><td><b>UHF</b></td><td><span class="readout">430–440 MHz</span></td><td>手持對講機（433.500）</td></tr>
+          <tr><td><b>VHF</b></td><td><span class="readout">144–146 MHz</span></td><td>業餘 2m（如 145.250）</td></tr>
+          <tr><td><b>UHF</b></td><td><span class="readout">430–440 MHz</span></td><td>業餘 70cm（三等 25W）</td></tr>
           <tr><td>FM 廣播</td><td><span class="readout">87.5–108 MHz</span></td><td>收音機</td></tr>
         </table>
         <div class="gnote">頻率越高 → 波越短 → 穿透力越弱但頻寬越大。</div>
@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="basic">
+    <div class="concept" data-tags="basic" id="wavelength">
       <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="audio-waveform"></i></span><div><div class="title">波長</div><div class="en">Wavelength (λ)</div></div></div>
       <div class="concept-bd">
         <div class="explain">一個完整無線電波的「長度」，單位是公尺或公分。頻率越高，波長越短。</div>
@@ -88,7 +88,7 @@
     </div>
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="volume-2"></i></span><div><div class="title">FM 調制</div><div class="en">Frequency Modulation</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="volume-2"></i></span><div><div class="title">FM 調變</div><div class="en">Frequency Modulation</div></div></div>
       <div class="concept-bd">
         <div class="explain">FM 是「調頻」的縮寫。把聲音「藏進」無線電波的一種方式。對講機和廣播電台都用 FM。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你講話時聲音忽高忽低，FM 就是把這個「高低起伏」轉換成電波頻率的「快慢變化」。收音機再把「快慢變化」還原成聲音。就像摩斯密碼，但編碼規則不同。</div>
@@ -99,7 +99,7 @@
           <svg viewBox="0 0 300 46" preserveAspectRatio="none"><path d="M0.0,19.8 L6.0,5.2 L8.0,3.7 L11.0,5.6 L16.0,18.1 L22.0,36.8 L26.0,42.3 L30.0,37.8 L35.0,21.4 L41.0,4.5 L43.0,3.8 L47.0,12.1 L52.0,32.2 L56.0,42.1 L60.0,36.6 L65.0,14.6 L69.0,3.8 L73.0,11.9 L78.0,36.3 L81.0,42.3 L85.0,29.9 L90.0,5.5 L92.0,4.0 L97.0,26.5 L101.0,42.2 L105.0,29.4 L110.0,4.1 L112.0,5.8 L117.0,34.8 L120.0,42.1 L124.0,22.6 L128.0,3.8 L132.0,19.4 L137.0,41.6 L140.0,29.6 L144.0,5.3 L147.0,8.4 L152.0,39.5 L155.0,39.1 L159.0,13.4 L162.0,3.7 L167.0,29.8 L171.0,41.7 L175.0,20.2 L179.0,3.7 L184.0,27.2 L188.0,42.3 L192.0,26.2 L196.0,5.2 L199.0,6.9 L204.0,34.2 L208.0,41.5 L212.0,24.2 L217.0,3.9 L221.0,12.2 L226.0,36.6 L230.0,41.6 L234.0,28.4 L239.0,7.3 L242.0,3.8 L247.0,16.7 L252.0,36.4 L256.0,42.3 L261.0,32.4 L266.0,14.2 L270.0,4.8 L273.0,4.1 L278.0,14.6 L284.0,33.9 L289.0,42.2 L294.0,37.4 L300.0,19.8" style="fill:none;stroke:var(--teal);stroke-width:1.7"/></svg>
         </figure>
         <div class="gnote">FM 優點：抗干擾（捕捉效應）、音質較 AM 清晰，是民防對講機標準。</div>
-        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FM 廣播和對講機的原理一樣。你每天聽的台北 FM 電台就是 FM 調制！</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FM 廣播和對講機的原理一樣。你每天聽的台北 FM 電台就是 FM 調變！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
@@ -107,18 +107,13 @@
     <div class="concept" data-tags="basic">
       <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="signal"></i></span><div><div class="title">信號強度 / S值</div><div class="en">Signal Strength / S-meter</div></div></div>
       <div class="concept-bd">
-        <div class="explain">接收到的信號有多強，用 S1 到 S9 表示，S9 最強。通訊報告時說「你的信號是五九」，意思就是 S5 S9 的最高值，信號很強。</div>
+        <div class="explain">接收到的信號有多強，用 S1 到 S9 表示，S9 最強。通訊報告常用 <strong>RST 制</strong>，「你的信號是<strong>五九</strong>」指的是<strong>可讀度（R）5 ＋ 信號強度（S）9</strong>——又清楚又強，不是「S5、S9 取最高」。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>就像手機的格數。1格=S3，2格=S5，3格=S7，4格=S9。格數越多，訊號越強，通話越清晰。</div>
-        <table class="tbl">
-          <tr><th>S 值</th><th>強度</th><th>說明</th></tr>
-          <tr><td><b>S1</b></td><td><span class="readout">−121 dBm</span></td><td>幾乎聽不到</td></tr>
-          <tr><td><b>S3</b></td><td><span class="readout">−115 dBm</span></td><td>很弱</td></tr>
-          <tr><td><b>S5</b></td><td><span class="readout">−109 dBm</span></td><td>勉強可聽</td></tr>
-          <tr><td><b>S7</b></td><td><span class="readout">−103 dBm</span></td><td>中等清晰</td></tr>
-          <tr><td><b>S9</b></td><td><span class="readout">−97 dBm</span></td><td>很強</td></tr>
+        <table class="tbl" data-rf="smeter">
+          <tr><th>S 值</th><th>強度*</th><th>說明</th></tr>
         </table>
-        <div class="gnote">每增加 1 個 S 值 ≈ 強 6 dB（約 4 倍功率）。</div>
-        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「五九報告」是無線電通訊裡說對方信號最完美的方式，就像給 5 顆星的評價！</div>
+        <div class="gnote">每增加 1 個 S 值 ≈ 強 6 dB（約 4 倍功率）。*為簡化示意值；IARU 標準 VHF/UHF 定義 S9 = −93 dBm、HF S9 = −73 dBm，實機刻度可能不同。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>「59 報告」＝可讀度與信號都滿分，是說對方信號最完美的方式，就像給 5 顆星的評價！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
@@ -148,7 +143,7 @@
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>VHF 像「長跑選手」，跑得遠但體型大（天線長）。UHF 像「城市跑者」，更靈活能在建築物間穿梭，但跑不那麼遠。</div>
         <table class="tbl">
           <tr><th></th><th>VHF</th><th>UHF</th></tr>
-          <tr><td>頻率</td><td><span class="readout">30–300 MHz</span><br>常用 144–148</td><td><span class="readout">300–3000 MHz</span><br>常用 430–440</td></tr>
+          <tr><td>頻率</td><td><span class="readout">30–300 MHz</span><br>業餘 144–146</td><td><span class="readout">300–3000 MHz</span><br>業餘 430–440</td></tr>
           <tr><td>波長</td><td>1–10 m</td><td>10 cm–1 m</td></tr>
           <tr><td>λ/4 天線</td><td>≈ 51 cm</td><td>≈ 17 cm</td></tr>
           <tr><td>特性</td><td>傳得遠、穿牆差</td><td>穿牆較佳、城市適用</td></tr>
@@ -328,7 +323,7 @@
   <div class="cat-title"><i data-lucide="building-2"></i>情境參數：七大情境中的核心術語</div>
   <div class="concept-grid">
 
-    <div class="concept" data-tags="scenario">
+    <div class="concept" data-tags="scenario" id="ctcss">
       <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="key-round"></i></span><div><div class="title">CTCSS（亞音頻）</div><div class="en">Continuous Tone Coded Squelch</div></div></div>
       <div class="concept-bd">
         <div class="explain">在正常語音信號中「夾帶」一個極低頻的純音，用來控制接收機的靜噪是否開啟。38 個標準頻率，每個隊伍用一個「自己的頻率」。</div>
@@ -385,9 +380,9 @@
         <div class="explain">每個無線電頻道「佔用」多少頻率空間。民防用 12.5kHz（窄頻），舊設備用 25kHz（寬頻）。頻寬窄＝每個頻道佔地小＝同段頻率可放更多頻道。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>把頻率範圍想成一條公路。25kHz 頻寬就像佔了兩個車道，12.5kHz 只佔一個車道。用窄車道就能放更多車（頻道），其他車也不容易撞到你（干擾少）。</div>
         <table class="tbl">
-          <tr><th>頻寬</th><th>144–148MHz 可放頻道</th></tr>
-          <tr><td><span class="readout">25 kHz</span>（寬頻、老式）</td><td>160 個</td></tr>
-          <tr><td><span class="readout">12.5 kHz</span>（窄頻、現代）</td><td>320 個</td></tr>
+          <tr><th>頻寬</th><th>144–146MHz（2MHz）可放頻道</th></tr>
+          <tr><td><span class="readout">25 kHz</span>（寬頻、老式）</td><td>80 個</td></tr>
+          <tr><td><span class="readout">12.5 kHz</span>（窄頻、現代）</td><td>160 個</td></tr>
         </table>
         <div class="gnote">窄頻讓頻道數加倍。FFT 上 25kHz 是寬山型、12.5kHz 是窄尖型。民防統一用 12.5kHz。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>12.5＝窄頻＝現代標準＝省空間。25＝寬頻＝老式＝佔空間。民防統一用 12.5kHz，才能和更多隊伍溝通。</div>
@@ -492,14 +487,8 @@
       <div class="concept-bd">
         <div class="explain">衡量天線和電纜「配合度」的數字。SWR=1 是完美，SWR 越高代表越多能量被「反射回來」而浪費掉，沒有真正發射出去。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你用水管澆花，水管有個彎折處（天線和電纜接頭不匹配）。一部分水能出來澆花（信號發出），一部分被擠回來（反射能量）浪費了。SWR=1 就是水管筆直，完全沒阻礙。</div>
-        <table class="tbl">
+        <table class="tbl" data-rf="swr">
           <tr><th>SWR</th><th>判讀</th></tr>
-          <tr><td><span class="readout">1.0</span></td><td>完美匹配（理論值）</td></tr>
-          <tr><td><span class="readout">1.0–1.5</span></td><td>優良（通訊設備標準）</td></tr>
-          <tr><td><span class="readout">1.5–2.0</span></td><td>可接受（輕微損失）</td></tr>
-          <tr><td><span class="readout">2.0–3.0</span></td><td>需調整（10–25% 功率損失）</td></tr>
-          <tr><td><span class="readout">&gt; 3.0</span></td><td>嚴重問題（天線可能損壞）</td></tr>
-          <tr><td>無限大</td><td>開路（斷線）或短路</td></tr>
         </table>
         <div class="tagrow"><span class="ctag adv">進階</span><span class="ctag scen">情境5</span></div>
       </div>
@@ -705,17 +694,17 @@
       <div class="concept-bd">
         <div class="explain">產生一個和 IF 同頻的載波，幫 SSB / CW 還原成可聽的音頻。FM 不需要 BFO。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>SSB/CW 把「載波」省掉了，BFO 就是在接收端「補回那根載波」，聲音才聽得懂。</div>
-        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>BFO 只用於 SSB 和 CW；FM 接收機用「鑑相器」解調，不用 BFO。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>BFO 只用於 SSB 和 CW；FM 接收機用「鑑別器」解調，不用 BFO。</div>
         <div class="tagrow"><span class="ctag sdr">接收機</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="receiver">
-      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="git-compare"></i></span><div><div class="title">鑑相器</div><div class="en">Discriminator</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="git-compare"></i></span><div><div class="title">鑑別器</div><div class="en">Discriminator</div></div></div>
       <div class="concept-bd">
         <div class="explain">FM 的解調器，把「頻率的變化」還原成音頻訊號。也叫頻率鑑別器。</div>
-        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像把「車速的快慢變化」翻譯成「踩多深油門」——鑑相器把頻率高低翻回聲音大小。</div>
-        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>考題：FM 接收機用什麼把 IF 轉成音頻？→ 鑑相器（Discriminator）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像把「車速的快慢變化」翻譯成「踩多深油門」——鑑別器把頻率高低翻回聲音大小。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>考題：FM 接收機用什麼把 IF 轉成音頻？→ 鑑別器（Discriminator）。</div>
         <div class="tagrow"><span class="ctag sdr">接收機</span></div>
       </div>
     </div>
@@ -761,7 +750,7 @@
       <div class="concept-bd">
         <div class="explain">二極體在「不導通」時要承受的最大反向電壓。選二極體必須撐得住 PIV。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像水壩逆向擋水要承受的最大水壓——選壩當然要選撐得住的。</div>
-        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>半波整流 PIV =「輸出峰值電壓的 2 倍」；全波/橋式 PIV = 等於輸出峰值電壓。最常考！</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>半波整流與全波「中心抽頭」式 PIV =「輸出峰值電壓的 2 倍」；全波「橋式」PIV = 等於輸出峰值電壓。最常考！（橋式每顆二極體只承受 1 倍峰值，這也是橋式常用的原因之一）</div>
         <div class="tagrow"><span class="ctag adv">電源</span></div>
       </div>
     </div>
@@ -1048,6 +1037,7 @@
 
 <script>window.SITE_SECTION = 'glossary';</script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/rf-data.js"></script>
 <script src="../assets/js/nav.js?v=3"></script>
 <script>
 function doSearch() {
@@ -1065,6 +1055,40 @@ function filterCat(tag, btn) {
     else { card.style.display = (card.dataset.tags && card.dataset.tags.indexOf(tag) !== -1) ? '' : 'none'; }
   });
 }
+
+/* ===== Phase 3 交叉連結 ===== */
+// 1) 把「情境N」標籤變成可點連結，連到 SDR 課程對應情境
+document.querySelectorAll('.ctag.scen').forEach(function (tag) {
+  var m = (tag.textContent || '').match(/情境\s*(\d)/);
+  if (!m) return;
+  var a = document.createElement('a');
+  a.href = 'sdr-advanced.html#p' + m[1];
+  a.className = tag.className;
+  a.title = '前往 SDR 課程 ' + tag.textContent;
+  a.style.textDecoration = 'none';
+  a.textContent = tag.textContent;
+  tag.parentNode.replaceChild(a, tag);
+});
+// 2) 為相關術語卡加上「延伸互動工具」連結
+var TOOL_MAP = {
+  '駐波比（SWR）': { href: '../tools/swr-visualizer.html', label: 'SWR 駐波互動視覺化' },
+  '超外差接收機': { href: '../tools/superhet-receiver.html', label: '超外差接收機互動解析' },
+  'CTCSS（亞音頻）': { href: '../simulators/civil-defense.html', label: '民防無線電參數模擬器' },
+  '干擾 / 捕捉效應': { href: '../tools/interference-diagnosis.html', label: '干擾診斷互動流程圖' },
+  '電離層分層（D / E / F 層）': { href: '../tools/ionosphere-viewer.html', label: '電離層傳播互動視覺化' }
+};
+document.querySelectorAll('.concept').forEach(function (card) {
+  var t = card.querySelector('.title');
+  var bd = card.querySelector('.concept-bd');
+  if (!t || !bd) return;
+  var info = TOOL_MAP[t.textContent.trim()];
+  if (!info) return;
+  var div = document.createElement('div');
+  div.className = 'gnote';
+  div.innerHTML = '🔧 延伸互動工具：<a href="' + info.href + '" style="font-weight:700">' + info.label + ' →</a>';
+  var tagrow = card.querySelector('.tagrow');
+  if (tagrow) bd.insertBefore(div, tagrow); else bd.appendChild(div);
+});
 </script>
 </body>
 </html>

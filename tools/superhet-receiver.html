@@ -271,7 +271,7 @@ const MODES = {
       { id:'iff',   name:'IF濾波器', color:'#ffcc00', x:370, fn:'只讓中頻（例如455kHz或10.7MHz）通過，濾除其他頻率。\n決定接收機的選擇性（帶寬）。',exam:'DSP IF濾波器的優點：可產生大範圍的濾波器頻寬和形狀（類比濾波器難以做到）。'},
       { id:'ifa',   name:'IF放大器', color:'#ffcc00', x:460, fn:'放大已濾波的中頻訊號。包含AGC（自動增益控制），防止強訊號過載。',exam:'AGC讓強弱訊號都能保持適當音量輸出。'},
       { id:'det',   name:'乘積檢測', color:'#ff88cc', x:570, fn:'SSB解調器：將IF訊號與BFO（拍頻振盪器）混頻，還原音頻。\nBFO頻率 = IF頻率。',exam:'考試：單邊帶接收機中，乘積檢測器混合來自IF放大器與BFO的訊號，輸出送入音頻放大器。'},
-      { id:'bfo',   name:'BFO',      color:'#ff4466', x:570, fn:'拍頻振盪器（Beat Frequency Oscillator）：產生與IF同頻的載波，用於SSB/CW解調。\nFM接收機不需要BFO。',exam:'BFO專用於SSB和CW解調。FM接收機使用鑑相器（Discriminator），不用BFO。'},
+      { id:'bfo',   name:'BFO',      color:'#ff4466', x:570, fn:'拍頻振盪器（Beat Frequency Oscillator）：產生與IF同頻的載波，用於SSB/CW解調。\nFM接收機不需要BFO。',exam:'BFO專用於SSB和CW解調。FM接收機使用鑑別器（Discriminator），不用BFO。'},
       { id:'af',    name:'音頻放大', color:'#44ffaa', x:700, fn:'將解調後的音頻訊號放大到可驅動喇叭或耳機的功率。',exam:'音頻放大器是最後一級。'},
       { id:'spk',   name:'喇叭',     color:'#aac8dc', x:810, fn:'將電訊號轉換為聲音輸出。',exam:''},
     ],
@@ -286,7 +286,7 @@ const MODES = {
       { id:'lo',    name:'本地振盪', color:'#ff8844', x:240, fn:'FM收發機中，VHF調頻發射機用倍頻器將低頻振盪器頻率乘至工作頻率。',exam:'考試：VHF FM發射機中，什麼級以較低頻率信號產生所需工作頻率？→ 倍頻器。'},
       { id:'iff',   name:'IF濾波器', color:'#ffcc00', x:370, fn:'FM接收機IF通常為10.7MHz，帶寬約200kHz（廣播）或12.5~25kHz（NFM）。',exam:''},
       { id:'ifa',   name:'IF放大+限幅',color:'#ffcc00',x:460,fn:'FM接收機包含限幅器（Limiter），將訊號振幅削平為固定值，去除振幅雜訊。\n這是FM抗雜訊能力強的關鍵。',exam:'FM振幅固定→限幅器消除振幅型雜訊→FM抗靜電（QRN）能力優於AM。'},
-      { id:'disc',  name:'鑑相器',   color:'#ff88cc', x:570, fn:'FM解調器：將頻率變化還原為音頻訊號。\n（也稱頻率鑑別器 Discriminator）',exam:'考試：許多FM接收機採用什麼線路將IF放大器信號轉換成音頻信號？→ 鑑相器。'},
+      { id:'disc',  name:'鑑別器',   color:'#ff88cc', x:570, fn:'FM解調器：將頻率變化還原為音頻訊號。\n（也稱頻率鑑別器 Discriminator）',exam:'考試：許多FM接收機採用什麼線路將IF放大器信號轉換成音頻信號？→ 鑑別器。'},
       { id:'af',    name:'音頻放大', color:'#44ffaa', x:700, fn:'放大音頻，通常也包含去加重（de-emphasis）網路，補償發射端的預加重。',exam:''},
       { id:'spk',   name:'喇叭',     color:'#aac8dc', x:810, fn:'輸出音頻。',exam:''},
     ],
@@ -498,7 +498,7 @@ function calcAnt(from){
 const EXAM_QA=[
   {q:'超外差接收機中，哪個電路處理RF放大器與本地振盪器的訊號？',a:'混波器（Mixer）'},
   {q:'單邊帶接收機中，乘積檢測器混合什麼兩個訊號？',a:'中頻放大器（IF）輸出 + BFO（拍頻振盪器）'},
-  {q:'FM接收機用什麼線路將IF轉換成音頻？',a:'鑑相器（Discriminator / Phase Detector）'},
+  {q:'FM接收機用什麼線路將IF轉換成音頻？',a:'鑑別器（Discriminator / Phase Detector）'},
   {q:'DSP IF濾波器比類比濾波器的優點是什麼？',a:'可以產生大範圍的濾波器頻寬和形狀'},
   {q:'dBi 與 dBd 相差多少？哪個數字比較大？',a:'dBi 比 dBd 高 2.15 dB（dBi數字較大）'},
   {q:'dBi 和 dBd 各以什麼天線為基準？',a:'dBi = 等向性天線；dBd = 半波偶極天線'},
@@ -507,7 +507,7 @@ const EXAM_QA=[
   {q:'高SWR對饋線損失有什麼影響？',a:'若饋線有損失，高SWR下損失會增加'},
   {q:'在發射機端加匹配網路讓SWR=1:1後，饋線上的SWR是多少？',a:'仍然是原來的SWR（例如5:1），匹配網路不改變饋線上的駐波'},
   {q:'VHF FM發射機中，什麼級將低頻振盪器頻率倍增至工作頻率？',a:'倍頻器（Multiplier）'},
-  {q:'BFO（拍頻振盪器）用於解調哪些模式？FM需要嗎？',a:'SSB和CW需要BFO；FM不需要（用鑑相器）'},
+  {q:'BFO（拍頻振盪器）用於解調哪些模式？FM需要嗎？',a:'SSB和CW需要BFO；FM不需要（用鑑別器）'},
 ];
 
 function buildExam(){
