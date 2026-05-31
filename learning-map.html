@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>從零到二等・學習地圖 — 無線電學習站</title>
+<link rel="icon" href="assets/logo-mark.svg">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* journey diagram */
+.journey-fig { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 16px; margin: 18px 0 10px; box-shadow: var(--shadow-sm); overflow-x: auto; }
+.journey-fig svg { width: 100%; min-width: 760px; height: auto; display: block; font-family: var(--font-display), 'Noto Sans TC', sans-serif; }
+.journey-fig svg a { cursor: pointer; }
+.journey-fig svg a:hover .blk { filter: brightness(0.96); }
+.journey-fig svg a:hover text { text-decoration: underline; }
+.jf-cap { font-size: 13px; color: var(--ink-2); text-align: center; margin-top: 4px; }
+.jf-cap b { color: var(--ink); }
+
+.flow-dash { stroke-dasharray: 5 6; animation: flowmove 1.1s linear infinite; }
+@keyframes flowmove { to { stroke-dashoffset: -22; } }
+
+/* legend */
+.zleg { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin: 4px 0 6px; }
+.zleg span { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+.zleg i { width: 13px; height: 13px; border-radius: 4px; display: inline-block; }
+
+/* station layer heading */
+.layer-h { display: flex; align-items: center; gap: 11px; margin: 34px 0 6px; }
+.layer-h .lh-tag { font-family: var(--font-mono); font-weight: 700; font-size: 11px; color: #fff; padding: 4px 12px; border-radius: var(--r-pill); white-space: nowrap; }
+.layer-h h2 { font-family: var(--font-display); font-weight: 800; font-size: 21px; color: var(--ink); }
+.layer-h .rule { flex: 1; height: 2px; border-radius: 2px; }
+.layer-sub { font-size: 13.5px; color: var(--ink-2); margin: 0 0 14px; }
+
+/* station cards */
+.mcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.mcard { background: var(--surface); border: 1px solid var(--border); border-top: 4px solid var(--mc, var(--teal)); border-radius: var(--r-lg); padding: 16px 18px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+.mcard .mc-st { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--mc, var(--teal-ink)); letter-spacing: .5px; }
+.mcard h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--ink); margin: 3px 0 8px; }
+.mcard .mc-what { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; }
+.mcard .mc-check { font-size: 12.5px; color: var(--ink-2); background: var(--surface-soft); border-left: 3px solid var(--mc, var(--teal)); border-radius: var(--r-sm); padding: 8px 11px; margin: 11px 0; line-height: 1.6; }
+.mcard .mc-check b { color: var(--mc, var(--teal-ink)); font-weight: 700; }
+.mcard .mc-tools { display: flex; gap: 7px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
+.mcard .mc-tool { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700; color: var(--mc, var(--teal-ink)); text-decoration: none; background: var(--mc-soft, var(--teal-soft)); border: 1px solid transparent; border-radius: var(--r-pill); padding: 5px 12px; }
+.mcard .mc-tool:hover { border-color: var(--mc, var(--teal)); }
+.mcard .mc-tool svg { width: 13px; height: 13px; }
+.mcard .mc-ext { font-size: 11.5px; color: var(--ink-3); margin-top: 9px; }
+.mcard .mc-ext b { color: var(--ink-2); }
+.mc-star { color: var(--honey); }
+</style>
+</head>
+<body>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="read-hero" style="margin-top:14px;">
+    <div class="eyebrow">從零到二等</div>
+    <h1>學習地圖：訊號的旅程</h1>
+    <p>把備考內容排成一條<strong>訊號從發射到接收</strong>的路：左邊是<strong style="color:var(--primary-ink)">發射機</strong>把訊息送上電波、中間是<strong style="color:var(--teal-ink)">通道</strong>讓電波跨越空間、右邊是<strong style="color:var(--sky-ink)">接收機</strong>把它還原成聲音。每一站都標清「學什麼、用哪個工具、一句自我檢查」。重心放在<strong>二等業餘考照</strong>，延伸概念只點到為止。</p>
+  </div>
+
+  <!-- ════════ ② 訊號的旅程 互動圖 ════════ -->
+  <div class="zleg">
+    <span><i style="background:#E89A1C"></i>地基</span>
+    <span><i style="background:#F2643C"></i>發射機 TX</span>
+    <span><i style="background:#1F9E96"></i>通道 Channel</span>
+    <span><i style="background:#3B86C9"></i>接收機 RX</span>
+    <span><i style="background:#3DA35D"></i>操作・法規</span>
+  </div>
+
+  <div class="journey-fig">
+    <svg viewBox="0 0 1000 480" role="img" aria-label="訊號的旅程：發射機到接收機的方塊圖">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#6B6157"/>
+        </marker>
+      </defs>
+
+      <!-- 地基 band -->
+      <a href="tools/circuit-calculator.html">
+        <rect class="blk" x="12" y="14" width="976" height="40" rx="20" fill="#FFF3DA" stroke="#E89A1C" stroke-width="1.5"/>
+        <text x="500" y="39" text-anchor="middle" font-size="15" font-weight="700" fill="#9A6510">出發前・地基： 頻率 · 波長（λ=300÷f） · dB 與功率 · 基本電路 〔點我去電路計算器〕</text>
+      </a>
+
+      <!-- zone backgrounds -->
+      <rect x="12"  y="72" width="288" height="306" rx="16" fill="#FFF4EF" stroke="#F2643C" stroke-width="1.2" stroke-dasharray="3 4"/>
+      <rect x="330" y="72" width="340" height="306" rx="16" fill="#EEF9F8" stroke="#1F9E96" stroke-width="1.2" stroke-dasharray="3 4"/>
+      <rect x="700" y="72" width="288" height="306" rx="16" fill="#EEF4FB" stroke="#3B86C9" stroke-width="1.2" stroke-dasharray="3 4"/>
+      <text x="156" y="92" text-anchor="middle" font-size="14" font-weight="800" fill="#B83A1F">發射機 TX</text>
+      <text x="500" y="92" text-anchor="middle" font-size="14" font-weight="800" fill="#126B65">通道 CHANNEL</text>
+      <text x="844" y="92" text-anchor="middle" font-size="14" font-weight="800" fill="#225F95">接收機 RX</text>
+
+      <!-- ionosphere arc -->
+      <a href="tools/ionosphere-viewer.html">
+        <path d="M348 132 Q500 90 652 132" fill="none" stroke="#1F9E96" stroke-width="1.6" stroke-dasharray="6 5"/>
+        <text x="500" y="118" text-anchor="middle" font-size="12.5" font-weight="700" fill="#126B65">電離層</text>
+      </a>
+      <!-- skip (sky-wave) path -->
+      <path class="flow-dash" d="M312 150 Q500 104 680 150" fill="none" stroke="#1F9E96" stroke-width="1.6"/>
+
+      <!-- ───── TX blocks ───── -->
+      <!-- 訊息源 (concept) -->
+      <rect class="blk" x="26" y="196" width="74" height="52" rx="10" fill="#fff" stroke="#F2643C" stroke-width="1.6"/>
+      <text x="63" y="227" text-anchor="middle" font-size="13" font-weight="700" fill="#B83A1F">訊息源</text>
+      <line x1="100" y1="222" x2="112" y2="222" stroke="#6B6157" stroke-width="1.6" marker-end="url(#ah)"/>
+      <!-- 調變 -->
+      <a href="tools/modulation-viewer.html">
+        <rect class="blk" x="112" y="196" width="80" height="52" rx="10" fill="#fff" stroke="#F2643C" stroke-width="1.6"/>
+        <text x="152" y="227" text-anchor="middle" font-size="13" font-weight="700" fill="#B83A1F">調變</text>
+      </a>
+      <line x1="192" y1="222" x2="206" y2="222" stroke="#6B6157" stroke-width="1.6" marker-end="url(#ah)"/>
+      <!-- 振盪·功放 -->
+      <a href="tools/spectrum-viewer.html">
+        <rect class="blk" x="206" y="196" width="86" height="52" rx="10" fill="#fff" stroke="#F2643C" stroke-width="1.6"/>
+        <text x="249" y="219" text-anchor="middle" font-size="12.5" font-weight="700" fill="#B83A1F">振盪・功放</text>
+        <text x="249" y="237" text-anchor="middle" font-size="10" fill="#6B6157">頻段／功率</text>
+      </a>
+      <!-- 電源 (feeds TX) -->
+      <a href="tools/power-circuit.html">
+        <rect class="blk" x="112" y="300" width="80" height="40" rx="9" fill="#fff" stroke="#F2643C" stroke-width="1.4"/>
+        <text x="152" y="325" text-anchor="middle" font-size="12.5" font-weight="700" fill="#B83A1F">電源</text>
+      </a>
+      <line x1="152" y1="300" x2="152" y2="250" stroke="#F2643C" stroke-width="1.3" stroke-dasharray="3 3"/>
+      <!-- 饋線·SWR -->
+      <a href="tools/swr-visualizer.html">
+        <rect class="blk" x="206" y="300" width="86" height="40" rx="9" fill="#fff" stroke="#1F9E96" stroke-width="1.4"/>
+        <text x="249" y="325" text-anchor="middle" font-size="12" font-weight="700" fill="#126B65">饋線・SWR</text>
+      </a>
+
+      <!-- TX antenna -->
+      <line x1="292" y1="222" x2="312" y2="222" stroke="#6B6157" stroke-width="1.6"/>
+      <a href="tools/antenna-basics.html">
+        <line class="blk" x1="312" y1="150" x2="312" y2="248" stroke="#1F9E96" stroke-width="2.4"/>
+        <path d="M312 150 l-7 12 l14 0 Z" fill="#1F9E96"/>
+        <path d="M320 156 q12 8 0 20 M326 150 q18 12 0 32" fill="none" stroke="#1F9E96" stroke-width="1.4"/>
+        <text x="312" y="142" text-anchor="middle" font-size="12.5" font-weight="700" fill="#126B65">天線</text>
+      </a>
+
+      <!-- ───── Channel ───── -->
+      <!-- direct / free-space path -->
+      <line class="flow-dash" x1="322" y1="222" x2="668" y2="222" stroke="#1F9E96" stroke-width="1.8"/>
+      <a href="tools/link-budget-sim.html">
+        <rect class="blk" x="442" y="206" width="116" height="30" rx="15" fill="#fff" stroke="#1F9E96" stroke-width="1.4"/>
+        <text x="500" y="226" text-anchor="middle" font-size="12" font-weight="700" fill="#126B65">自由空間損耗</text>
+      </a>
+      <!-- multipath / ground bounce -->
+      <path d="M322 232 L500 356 L668 232" fill="none" stroke="#1F9E96" stroke-width="1" stroke-dasharray="4 4" opacity="0.7"/>
+      <a href="tools/propagation-multipath.html">
+        <rect class="blk" x="442" y="300" width="116" height="30" rx="15" fill="#fff" stroke="#1F9E96" stroke-width="1.4"/>
+        <text x="500" y="320" text-anchor="middle" font-size="12" font-weight="700" fill="#126B65">多徑・反射</text>
+      </a>
+      <!-- ground -->
+      <line x1="338" y1="360" x2="662" y2="360" stroke="#A89C8C" stroke-width="1.4"/>
+
+      <!-- RX antenna -->
+      <a href="tools/antenna-basics.html">
+        <line class="blk" x1="680" y1="150" x2="680" y2="248" stroke="#3B86C9" stroke-width="2.4"/>
+        <path d="M680 150 l-7 12 l14 0 Z" fill="#3B86C9"/>
+        <text x="680" y="142" text-anchor="middle" font-size="12.5" font-weight="700" fill="#225F95">天線</text>
+      </a>
+      <line x1="680" y1="222" x2="708" y2="222" stroke="#6B6157" stroke-width="1.6" marker-end="url(#ah)"/>
+      <!-- interference -->
+      <a href="tools/interference-diagnosis.html">
+        <path d="M612 178 l-10 18 l8 0 l-9 16" fill="none" stroke="#E5544B" stroke-width="2"/>
+        <rect class="blk" x="600" y="300" width="84" height="40" rx="9" fill="#fff" stroke="#E5544B" stroke-width="1.4"/>
+        <text x="642" y="325" text-anchor="middle" font-size="12.5" font-weight="700" fill="#B5342C">干擾</text>
+      </a>
+
+      <!-- ───── RX blocks ───── -->
+      <a href="tools/receiver-chain.html">
+        <rect class="blk" x="708" y="196" width="84" height="52" rx="10" fill="#fff" stroke="#3B86C9" stroke-width="1.6"/>
+        <text x="750" y="219" text-anchor="middle" font-size="12.5" font-weight="700" fill="#225F95">前端</text>
+        <text x="750" y="237" text-anchor="middle" font-size="10" fill="#6B6157">靈敏度 NF</text>
+      </a>
+      <line x1="792" y1="222" x2="806" y2="222" stroke="#6B6157" stroke-width="1.6" marker-end="url(#ah)"/>
+      <a href="tools/superhet-receiver.html">
+        <rect class="blk" x="806" y="196" width="84" height="52" rx="10" fill="#fff" stroke="#3B86C9" stroke-width="1.6"/>
+        <text x="848" y="227" text-anchor="middle" font-size="12.5" font-weight="700" fill="#225F95">超外差</text>
+      </a>
+      <line x1="890" y1="222" x2="900" y2="222" stroke="#6B6157" stroke-width="1.6" marker-end="url(#ah)"/>
+      <a href="tools/modulation-viewer.html">
+        <rect class="blk" x="900" y="196" width="76" height="52" rx="10" fill="#fff" stroke="#3B86C9" stroke-width="1.6"/>
+        <text x="938" y="227" text-anchor="middle" font-size="12.5" font-weight="700" fill="#225F95">解調</text>
+      </a>
+      <path d="M938 248 l0 30" stroke="#6B6157" stroke-width="1.4" marker-end="url(#ah)"/>
+      <text x="938" y="296" text-anchor="middle" font-size="11" fill="#6B6157">🔊 喇叭</text>
+
+      <!-- 操作・法規 band -->
+      <rect x="12" y="398" width="976" height="44" rx="20" fill="#E3F4E8" stroke="#3DA35D" stroke-width="1.5"/>
+      <text x="30" y="425" font-size="13" font-weight="700" fill="#237A3C">操作與法規貫穿全程：通聯禮節 · 頻段權限 · 安全</text>
+      <a href="tools/callsign-decoder.html">
+        <rect class="blk" x="690" y="409" width="92" height="24" rx="12" fill="#fff" stroke="#3DA35D" stroke-width="1.3"/>
+        <text x="736" y="426" text-anchor="middle" font-size="11.5" font-weight="700" fill="#237A3C">呼號</text>
+      </a>
+      <a href="tools/qcode-trainer.html">
+        <rect class="blk" x="790" y="409" width="100" height="24" rx="12" fill="#fff" stroke="#3DA35D" stroke-width="1.3"/>
+        <text x="840" y="426" text-anchor="middle" font-size="11.5" font-weight="700" fill="#237A3C">Q 簡語</text>
+      </a>
+      <a href="courses/basic-radio.html">
+        <rect class="blk" x="898" y="409" width="80" height="24" rx="12" fill="#fff" stroke="#3DA35D" stroke-width="1.3"/>
+        <text x="938" y="426" text-anchor="middle" font-size="11.5" font-weight="700" fill="#237A3C">法規課</text>
+      </a>
+    </svg>
+  </div>
+  <div class="jf-cap"><b>點圖上任一方塊</b>即可跳到對應工具。訊號由左到右：發射機 → 通道 → 接收機。</div>
+
+  <!-- ════════ ① 各站詳細地圖 ════════ -->
+  <div id="stations"></div>
+
+  <!-- 延伸 -->
+  <div class="layer-h" style="margin-top:38px;">
+    <span class="lh-tag" style="background:#6D3FC0">延伸</span>
+    <h2>考後延伸：進階實驗室</h2>
+    <span class="rule" style="background:#efe7fb"></span>
+  </div>
+  <p class="layer-sub">這些<strong>不在 NCC 二等考照範圍</strong>，給想往通訊工程／SDR 深入的人——星座圖／眼圖、OFDM、MIMO、頻譜感測。建議考完或行有餘力再來。</p>
+  <a class="btn btn-ghost" href="index.html#advanced"><i data-lucide="flask-conical"></i> 看進階實驗室</a>
+
+</div><!-- /wrap -->
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="assets/js/nav.js?v=4"></script>
+<script>
+// ── ① station data ──────────────────────────────────────────
+const LAYERS = [
+  { key:'base', tag:'站 0', name:'出發前・地基', color:'#E89A1C', soft:'#FFF3DA', ink:'#9A6510',
+    sub:'發射機之前，先把電與波的底子打好——這些概念之後每一站都會用到。' },
+  { key:'tx', tag:'第一層', name:'發射機 TX — 把訊息送上電波', color:'#F2643C', soft:'#FFE5DA', ink:'#B83A1F',
+    sub:'訊息源 → 調變 → 振盪／功率放大 → 天線。電源在底下供電，諧波要濾乾淨。' },
+  { key:'ch', tag:'第二層', name:'通道 Channel — 電波怎麼過去', color:'#1F9E96', soft:'#D7F0ED', ink:'#126B65',
+    sub:'天線把電變成電磁波，越過自由空間、被電離層反射、受地形與多徑影響。' },
+  { key:'rx', tag:'第三層', name:'接收機 RX — 還原成訊息', color:'#3B86C9', soft:'#E4F1FB', ink:'#225F95',
+    sub:'天線收訊 → 前端放大／混波 → 中頻濾波 → 解調 → 喇叭，並對付各種干擾。' },
+  { key:'ops', tag:'橫向', name:'操作與法規 — 合法上線', color:'#3DA35D', soft:'#E3F4E8', ink:'#237A3C',
+    sub:'不在訊號路徑上，但貫穿全程：呼號、Q 簡語、通聯禮節與頻段法規。' },
+];
+
+const STATIONS = [
+  { layer:'base', st:'站 0', title:'電與波的地基',
+    what:'電磁波、頻率↔波長（λ=300÷f）、dB 與功率（dBm、+3／+10 的意義）、歐姆定律與功率。',
+    check:'145MHz 的波長多長？5W 等於幾 dBm？',
+    tools:[['電路計算器','tools/circuit-calculator.html','calculator']],
+    ext:'延伸：什麼是 SDR（軟體定義無線電）。' },
+
+  { layer:'tx', st:'1-1', title:'調變',
+    what:'AM／FM／SSB／CW 的差異、占用頻寬、Carson 法則；為何 SSB 省頻寬、FM 抗雜訊。',
+    check:'同樣語音，SSB 比 AM 省下哪一部分？',
+    tools:[['調變視覺化','tools/modulation-viewer.html','audio-waveform']],
+    ext:'延伸：數位調變與星座圖。' },
+  { layer:'tx', st:'1-2', title:'振盪與功率',
+    what:'載波振盪、功率放大、發射功率上限與業餘頻段分配。',
+    check:'二等在 144MHz 頻段的功率上限是多少？',
+    tools:[['業餘頻段頻譜','tools/spectrum-viewer.html','signal']] },
+  { layer:'tx', st:'1-3', title:'電源供應',
+    what:'整流（半波／全波／橋式）、濾波、穩壓、PIV 與漣波——給發射機穩定的直流。',
+    check:'橋式整流要用幾顆二極體？',
+    tools:[['電源電路','tools/power-circuit.html','circuit-board']] },
+  { layer:'tx', st:'1-4', title:'發射安全',
+    what:'RF 曝露、安全距離（職業 vs 公眾）、工作週期與電氣安全。',
+    check:'提高天線增益，對安全距離有什麼影響？',
+    tools:[['RF 安全防護','tools/rf-safety.html','shield-check']] },
+
+  { layer:'ch', st:'2-1', title:'天線', star:true,
+    what:'把電變成電磁波；λ/4・λ/2 共振長度、增益 dBi／dBd、方向性、極化、常見天線型式。',
+    check:'dBi 與 dBd 差多少？¼ 波長垂直天線為何要地網？',
+    tools:[['天線基礎','tools/antenna-basics.html','radio-tower']],
+    ext:'延伸：八木前後比、衛星圓極化。' },
+  { layer:'ch', st:'2-2', title:'饋線與匹配',
+    what:'SWR 駐波、反射係數、阻抗匹配、巴倫與饋線損耗。',
+    check:'50Ω 饋線接 200Ω 天線，SWR 是多少？',
+    tools:[['SWR 駐波視覺化','tools/swr-visualizer.html','waves']] },
+  { layer:'ch', st:'2-3', title:'自由空間',
+    what:'自由空間路徑損耗、鏈路預算、接收功率與餘裕（Fade Margin）。',
+    check:'距離加倍，自由空間路徑損耗增加幾 dB？',
+    tools:[['Link Budget 模擬器','tools/link-budget-sim.html','route']] },
+  { layer:'ch', st:'2-4', title:'電離層傳播',
+    what:'D／E／F 層、MUF／LUF、跳躍距離、NVIS 與太陽活動的影響。',
+    check:'白天哪一層吸收最強？MUF 指什麼？',
+    tools:[['電離層傳播','tools/ionosphere-viewer.html','satellite']] },
+  { layer:'ch', st:'2-5', title:'地形與多徑',
+    what:'視距、菲涅耳區、雙射線多徑衰落與 QSB（訊號起伏）。',
+    check:'菲涅耳區被建物擋住會發生什麼？',
+    tools:[['傳播與多徑','tools/propagation-multipath.html','radio-tower']] },
+
+  { layer:'rx', st:'3-1', title:'收得到嗎',
+    what:'靈敏度、底噪、SNR、串接雜訊指數 NF／MDS 與 SFDR；哪一級決定整機 NF。',
+    check:'前端放大器擺在哪一級，對整機 NF 最有利？',
+    tools:[['接收機 NF／MDS','tools/receiver-chain.html','git-merge']] },
+  { layer:'rx', st:'3-2', title:'超外差架構',
+    what:'RF 放大 → 混波 → 本振 LO → 中頻 IF → 鏡像頻率與選擇性。',
+    check:'鏡像頻率離接收頻率多遠？',
+    tools:[['超外差接收機','tools/superhet-receiver.html','radio-receiver']],
+    ext:'延伸：零中頻與 SDR 接收。' },
+  { layer:'rx', st:'3-3', title:'解調',
+    what:'鑑別器（FM）、乘積檢波與 BFO（SSB／CW）、AGC、靜噪／CTCSS。',
+    check:'FM 用什麼解調？SSB 為什麼需要 BFO？',
+    tools:[['調變視覺化','tools/modulation-viewer.html','audio-waveform'],['超外差接收機','tools/superhet-receiver.html','radio-receiver']] },
+  { layer:'rx', st:'3-4', title:'干擾排除',
+    what:'同頻／鄰頻／互調干擾、捕捉效應與 EMC 對策；用症狀問診找原因。',
+    check:'聽到規律的嗡嗡聲，最可能是哪種干擾？',
+    tools:[['干擾診斷','tools/interference-diagnosis.html','stethoscope']] },
+
+  { layer:'ops', st:'呼號', title:'台灣業餘呼號',
+    what:'呼號結構、地區別與電台等級的對應。',
+    check:'BV／BX／BM 開頭分別代表什麼？',
+    tools:[['呼號解碼器','tools/callsign-decoder.html','search']] },
+  { layer:'ops', st:'Q 簡語', title:'Q 簡語與通聯',
+    what:'QSO／QTH／QRZ／QRM／QRN… 在情境中學通聯用語。',
+    check:'QRM 與 QRN 差在哪裡？',
+    tools:[['Q 簡語訓練','tools/qcode-trainer.html','messages-square']] },
+  { layer:'ops', st:'法規', title:'法規與實機操作',
+    what:'頻段權限、功率上限、通聯禮節與第一次拿對講機的實機操作。',
+    check:'二等可用的頻段與各自的功率上限？',
+    tools:[['基礎無線電課程','courses/basic-radio.html','radio']] },
+];
+
+function render(){
+  const root = document.getElementById('stations');
+  LAYERS.forEach(L => {
+    const h = document.createElement('div');
+    h.className = 'layer-h';
+    h.innerHTML = `<span class="lh-tag" style="background:${L.color}">${L.tag}</span>`
+      + `<h2>${L.name}</h2><span class="rule" style="background:${L.soft}"></span>`;
+    root.appendChild(h);
+    const sub = document.createElement('p');
+    sub.className = 'layer-sub';
+    sub.textContent = L.sub;
+    root.appendChild(sub);
+
+    const grid = document.createElement('div');
+    grid.className = 'mcards';
+    STATIONS.filter(s => s.layer === L.key).forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'mcard';
+      card.style.setProperty('--mc', L.color);
+      card.style.setProperty('--mc-soft', L.soft);
+      const tools = s.tools.map(t =>
+        `<a class="mc-tool" href="${t[1]}"><i data-lucide="${t[2]}"></i> ${t[0]}</a>`).join('');
+      card.innerHTML =
+        `<div class="mc-st">${s.st}</div>`
+        + `<h3>${s.title}${s.star ? ' <span class="mc-star" title="二等大題">★</span>' : ''}</h3>`
+        + `<div class="mc-what">${s.what}</div>`
+        + `<div class="mc-check"><b>自我檢查：</b>${s.check}</div>`
+        + `<div class="mc-tools">${tools}</div>`
+        + (s.ext ? `<div class="mc-ext">${s.ext}</div>` : '');
+      grid.appendChild(card);
+    });
+    root.appendChild(grid);
+  });
+  if (window.lucide) lucide.createIcons();
+}
+render();
+</script>
+</body>
+</html>
