@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進階・頻譜感測（能量檢測 / 門檻）— RF 學習站</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.adv-badge { display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:11px; font-weight:700; padding:3px 10px; border-radius:var(--r-pill); background:#efe7fb; color:#6D3FC0; margin-bottom:10px; }
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: #6D3FC0; border-radius: 3px; flex-shrink: 0; }
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; }
+canvas { width: 100%; display: block; background: #08080e; border-radius: var(--r-sm); }
+.ctrl-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+@media (max-width:560px){ .ctrl-grid { grid-template-columns:1fr; } }
+.cg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); }
+.cg-label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.cg-label span { color: #6D3FC0; font-family: var(--font-mono); font-size: 13px; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; margin-bottom: 7px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+.cg-sublabel { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+.status-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 10px; text-align: center; box-shadow: var(--shadow-sm); }
+.metric-label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); margin-bottom: 5px; }
+.metric-val { font-family: var(--font-mono); font-size: 16px; font-weight: 700; }
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid #6D3FC0; border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.8; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: #6D3FC0; }
+.challenge { display: flex; align-items: flex-start; gap: 9px; background: var(--honey-soft); border: 1px solid #f0dcae; border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 13px 15px; font-size: 13px; color: var(--ink-2); line-height: 1.8; margin-bottom: 12px; }
+.challenge svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; color: var(--honey-ink); }
+.challenge b { color: var(--honey-ink); }
+.xlink { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.xlink a { font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: #6D3FC0; text-decoration: none; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+<div class="wrap wrap-narrow">
+  <div class="read-top"><a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a></div>
+  <div class="adv-badge"><i data-lucide="flask-conical" style="width:13px;height:13px"></i> 選修・進階實驗室</div>
+  <div class="tool-title">頻譜感測：能量檢測與門檻</div>
+  <p class="tool-sub">認知無線電要先「聽」頻段有沒有人用，最常見的是<strong>能量檢測</strong>：把某頻段能量和一個<strong>門檻</strong>比。門檻設太低→把雜訊當訊號（<strong>誤警</strong>）；設太高→漏掉真正的弱訊號（<strong>漏檢</strong>）。拖滑桿體會這個取捨。</p>
+
+  <div class="insight"><strong>核心取捨：</strong>誤警率（P<sub>fa</sub>）與漏檢率永遠對立——門檻是這條線上的選擇。SNR 越低，雜訊與訊號能量分佈越重疊，越難兩全。這也呼應基礎課「RF 增益調太高→底噪抬升→反而蓋掉弱訊號」。</div>
+
+  <div class="ctrl-grid">
+    <div class="cg"><div class="cg-label">訊號 SNR <span id="lbl-snr">8 dB</span></div>
+      <input type="range" id="sl-snr" min="-4" max="20" value="8" step="1" oninput="redraw()">
+      <div class="cg-sublabel">訊號相對雜訊的強度</div></div>
+    <div class="cg"><div class="cg-label">檢測門檻 <span id="lbl-th">50 %</span></div>
+      <input type="range" id="sl-th" min="5" max="95" value="50" step="1" oninput="redraw()">
+      <div class="cg-sublabel">能量高過門檻 → 判定「有人用」</div></div>
+  </div>
+
+  <div class="status-grid">
+    <div class="metric"><div class="metric-label">偵測率 P_d</div><div class="metric-val" id="m-pd" style="color:var(--leaf-ink)">—</div></div>
+    <div class="metric"><div class="metric-label">誤警率 P_fa</div><div class="metric-val" id="m-pfa" style="color:var(--rose-ink)">—</div></div>
+    <div class="metric"><div class="metric-label">判定</div><div class="metric-val" id="m-verdict" style="color:#6D3FC0">—</div></div>
+  </div>
+
+  <div class="viz-card"><div class="viz-head">能量分佈：雜訊（藍）vs 有訊號（綠），紫線＝門檻</div><canvas id="c-dist" height="200"></canvas></div>
+  <div class="viz-card"><div class="viz-head">頻段掃描：超過門檻的格被標為「佔用」</div><canvas id="c-scan" height="120"></canvas></div>
+
+  <div class="challenge"><i data-lucide="flask-conical"></i><div><b>實驗挑戰：</b>把 SNR 降到 0dB（訊號≈雜訊），再左右移門檻——能不能找到同時讓 P_fa 低、P_d 高的位置？把 SNR 拉到 15dB 再試一次，比較兩者的難易。寫下你對「門檻取捨」的觀察。</div></div>
+
+  <div class="st">為什麼這在進階軌</div>
+  <div class="insight">頻譜感測／認知無線電屬研究與工程主題，<strong>不在 NCC 業餘考照範圍</strong>。但其「能量 vs 門檻」直覺與基礎課的底噪/靜噪概念相通。</div>
+
+  <div class="st">延伸學習</div>
+  <div class="xlink"><a href="../tools/spectrum-viewer.html">基礎：業餘頻段頻譜</a><a href="../courses/rf-glossary.html#noisefloor">📖 手冊：底噪</a><a href="adv-constellation-eye.html">星座與眼圖</a></div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value); }
+// gaussian pdf
+function pdf(x,mu,s){ return Math.exp(-0.5*Math.pow((x-mu)/s,2))/(s*Math.sqrt(2*Math.PI)); }
+// approx normal CDF
+function Phi(z){ var t=1/(1+0.2316419*Math.abs(z)); var d=0.3989423*Math.exp(-z*z/2);
+  var p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0?1-p:p; }
+function redraw(){
+  var snr=val('sl-snr'), thPct=val('sl-th');
+  document.getElementById('lbl-snr').textContent=snr+' dB';
+  document.getElementById('lbl-th').textContent=thPct+' %';
+  // model: noise energy ~ N(muN, s), signal-present ~ N(muS, s)
+  var muN=3, s=1.0;
+  var muS=muN + Math.pow(10,snr/20)*1.1; // separation grows with SNR
+  var thVal=muN + (thPct/100)*(muS+3*s - (muN-3*s)); // map % across range
+  var Pfa=1-Phi((thVal-muN)/s);
+  var Pd =1-Phi((thVal-muS)/s);
+  document.getElementById('m-pd').textContent=(Pd*100).toFixed(0)+' %';
+  document.getElementById('m-pfa').textContent=(Pfa*100).toFixed(0)+' %';
+  var v=document.getElementById('m-verdict');
+  if(Pd>0.9&&Pfa<0.1){ v.textContent='良好'; v.style.color='var(--leaf-ink)'; }
+  else if(Pfa>0.3){ v.textContent='誤警多'; v.style.color='var(--rose-ink)'; }
+  else if(Pd<0.6){ v.textContent='漏檢多'; v.style.color='var(--honey-ink)'; }
+  else { v.textContent='普通'; v.style.color='#6D3FC0'; }
+  drawDist(muN,muS,s,thVal); drawScan(thPct,snr);
+}
+function drawDist(muN,muS,s,th){
+  var cv=document.getElementById('c-dist'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=200;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+  var xmin=muN-3*s-1, xmax=muS+3*s+1, base=H-22;
+  function X(x){ return 20+(x-xmin)/(xmax-xmin)*(W-40); }
+  var peak=pdf(muN,muN,s);
+  function Y(p){ return base-p/peak*(base-16); }
+  // noise
+  ctx.strokeStyle='#3B86C9'; ctx.fillStyle='rgba(59,134,201,.18)'; ctx.lineWidth=2; ctx.beginPath();
+  for(var x=xmin;x<=xmax;x+=(xmax-xmin)/200){ var y=Y(pdf(x,muN,s)); var px=X(x); if(x===xmin)ctx.moveTo(px,y); else ctx.lineTo(px,y); }
+  ctx.stroke();
+  // signal
+  ctx.strokeStyle='#3DA35D'; ctx.lineWidth=2; ctx.beginPath();
+  for(var x=xmin;x<=xmax;x+=(xmax-xmin)/200){ var y=Y(pdf(x,muS,s)); var px=X(x); if(x===xmin)ctx.moveTo(px,y); else ctx.lineTo(px,y); }
+  ctx.stroke();
+  // threshold
+  ctx.strokeStyle='#6D3FC0'; ctx.setLineDash([5,4]); ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(X(th),10); ctx.lineTo(X(th),base); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#6D3FC0'; ctx.font='10px "Space Mono",monospace'; ctx.fillText('門檻', X(th)+4, 18);
+  ctx.fillStyle='#3B86C9'; ctx.fillText('雜訊', X(muN)-10, base+16);
+  ctx.fillStyle='#3DA35D'; ctx.fillText('有訊號', X(muS)-14, base+16);
+}
+function drawScan(thPct,snr){
+  var cv=document.getElementById('c-scan'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=120;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+  var N=32, bw=W/N, thr=thPct/100;
+  for(var k=0;k<N;k++){
+    // a few "occupied" channels with signal
+    var occupied=(k%7===2||k%11===5);
+    var e=Math.random()*0.35 + (occupied?(0.4+Math.pow(10,snr/20)*0.04):0);
+    e=Math.min(1,e);
+    var det=e>thr;
+    var h=e*(H-24);
+    ctx.fillStyle = det?(occupied?'#3DA35D':'#E5544B'):'rgba(168,156,140,.4)';
+    ctx.fillRect(k*bw+1, H-16-h, bw-2, h);
+  }
+  ctx.strokeStyle='#6D3FC0'; ctx.setLineDash([4,3]); ctx.beginPath(); var ty=H-16-thr*(H-24); ctx.moveTo(0,ty); ctx.lineTo(W,ty); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#A89C8C'; ctx.font='9px "Space Mono",monospace'; ctx.fillText('綠=正確偵測　紅=誤警　灰=判定空閒', 6, H-4);
+}
+window.addEventListener('resize', redraw);
+redraw();
+</script>
+</body>
+</html>

@@ -229,7 +229,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="sdr">
+    <div class="concept" data-tags="sdr" id="noisefloor">
       <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="bell-off"></i></span><div><div class="title">底噪（噪聲底）</div><div class="en">Noise Floor</div></div></div>
       <div class="concept-bd">
         <div class="explain">即使沒有任何人發話，接收機仍然會「聽到」一些隨機的微弱雜訊，這就是底噪。是接收機能力的下限。</div>
@@ -424,7 +424,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="scenario">
+    <div class="concept" data-tags="scenario" id="sensitivity">
       <div class="concept-hd hd-scen"><span class="ico"><i data-lucide="radio"></i></span><div><div class="title">靈敏度</div><div class="en">Receiver Sensitivity</div></div></div>
       <div class="concept-bd">
         <div class="explain">接收機能聽到的「最微弱的信號」。靈敏度越好（數字越小），越遠的對講機你也能聽到。</div>
@@ -494,7 +494,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="advanced">
+    <div class="concept" data-tags="advanced" id="fresnel">
       <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="mountain"></i></span><div><div class="title">菲涅耳區 / 視距</div><div class="en">Fresnel Zone / Line of Sight</div></div></div>
       <div class="concept-bd">
         <div class="explain">無線電信號不只走「直線」，它的能量分布在一個橢圓形的「管子」裡（菲涅耳區）。如果這個管子被山丘或建築物擋住，信號就會嚴重衰減，即使你「看得到」對方。</div>
@@ -531,7 +531,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="advanced">
+    <div class="concept" data-tags="advanced" id="pathloss">
       <div class="concept-hd hd-adv"><span class="ico"><i data-lucide="trending-down"></i></span><div><div class="title">路徑衰減</div><div class="en">Path Loss / Free Space Loss</div></div></div>
       <div class="concept-bd">
         <div class="explain">無線電信號從發射天線出發，隨著距離增加而自然「擴散變弱」。即使沒有任何障礙物，距離加倍，信號強度也會剩約四分之一。</div>
@@ -633,7 +633,7 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="propagation">
+    <div class="concept" data-tags="propagation" id="scatter">
       <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="audio-waveform"></i></span><div><div class="title">散射 / 顫抖訊號</div><div class="en">Scatter / Flutter</div></div></div>
       <div class="concept-bd">
         <div class="explain">訊號走多條路徑（多路徑）抵達，彼此干涉，聽起來會「顫抖、忽強忽弱」，這就是散射造成的衰落（QSB）。</div>
@@ -1003,12 +1003,13 @@
       </div>
     </div>
 
-    <div class="concept" data-tags="modulation">
+    <div class="concept" data-tags="modulation" id="fskpsk">
       <div class="concept-hd hd-coral"><span class="ico"><i data-lucide="binary"></i></span><div><div class="title">FSK / PSK 數位調變</div><div class="en">Frequency / Phase Shift Keying</div></div></div>
       <div class="concept-bd">
         <div class="explain">數位調變：FSK 用「兩個頻率」代表 0/1；PSK 用「相位反轉（0°/180°）」代表 0/1。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>FSK 像用兩個哨音（高/低）發摩斯；PSK 像用「拍手正/反」傳訊號。</div>
         <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FSK 用於 RTTY/封包/APRS；BPSK 每位元相位反轉 180°，同頻寬下資料率比 FSK 高。</div>
+        <div class="gnote">🔧 延伸互動：<a href="../tools/modulation-viewer.html#iq" style="font-weight:700">調變視覺化的「星座圖 IQ」分頁 →</a></div>
         <div class="tagrow"><span class="ctag adv">調變</span></div>
       </div>
     </div>

@@ -22,7 +22,8 @@
     </div>
     <div class="stats">
       <a class="stat" href="#courses" onclick="event.preventDefault();document.getElementById('courses').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--primary)"></span><span class="num">2</span><span class="lab">套課程</span></a>
-      <a class="stat" href="#tools" onclick="event.preventDefault();document.getElementById('tools').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--teal)"></span><span class="num">11</span><span class="lab">個互動工具</span></a>
+      <a class="stat" href="#tools" onclick="event.preventDefault();document.getElementById('tools').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--teal)"></span><span class="num">14</span><span class="lab">個互動工具</span></a>
+      <a class="stat" href="#advanced" onclick="event.preventDefault();document.getElementById('advanced').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#6D3FC0"></span><span class="num">4</span><span class="lab">進階實驗室</span></a>
       <a class="stat" href="#sims" onclick="event.preventDefault();document.getElementById('sims').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:var(--sky)"></span><span class="num">1</span><span class="lab">套模擬器</span></a>
       <a class="stat" href="courses/rf-glossary.html"><span class="dot" style="background:var(--honey)"></span><span class="num">30+</span><span class="lab">白話術語</span></a>
     </div>
@@ -68,9 +69,33 @@
     <span class="ico"><i data-lucide="sliders-horizontal"></i></span>
     <h2>互動工具 — 二等業餘無線電</h2>
     <span class="rule"></span>
-    <span class="count">11 tools</span>
+    <span class="count">14 tools</span>
   </div>
   <div class="cards">
+
+    <a class="ccard accent-teal" href="tools/link-budget-sim.html">
+      <span class="badge">TOOL · 鏈路預算</span>
+      <span class="ico"><i data-lucide="route"></i></span>
+      <h3>Link Budget 鏈路預算模擬器</h3>
+      <p>發射→天線→路徑損耗→接收一條鏈路走完，即時看接收功率與餘裕（Fade Margin）夠不夠通。</p>
+      <span class="arrow"><i data-lucide="arrow-right"></i></span>
+    </a>
+
+    <a class="ccard accent-teal" href="tools/receiver-chain.html">
+      <span class="badge">TOOL · 接收機鏈路</span>
+      <span class="ico"><i data-lucide="git-merge"></i></span>
+      <h3>接收機 NF / MDS 串接計算器</h3>
+      <p>串接 LNA／混波器／IF，算總增益、總 NF、MDS 與 SFDR，指出瓶頸級——親手感覺 NF 與線性度的取捨。</p>
+      <span class="arrow"><i data-lucide="arrow-right"></i></span>
+    </a>
+
+    <a class="ccard accent-teal" href="tools/propagation-multipath.html">
+      <span class="badge">TOOL · 傳播多徑</span>
+      <span class="ico"><i data-lucide="radio-tower"></i></span>
+      <h3>傳播與多徑視覺化</h3>
+      <p>雙射線（直射＋地面反射）＋菲涅耳區，看天線高度／距離／頻率如何造成多徑衰落與地形阻擋。</p>
+      <span class="arrow"><i data-lucide="arrow-right"></i></span>
+    </a>
 
     <a class="ccard accent-sky" href="tools/spectrum-viewer.html">
       <span class="badge">TOOL · 頻譜</span>
@@ -157,6 +182,50 @@
       <span class="ico"><i data-lucide="circuit-board"></i></span>
       <h3>電源電路互動圖解</h3>
       <p>整流電路圖＋動態波形、二極體／電容／電晶體元件辨識，與系統原理電源題速查。</p>
+      <span class="arrow"><i data-lucide="arrow-right"></i></span>
+    </a>
+
+  </div>
+
+  <!-- 進階實驗室（選修） -->
+  <div class="section-label" id="advanced">
+    <span class="ico"><i data-lucide="flask-conical"></i></span>
+    <h2>進階實驗室 — 選修・工程/SDR</h2>
+    <span class="rule"></span>
+    <span class="count">4 labs · 超出考照範圍</span>
+  </div>
+  <p style="font-size:14px;color:var(--ink-2);margin:-6px 0 18px;max-width:680px">這些主題<strong>不在 NCC 業餘考照範圍</strong>，給想往通訊工程／SDR 深入的人。建議先讀完上方主軌工具再來。</p>
+  <div class="cards">
+
+    <a class="ccard accent-pur" href="tools/adv-constellation-eye.html">
+      <span class="badge">LAB · 星座/眼圖</span>
+      <span class="ico"><i data-lucide="scatter-chart"></i></span>
+      <h3>星座與眼圖實驗室</h3>
+      <p>16QAM 星座＋眼圖（ISI），看雜訊／I-Q 不平衡／相位噪聲如何讓星座糊掉。</p>
+      <span class="arrow"><i data-lucide="arrow-right"></i></span>
+    </a>
+
+    <a class="ccard accent-pur" href="tools/adv-ofdm.html">
+      <span class="badge">LAB · OFDM</span>
+      <span class="ico"><i data-lucide="bar-chart-3"></i></span>
+      <h3>OFDM 子載波視覺化</h3>
+      <p>看子載波如何「峰對零」彼此正交，以及子載波數對符號時間／抗多徑的影響。</p>
+      <span class="arrow"><i data-lucide="arrow-right"></i></span>
+    </a>
+
+    <a class="ccard accent-pur" href="tools/adv-mimo.html">
+      <span class="badge">LAB · MIMO</span>
+      <span class="ico"><i data-lucide="grid-3x3"></i></span>
+      <h3>MIMO 基礎</h3>
+      <p>空間多工（提速）vs 分集（抗衰落），N×M 通道矩陣示意「多徑反而是好事」。</p>
+      <span class="arrow"><i data-lucide="arrow-right"></i></span>
+    </a>
+
+    <a class="ccard accent-pur" href="tools/adv-spectrum-sensing.html">
+      <span class="badge">LAB · 頻譜感測</span>
+      <span class="ico"><i data-lucide="radar"></i></span>
+      <h3>頻譜感測：能量檢測</h3>
+      <p>能量 vs 門檻的取捨：誤警與漏檢永遠對立，拖滑桿體會認知無線電的核心。</p>
       <span class="arrow"><i data-lucide="arrow-right"></i></span>
     </a>
 

@@ -73,3 +73,36 @@
 **重要：回頭修正 Phase 1 的過度限縮**
 - `spectrum-viewer` 內含對 NCC 附表的完整轉寫，顯示 70cm **下段 430–432 與上段 432–440 對三等皆開放（25W）**。
 - 據此將三等 UHF 由 Phase 1 暫定的 430–432 **更正為 430–440**，並同步 `rf-data.js`／basic-radio／glossary，使全站與 spectrum-viewer 一致。
+
+---
+
+# 擴充第二輪：進階工具套件（feature branch: rf-advanced-tools-suite）
+
+依使用者裁示，只做：第二大項全部 + 第三大項(OFDM/MIMO/頻譜感測/眼圖/16QAM) + 第五大項整合。
+明確不做：Smith Chart、天線場型、WebUSB/WebSDR、P2P 課程模組、雨衰、GRC 線上模擬、WASM。
+
+## 階段 0 — 地基 ✅
+- rf-data.js 增 `constants`(c/k/T0/−174dBm/Hz) 與 `linkEnv`(自由/郊區/市區，雨衰不納入)。
+
+## 階段 1 — Link Budget 模擬器 ✅
+- tools/link-budget-sim.html：FSPL=32.45+20log d+20log f → Prx → Fade Margin；逐項 ledger、功率鏈 canvas。
+- 交叉連結情境6/手冊#pathloss；明示 Friis 傳輸式 vs 雜訊式。
+
+## 階段 2 — 接收機 NF/MDS 串接 ✅
+- tools/receiver-chain.html：Friis 雜訊串接 + IIP3 串接 + MDS + SFDR + 瓶頸級長條圖；LNA前/後對照。
+- 教學重點：NF↔線性度取捨。glossary #noisefloor/#sensitivity。
+
+## 階段 3 — 傳播/多徑 ✅
+- tools/propagation-multipath.html：two-ray 地面反射 + 第一菲涅耳半徑/0.6F1淨空 + 收訊vs距離曲線。
+- F1 與課程一致(@3km≈39m)。glossary #fresnel/#scatter。
+
+## 階段 4 — modulation-viewer 加星座圖 ✅
+- 新增「星座圖 IQ」分頁：2-FSK/BPSK/QPSK；glossary #fskpsk 連入，支援 #iq 深連結。
+
+## 階段 5 — 進階實驗室（選修） ✅
+- adv-constellation-eye（16QAM+眼圖+IQ不平衡+相位噪聲）、adv-ofdm、adv-mimo、adv-spectrum-sensing。
+- 全標紫色「選修・進階」徽章、明示不在考照範圍。
+
+## 階段 6 — 整合 ✅
+- index 新增「進階實驗室」區、主軌掛三新卡、hero 統計更新(14 工具/4 實驗室)。
+- 全工具套 design tokens / nav.js / rf-data.js / 交叉連結 / 實驗挑戰；新增 .accent-pur。

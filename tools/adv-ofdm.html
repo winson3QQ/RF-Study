@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進階・OFDM 子載波視覺化 — RF 學習站</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.adv-badge { display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:11px; font-weight:700; padding:3px 10px; border-radius:var(--r-pill); background:#efe7fb; color:#6D3FC0; margin-bottom:10px; }
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: #6D3FC0; border-radius: 3px; flex-shrink: 0; }
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; }
+canvas { width: 100%; display: block; background: #08080e; border-radius: var(--r-sm); }
+.cg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); margin-bottom:12px; }
+.cg-label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.cg-label span { color: #6D3FC0; font-family: var(--font-mono); font-size: 13px; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; margin-bottom: 7px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+.cg-sublabel { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid #6D3FC0; border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.8; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: #6D3FC0; }
+.challenge { display: flex; align-items: flex-start; gap: 9px; background: var(--honey-soft); border: 1px solid #f0dcae; border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 13px 15px; font-size: 13px; color: var(--ink-2); line-height: 1.8; margin-bottom: 12px; }
+.challenge svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; color: var(--honey-ink); }
+.challenge b { color: var(--honey-ink); }
+.xlink { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.xlink a { font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: #6D3FC0; text-decoration: none; }
+.xlink a:hover { border-color: #6D3FC0; background: #efe7fb; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+<div class="wrap wrap-narrow">
+  <div class="read-top"><a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a></div>
+  <div class="adv-badge"><i data-lucide="flask-conical" style="width:13px;height:13px"></i> 選修・進階實驗室</div>
+  <div class="tool-title">OFDM 子載波視覺化</div>
+  <p class="tool-sub">OFDM 把一條高速資料拆成許多<strong>互相正交</strong>的低速子載波並排傳送，是 Wi-Fi／4G／5G／DVB 的核心。這裡看子載波如何在頻域「峰對零」彼此不干擾，以及子載波數對符號時間的影響。</p>
+
+  <div class="insight"><strong>關鍵字「正交」：</strong>每個子載波的頻譜是 sinc 形，<strong>每個子載波的峰值剛好落在其他子載波的零點</strong>，所以即使彼此重疊也不互相干擾——這讓 OFDM 頻譜利用率極高。代價：對頻率偏移與相位噪聲敏感（會破壞正交性）。</div>
+
+  <div class="cg">
+    <div class="cg-label">子載波數 N <span id="lbl-n">8</span></div>
+    <input type="range" id="sl-n" min="2" max="32" value="8" step="1" oninput="redraw()">
+    <div class="cg-sublabel">N 越多 → 每個子載波越窄、符號時間越長 → 越抗多徑（但越怕頻偏）</div>
+  </div>
+
+  <div class="viz-card"><div class="viz-head">頻域：各子載波 sinc 峰值對齊其他子載波零點（正交）</div><canvas id="c-freq" height="200"></canvas></div>
+  <div class="viz-card"><div class="viz-head">時域：N 個子載波相加 = OFDM 符號</div><canvas id="c-time" height="160"></canvas></div>
+
+  <div class="challenge"><i data-lucide="flask-conical"></i><div><b>實驗挑戰：</b>把 N 從 4 加到 32，觀察頻域圖中每個子載波「峰對零」的關係是否一直成立，以及時域波形的複雜度怎麼變。想一想：為什麼子載波多 → 符號時間長 → 對多徑（延遲擴展）更耐受？</div></div>
+
+  <div class="st">為什麼這在進階軌</div>
+  <div class="insight">OFDM/多載波屬通訊系統工程，<strong>不在 NCC 業餘考照範圍</strong>。業餘語音多為 FM/SSB 單載波；OFDM 出現在寬頻數據系統。放這裡供延伸。</div>
+
+  <div class="st">延伸學習</div>
+  <div class="xlink">
+    <a href="adv-constellation-eye.html">星座與眼圖</a>
+    <a href="adv-mimo.html">MIMO 基礎</a>
+    <a href="../tools/modulation-viewer.html#iq">基礎：星座圖 IQ</a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+function val(id){ return parseFloat(document.getElementById(id).value); }
+function redraw(){
+  var N=val('sl-n'); document.getElementById('lbl-n').textContent=N;
+  drawFreq(N); drawTime(N);
+}
+function sinc(x){ return x===0?1:Math.sin(Math.PI*x)/(Math.PI*x); }
+function drawFreq(N){
+  var cv=document.getElementById('c-freq'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=200;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+  var padL=20, padR=W-20, base=H-26, top=18;
+  ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.beginPath(); ctx.moveTo(padL,base); ctx.lineTo(padR,base); ctx.stroke();
+  var spacing=(padR-padL)/(N+1);
+  var hue=270;
+  for(var k=1;k<=N;k++){
+    var center=padL+k*spacing;
+    ctx.strokeStyle='hsla('+(200+k*8%120)+',70%,60%,.85)'; ctx.lineWidth=1.4; ctx.beginPath();
+    for(var x=padL;x<=padR;x++){
+      var f=(x-center)/spacing; var v=Math.abs(sinc(f));
+      var y=base-v*(base-top);
+      if(x===padL)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // peak dot
+    ctx.fillStyle='#F2643C'; ctx.beginPath(); ctx.arc(center,top,3,0,7); ctx.fill();
+  }
+  ctx.fillStyle='#A89C8C'; ctx.font='10px "Space Mono",monospace';
+  ctx.fillText(N+' 個正交子載波（橙點＝峰值，落在鄰居零點上）', padL, H-8);
+}
+function drawTime(N){
+  var cv=document.getElementById('c-time'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=160;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+  var mid=H/2;
+  ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.beginPath(); ctx.moveTo(0,mid); ctx.lineTo(W,mid); ctx.stroke();
+  // random phase per subcarrier, sum
+  var ph=[]; for(var k=0;k<N;k++) ph.push(Math.random()*2*Math.PI);
+  ctx.strokeStyle='#6D3FC0'; ctx.lineWidth=2; ctx.beginPath();
+  for(var x=0;x<=W;x++){
+    var t=x/W; var s=0;
+    for(var k=0;k<N;k++) s+=Math.cos(2*Math.PI*(k+1)*t + ph[k]);
+    s/=N; var y=mid - s*(mid-14);
+    if(x===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.fillStyle='#A89C8C'; ctx.font='10px "Space Mono",monospace'; ctx.fillText('N 個子載波相加（一個 OFDM 符號內）', 6, 14);
+}
+window.addEventListener('resize', redraw);
+redraw();
+</script>
+</body>
+</html>

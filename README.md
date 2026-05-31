@@ -11,11 +11,19 @@ radio-site/
 │   ├── basic-radio.html    基礎無線電使用（實機操作 + 考照準備）
 │   ├── sdr-advanced.html   SDR 深化課程（RF 理論）
 │   └── rf-glossary.html    RF 術語白話手冊
-├── tools/                  ← 互動工具（二等業餘無線電）
+├── tools/                  ← 互動工具（主軌：考照 + 點對點實務）
 │   ├── spectrum-viewer.html    業餘頻段互動頻譜
-│   ├── modulation-viewer.html  調變方式視覺化
+│   ├── modulation-viewer.html  調變方式視覺化（含星座圖 IQ 分頁）
 │   ├── circuit-calculator.html 電路計算工具
-│   └── callsign-decoder.html   呼號解碼器
+│   ├── callsign-decoder.html   呼號解碼器
+│   ├── link-budget-sim.html    Link Budget 鏈路預算模擬器
+│   ├── receiver-chain.html     接收機 NF/MDS 串接計算器
+│   ├── propagation-multipath.html 傳播與多徑（雙射線 + 菲涅耳）
+│   └── …（其餘 SWR/超外差/干擾/安全/電源/Q簡語/電離層）
+│   ├── adv-constellation-eye.html  〔進階〕星座與眼圖（16QAM/ISI）
+│   ├── adv-ofdm.html               〔進階〕OFDM 子載波
+│   ├── adv-mimo.html               〔進階〕MIMO 基礎
+│   └── adv-spectrum-sensing.html   〔進階〕頻譜感測
 ├── simulators/             ← 模擬器
 │   └── civil-defense.html  民防無線電參數模擬器
 └── assets/                 ← 共用資源（設計系統）
