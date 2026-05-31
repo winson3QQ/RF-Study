@@ -88,7 +88,7 @@
     </div>
 
     <div class="concept" data-tags="basic">
-      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="volume-2"></i></span><div><div class="title">FM 調制</div><div class="en">Frequency Modulation</div></div></div>
+      <div class="concept-hd hd-basic"><span class="ico"><i data-lucide="volume-2"></i></span><div><div class="title">FM 調變</div><div class="en">Frequency Modulation</div></div></div>
       <div class="concept-bd">
         <div class="explain">FM 是「調頻」的縮寫。把聲音「藏進」無線電波的一種方式。對講機和廣播電台都用 FM。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>想像你講話時聲音忽高忽低，FM 就是把這個「高低起伏」轉換成電波頻率的「快慢變化」。收音機再把「快慢變化」還原成聲音。就像摩斯密碼，但編碼規則不同。</div>
@@ -99,7 +99,7 @@
           <svg viewBox="0 0 300 46" preserveAspectRatio="none"><path d="M0.0,19.8 L6.0,5.2 L8.0,3.7 L11.0,5.6 L16.0,18.1 L22.0,36.8 L26.0,42.3 L30.0,37.8 L35.0,21.4 L41.0,4.5 L43.0,3.8 L47.0,12.1 L52.0,32.2 L56.0,42.1 L60.0,36.6 L65.0,14.6 L69.0,3.8 L73.0,11.9 L78.0,36.3 L81.0,42.3 L85.0,29.9 L90.0,5.5 L92.0,4.0 L97.0,26.5 L101.0,42.2 L105.0,29.4 L110.0,4.1 L112.0,5.8 L117.0,34.8 L120.0,42.1 L124.0,22.6 L128.0,3.8 L132.0,19.4 L137.0,41.6 L140.0,29.6 L144.0,5.3 L147.0,8.4 L152.0,39.5 L155.0,39.1 L159.0,13.4 L162.0,3.7 L167.0,29.8 L171.0,41.7 L175.0,20.2 L179.0,3.7 L184.0,27.2 L188.0,42.3 L192.0,26.2 L196.0,5.2 L199.0,6.9 L204.0,34.2 L208.0,41.5 L212.0,24.2 L217.0,3.9 L221.0,12.2 L226.0,36.6 L230.0,41.6 L234.0,28.4 L239.0,7.3 L242.0,3.8 L247.0,16.7 L252.0,36.4 L256.0,42.3 L261.0,32.4 L266.0,14.2 L270.0,4.8 L273.0,4.1 L278.0,14.6 L284.0,33.9 L289.0,42.2 L294.0,37.4 L300.0,19.8" style="fill:none;stroke:var(--teal);stroke-width:1.7"/></svg>
         </figure>
         <div class="gnote">FM 優點：抗干擾（捕捉效應）、音質較 AM 清晰，是民防對講機標準。</div>
-        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FM 廣播和對講機的原理一樣。你每天聽的台北 FM 電台就是 FM 調制！</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>FM 廣播和對講機的原理一樣。你每天聽的台北 FM 電台就是 FM 調變！</div>
         <div class="tagrow"><span class="ctag basic">基礎</span></div>
       </div>
     </div>
@@ -694,17 +694,17 @@
       <div class="concept-bd">
         <div class="explain">產生一個和 IF 同頻的載波，幫 SSB / CW 還原成可聽的音頻。FM 不需要 BFO。</div>
         <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>SSB/CW 把「載波」省掉了，BFO 就是在接收端「補回那根載波」，聲音才聽得懂。</div>
-        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>BFO 只用於 SSB 和 CW；FM 接收機用「鑑相器」解調，不用 BFO。</div>
+        <div class="callout warn"><span class="ct"><i data-lucide="triangle-alert"></i>常見誤解</span>BFO 只用於 SSB 和 CW；FM 接收機用「鑑別器」解調，不用 BFO。</div>
         <div class="tagrow"><span class="ctag sdr">接收機</span></div>
       </div>
     </div>
 
     <div class="concept" data-tags="receiver">
-      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="git-compare"></i></span><div><div class="title">鑑相器</div><div class="en">Discriminator</div></div></div>
+      <div class="concept-hd hd-sdr"><span class="ico"><i data-lucide="git-compare"></i></span><div><div class="title">鑑別器</div><div class="en">Discriminator</div></div></div>
       <div class="concept-bd">
         <div class="explain">FM 的解調器，把「頻率的變化」還原成音頻訊號。也叫頻率鑑別器。</div>
-        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像把「車速的快慢變化」翻譯成「踩多深油門」——鑑相器把頻率高低翻回聲音大小。</div>
-        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>考題：FM 接收機用什麼把 IF 轉成音頻？→ 鑑相器（Discriminator）。</div>
+        <div class="callout analogy"><span class="ct"><i data-lucide="lightbulb"></i>生活比喻</span>像把「車速的快慢變化」翻譯成「踩多深油門」——鑑別器把頻率高低翻回聲音大小。</div>
+        <div class="callout tip"><span class="ct"><i data-lucide="circle-check"></i>記憶方法</span>考題：FM 接收機用什麼把 IF 轉成音頻？→ 鑑別器（Discriminator）。</div>
         <div class="tagrow"><span class="ctag sdr">接收機</span></div>
       </div>
     </div>
