@@ -178,6 +178,7 @@ a:hover { color: var(--primary-strong); }
 .accent-sky   { --card-accent: var(--sky);     --card-soft: var(--sky-soft);     --card-ink: var(--sky-ink); }
 .accent-rose  { --card-accent: var(--rose);    --card-soft: var(--rose-soft);    --card-ink: var(--rose-ink); }
 .accent-leaf  { --card-accent: var(--leaf);    --card-soft: var(--leaf-soft);    --card-ink: var(--leaf-ink); }
+.accent-pur   { --card-accent: #6D3FC0;        --card-soft: #efe7fb;             --card-ink: #6D3FC0; }
 
 /* ============================================================
    READING VIEW (glossary / course)
