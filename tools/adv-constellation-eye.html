@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進階・星座與眼圖實驗室（16QAM / ISI / I-Q）— RF 學習站</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.adv-badge { display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:11px; font-weight:700; padding:3px 10px; border-radius:var(--r-pill); background:#efe7fb; color:#6D3FC0; margin-bottom:10px; }
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: #6D3FC0; border-radius: 3px; flex-shrink: 0; }
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; }
+canvas { width: 100%; display: block; background: #08080e; border-radius: var(--r-sm); }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+@media (max-width:560px){ .two { grid-template-columns:1fr; } }
+.ctrl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 560px) { .ctrl-grid { grid-template-columns: 1fr; } }
+.cg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); }
+.cg-label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.cg-label span { color: #6D3FC0; font-family: var(--font-mono); font-size: 13px; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; margin-bottom: 7px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+.cg-sublabel { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+.seg { display:flex; gap:6px; flex-wrap:wrap; }
+.seg button { font-family: var(--font-sans); font-weight:700; font-size:12px; padding:7px 13px; border:1.5px solid var(--border-strong); border-radius:var(--r-pill); background:var(--surface); color:var(--ink-2); cursor:pointer; }
+.seg button.on { border-color:#6D3FC0; color:#6D3FC0; background:#efe7fb; }
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid #6D3FC0; border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.8; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: #6D3FC0; }
+.challenge { display: flex; align-items: flex-start; gap: 9px; background: var(--honey-soft); border: 1px solid #f0dcae; border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 13px 15px; font-size: 13px; color: var(--ink-2); line-height: 1.8; margin-bottom: 12px; }
+.challenge svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; color: var(--honey-ink); }
+.challenge b { color: var(--honey-ink); }
+.xlink { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.xlink a { font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: #6D3FC0; text-decoration: none; }
+.xlink a:hover { border-color: #6D3FC0; background: #efe7fb; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+
+<div class="wrap wrap-narrow">
+
+  <div class="read-top">
+    <a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a>
+  </div>
+
+  <div class="adv-badge"><i data-lucide="flask-conical" style="width:13px;height:13px"></i> 選修・進階實驗室</div>
+  <div class="tool-title">星座與眼圖實驗室</div>
+  <p class="tool-sub">超出考照範圍的工程級主題：高階數位調變（16QAM）、<strong>雜訊／I-Q 不平衡／相位噪聲</strong>如何讓星座點「糊掉」，以及<strong>眼圖</strong>怎麼一眼看出符號間干擾（ISI）。先學過基礎「星座圖 IQ」分頁再來這裡。</p>
+
+  <div class="insight">
+    <strong>星座圖是接收端的「健康儀表」：</strong>理想時每個符號落在固定點；一旦有雜訊、I-Q 增益/相位不平衡、相位噪聲，點就會擴散、旋轉或變形。點之間還分得開 → 還能正確判別；糊成一團 → 誤碼。<strong>眼圖</strong>則把時域疊起來，「眼睛」張得越開＝ISI 越小、越好解。
+  </div>
+
+  <div class="st">調變階數</div>
+  <div class="seg" id="seg-mod" style="margin-bottom:14px">
+    <button data-m="bpsk">BPSK (1 bit)</button>
+    <button data-m="qpsk">QPSK (2 bit)</button>
+    <button class="on" data-m="qam16">16-QAM (4 bit)</button>
+  </div>
+
+  <div class="ctrl-grid">
+    <div class="cg">
+      <div class="cg-label">雜訊（降低 SNR） <span id="lbl-snr">20 dB</span></div>
+      <input type="range" id="sl-snr" min="3" max="35" value="20" step="1" oninput="redraw()">
+      <div class="cg-sublabel">SNR 越低，點雲越散</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">I/Q 增益不平衡 <span id="lbl-gain">0 %</span></div>
+      <input type="range" id="sl-gain" min="0" max="40" value="0" step="1" oninput="redraw()">
+      <div class="cg-sublabel">I、Q 兩路增益不一致 → 星座被拉成橢圓</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">I/Q 相位不平衡 <span id="lbl-phase">0°</span></div>
+      <input type="range" id="sl-phase" min="0" max="25" value="0" step="1" oninput="redraw()">
+      <div class="cg-sublabel">兩路非正交 → 星座被「剪切」歪斜</div>
+    </div>
+    <div class="cg">
+      <div class="cg-label">相位噪聲 <span id="lbl-pn">0°rms</span></div>
+      <input type="range" id="sl-pn" min="0" max="15" value="0" step="0.5" oninput="redraw()">
+      <div class="cg-sublabel">本振不純 → 星座點沿圓周「抹開」</div>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="viz-card">
+      <div class="viz-head" id="vh-const">星座圖（接收）</div>
+      <canvas id="c-const" height="240"></canvas>
+    </div>
+    <div class="viz-card">
+      <div class="viz-head">眼圖（I 通道，疊多個符號）</div>
+      <canvas id="c-eye" height="240"></canvas>
+    </div>
+  </div>
+
+  <div class="insight" id="evm-box" style="border-left-color:var(--teal)"></div>
+
+  <div class="challenge">
+    <i data-lucide="flask-conical"></i>
+    <div><b>實驗挑戰：</b>切到 16-QAM，先只加雜訊把 SNR 降到約 12dB，看哪一圈的點先開始互相侵入（外圈還是內圈？）。再把雜訊歸零、只加「相位噪聲」，觀察星座點是沿半徑散還是沿圓周散——這對應本振哪種缺陷？用 1–2 句寫下你的判讀。</div>
+  </div>
+
+  <div class="st">為什麼這在進階軌</div>
+  <div class="insight">16QAM、I-Q 校正、相位噪聲、眼圖/ISI 屬於<strong>通訊系統與 SDR 工程</strong>範疇，<strong>不在 NCC 業餘考照範圍</strong>，也跟民防語音通聯無直接關係。放這裡給想往工程/SDR 深入的人。基礎請回 <a href="../tools/modulation-viewer.html#iq" style="color:#6D3FC0;font-weight:700">調變視覺化・星座圖 IQ</a>。</div>
+
+  <div class="st">延伸學習</div>
+  <div class="xlink">
+    <a href="../tools/modulation-viewer.html#iq">基礎：星座圖 IQ（FSK/PSK）</a>
+    <a href="adv-ofdm.html">進階：OFDM 子載波</a>
+    <a href="adv-mimo.html">進階：MIMO 基礎</a>
+    <a href="adv-spectrum-sensing.html">進階：頻譜感測</a>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/rf-data.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+var mod='qam16';
+function baseConstellation(m){
+  if(m==='bpsk') return [{i:-1,q:0},{i:1,q:0}];
+  if(m==='qpsk') return [{i:-1,q:-1},{i:-1,q:1},{i:1,q:-1},{i:1,q:1}];
+  // 16QAM: levels -3,-1,1,3 (will normalize)
+  var lv=[-3,-1,1,3], pts=[];
+  lv.forEach(function(a){ lv.forEach(function(b){ pts.push({i:a,q:b}); }); });
+  return pts;
+}
+function normFactor(m){ return m==='qam16'?3:1; } // max coord for scaling to unit
+function randn(){ // Box-Muller
+  var u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function val(id){ return parseFloat(document.getElementById(id).value); }
+
+function redraw(){
+  var snr=val('sl-snr'), gImb=val('sl-gain')/100, pImb=val('sl-phase')*Math.PI/180, pn=val('sl-pn')*Math.PI/180;
+  document.getElementById('lbl-snr').textContent=snr+' dB';
+  document.getElementById('lbl-gain').textContent=val('sl-gain')+' %';
+  document.getElementById('lbl-phase').textContent=val('sl-phase')+'°';
+  document.getElementById('lbl-pn').textContent=val('sl-pn')+'°rms';
+
+  var base=baseConstellation(mod), nf=normFactor(mod);
+  var noiseSigma=Math.pow(10,-snr/20)*0.7; // 視覺用
+  // generate received cloud
+  var perPt=mod==='qam16'?60:120;
+  var rxPts=[], sumErr=0, cnt=0;
+  base.forEach(function(p){
+    for(var k=0;k<perPt;k++){
+      var I=p.i/nf, Q=p.q/nf;
+      // phase noise: rotate
+      if(pn>0){ var th=randn()*pn; var ci=I*Math.cos(th)-Q*Math.sin(th); var cq=I*Math.sin(th)+Q*Math.cos(th); I=ci; Q=cq; }
+      // IQ gain imbalance on I, phase imbalance skews Q
+      I=I*(1+gImb);
+      Q=Q + I*Math.sin(pImb);
+      // AWGN
+      I+=randn()*noiseSigma; Q+=randn()*noiseSigma;
+      rxPts.push({i:I,q:Q});
+      var di=I-p.i/nf, dq=Q-p.q/nf; sumErr+=di*di+dq*dq; cnt++;
+    }
+  });
+  var evm=Math.sqrt(sumErr/cnt)*100; // % roughly (ref unit avg pow ~1)
+  drawConst(rxPts, base, nf);
+  drawEye(snr, noiseSigma);
+  document.getElementById('vh-const').textContent='星座圖（接收）— '+mod.toUpperCase()+'　灰=理想點　紫=接收樣本';
+  document.getElementById('evm-box').innerHTML =
+    '<strong>判讀：</strong>估計 EVM ≈ '+evm.toFixed(0)+'%（量級示意）。'+
+    (evm<12?'點雲集中，分得很開 → 可靠解調。':evm<25?'點雲已明顯擴散，逼近判決邊界 → 開始有誤碼風險。':'點雲糊成一團、跨越判決邊界 → 高誤碼，鏈路不可用。')+
+    ' 對 16QAM 這類密星座，同樣雜訊比 QPSK/BPSK 更早出錯（點間距小）。';
+  if(window.lucide) lucide.createIcons();
+}
+
+function drawConst(rx, base, nf){
+  var cv=document.getElementById('c-const'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=240;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var cx=W/2, cy=H/2, R=Math.min(W,H)/2-18;
+  ctx.strokeStyle='rgba(255,255,255,.1)';
+  ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
+  // received cloud
+  ctx.fillStyle='rgba(109,63,192,.45)';
+  rx.forEach(function(p){ var x=cx+p.i*R*0.82, y=cy-p.q*R*0.82; ctx.fillRect(x-1,y-1,2,2); });
+  // ideal points
+  ctx.fillStyle='#A89C8C';
+  base.forEach(function(p){ var x=cx+(p.i/nf)*R*0.82, y=cy-(p.q/nf)*R*0.82; ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill(); });
+}
+
+function drawEye(snr, sigma){
+  var cv=document.getElementById('c-eye'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=240;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  var mid=H/2, amp=H/2-26;
+  ctx.strokeStyle='rgba(255,255,255,.08)';
+  ctx.beginPath(); ctx.moveTo(0,mid); ctx.lineTo(W,mid); ctx.stroke();
+  // draw many 2-symbol traces with raised-cosine-ish transition + noise
+  var traces=40;
+  for(var t=0;t<traces;t++){
+    var a=(Math.random()<0.5?-1:1), b=(Math.random()<0.5?-1:1);
+    ctx.strokeStyle='rgba(109,63,192,'+(0.10+0.10*Math.random())+')'; ctx.lineWidth=1.2;
+    ctx.beginPath();
+    for(var x=0;x<=W;x++){
+      var ph=x/W*2*Math.PI; // 0..2π across two symbols
+      // smooth transition a->b using half-cosine over the window
+      var f=(1-Math.cos(x/W*Math.PI))/2;
+      var lvl=a*(1-f)+b*f;
+      var y=mid - (lvl + randn()*sigma*0.5)*amp;
+      if(x===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  // decision instant marker
+  ctx.strokeStyle='rgba(61,163,93,.5)'; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(W/2,8); ctx.lineTo(W/2,H-8); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#3DA35D'; ctx.font='9px "Space Mono",monospace'; ctx.fillText('判決時刻（眼最開）', W/2-58, 14);
+  ctx.fillStyle='#A89C8C'; ctx.fillText('眼開越大＝ISI/雜訊越小', 6, H-8);
+}
+
+// mode buttons
+document.getElementById('seg-mod').addEventListener('click', function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  mod=b.getAttribute('data-m');
+  this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); });
+  redraw();
+});
+window.addEventListener('resize', redraw);
+redraw();
+</script>
+</body>
+</html>

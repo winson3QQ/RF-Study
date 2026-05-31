@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>進階・MIMO 基礎（空間多工 / 分集）— RF 學習站</title>
+<link rel="icon" href="../assets/logo-mark.svg">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+.adv-badge { display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:11px; font-weight:700; padding:3px 10px; border-radius:var(--r-pill); background:#efe7fb; color:#6D3FC0; margin-bottom:10px; }
+.st { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink); margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+.st::before { content: ''; width: 5px; height: 19px; background: #6D3FC0; border-radius: 3px; flex-shrink: 0; }
+.viz-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.viz-head { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 9px; }
+canvas { width: 100%; display: block; background: #08080e; border-radius: var(--r-sm); }
+.ctrl-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+@media (max-width:560px){ .ctrl-grid { grid-template-columns:1fr; } }
+.cg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow-sm); }
+.cg-label { font-family: var(--font-sans); font-weight: 700; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.cg-label span { color: #6D3FC0; font-family: var(--font-mono); font-size: 13px; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; margin-bottom: 7px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: #6D3FC0; cursor: pointer; }
+.cg-sublabel { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px 10px; text-align: center; box-shadow: var(--shadow-sm); }
+.status-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+.metric-label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); margin-bottom: 5px; }
+.metric-val { font-family: var(--font-mono); font-size: 17px; font-weight: 700; color: #6D3FC0; }
+.insight { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid #6D3FC0; border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 12px; font-size: 13px; line-height: 1.8; color: var(--ink-2); box-shadow: var(--shadow-sm); }
+.insight strong { color: #6D3FC0; }
+.seg { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.seg button { font-family: var(--font-sans); font-weight:700; font-size:12px; padding:7px 13px; border:1.5px solid var(--border-strong); border-radius:var(--r-pill); background:var(--surface); color:var(--ink-2); cursor:pointer; }
+.seg button.on { border-color:#6D3FC0; color:#6D3FC0; background:#efe7fb; }
+.challenge { display: flex; align-items: flex-start; gap: 9px; background: var(--honey-soft); border: 1px solid #f0dcae; border-left: 4px solid var(--honey); border-radius: var(--r-md); padding: 13px 15px; font-size: 13px; color: var(--ink-2); line-height: 1.8; margin-bottom: 12px; }
+.challenge svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; color: var(--honey-ink); }
+.challenge b { color: var(--honey-ink); }
+.xlink { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.xlink a { font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: var(--r-pill); border: 1.5px solid var(--border-strong); background: var(--surface); color: #6D3FC0; text-decoration: none; }
+</style>
+</head>
+<body>
+<script>window.SITE_SECTION = 'tools';</script>
+<div class="wrap wrap-narrow">
+  <div class="read-top"><a class="back-btn" href="../index.html"><i data-lucide="arrow-left"></i> 回首頁</a></div>
+  <div class="adv-badge"><i data-lucide="flask-conical" style="width:13px;height:13px"></i> 選修・進階實驗室</div>
+  <div class="tool-title">MIMO 基礎</div>
+  <p class="tool-sub">多天線（MIMO）有兩種用法：<strong>空間多工</strong>（多條資料流並行 → 提速）與<strong>分集</strong>（同一資料走多條路徑 → 抗衰落）。這裡用 N×M 天線示意兩者差異，以及「多路徑反而是好事」的反直覺。</p>
+
+  <div class="insight"><strong>反直覺：</strong>在單天線時多徑是麻煩（衰落）；在 MIMO 裡，<strong>豐富的多徑讓各天線的通道彼此獨立</strong>，反而能把多條資料流「分得開」——多徑成了容量的來源。</div>
+
+  <div class="seg" id="seg-mode">
+    <button class="on" data-m="mux">空間多工（提速）</button>
+    <button data-m="div">分集（抗衰落）</button>
+  </div>
+
+  <div class="ctrl-grid">
+    <div class="cg"><div class="cg-label">發射天線 N<sub>t</sub> <span id="lbl-nt">2</span></div>
+      <input type="range" id="sl-nt" min="1" max="4" value="2" step="1" oninput="redraw()"></div>
+    <div class="cg"><div class="cg-label">接收天線 N<sub>r</sub> <span id="lbl-nr">2</span></div>
+      <input type="range" id="sl-nr" min="1" max="4" value="2" step="1" oninput="redraw()"></div>
+  </div>
+
+  <div class="status-grid">
+    <div class="metric"><div class="metric-label">資料流數（≤min）</div><div class="metric-val" id="m-streams">—</div></div>
+    <div class="metric"><div class="metric-label">多工容量增益</div><div class="metric-val" id="m-cap">—</div></div>
+    <div class="metric"><div class="metric-label">分集階數</div><div class="metric-val" id="m-div">—</div></div>
+  </div>
+
+  <div class="viz-card"><div class="viz-head" id="vh">天線陣列與通道矩陣 H（N<sub>r</sub>×N<sub>t</sub>）</div><canvas id="c-mimo" height="240"></canvas></div>
+
+  <div class="insight" id="explain"></div>
+
+  <div class="challenge"><i data-lucide="flask-conical"></i><div><b>實驗挑戰：</b>切到「空間多工」，把 2×2 改成 4×4，看資料流數與容量增益怎麼變；再切「分集」用 1×4，注意這時不增加資料流，而是用 4 條路徑保同一份資料。想一想：什麼情境該選多工、什麼情境該選分集？</div></div>
+
+  <div class="st">為什麼這在進階軌</div>
+  <div class="insight">MIMO 屬通訊系統工程，<strong>不在 NCC 業餘考照範圍</strong>，業餘語音通聯多為單天線。放這裡供延伸理解現代寬頻系統。</div>
+
+  <div class="st">延伸學習</div>
+  <div class="xlink"><a href="adv-ofdm.html">OFDM 子載波</a><a href="../tools/propagation-multipath.html">傳播/多徑（基礎）</a><a href="adv-constellation-eye.html">星座與眼圖</a></div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../assets/js/nav.js?v=3"></script>
+<script>
+var mode='mux';
+function val(id){ return parseFloat(document.getElementById(id).value); }
+function redraw(){
+  var nt=val('sl-nt'), nr=val('sl-nr');
+  document.getElementById('lbl-nt').textContent=nt;
+  document.getElementById('lbl-nr').textContent=nr;
+  var streams=Math.min(nt,nr), div=nt*nr;
+  document.getElementById('m-streams').textContent=streams;
+  document.getElementById('m-cap').textContent='×'+streams+'（理論上限）';
+  document.getElementById('m-div').textContent=div+' 階';
+  document.getElementById('explain').innerHTML = mode==='mux'
+    ? '<strong>空間多工：</strong>'+nt+'×'+nr+' → 最多 '+streams+' 條獨立資料流並行，理論吞吐量 ≈ ×'+streams+'（需豐富多徑讓通道矩陣 H 滿秩）。'
+    : '<strong>分集：</strong>'+nt+'×'+nr+' → '+div+' 條獨立路徑送同一份資料，任一條深衰落仍有其他路徑救援 → 大幅降低中斷機率（不提速，但更穩）。';
+  drawMimo(nt,nr);
+  if(window.lucide) lucide.createIcons();
+}
+function drawMimo(nt,nr){
+  var cv=document.getElementById('c-mimo'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=240;
+  cv.width=W*dpr; cv.height=H*dpr; var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+  var lx=70, rx=W-70;
+  function ty(i,n){ return 30+(H-60)*(n===1?0.5:i/(n-1)); }
+  // links
+  for(var i=0;i<nt;i++) for(var j=0;j<nr;j++){
+    var strong = mode==='div' ? true : (i%nr)===(j%nt);
+    ctx.strokeStyle = mode==='mux'
+      ? (i===j?'rgba(61,163,93,.8)':'rgba(255,255,255,.10)')
+      : 'rgba(109,63,192,.45)';
+    ctx.lineWidth = mode==='mux'&&i===j?2.2:1;
+    ctx.beginPath(); ctx.moveTo(lx,ty(i,nt)); ctx.lineTo(rx,ty(j,nr)); ctx.stroke();
+  }
+  // antennas
+  for(var i=0;i<nt;i++){ var y=ty(i,nt); ctx.fillStyle='#F2643C'; ctx.beginPath(); ctx.arc(lx,y,8,0,7); ctx.fill();
+    ctx.fillStyle='#A89C8C'; ctx.font='10px "Space Mono",monospace'; ctx.fillText('Tx'+(i+1), lx-46, y+4); }
+  for(var j=0;j<nr;j++){ var y=ty(j,nr); ctx.fillStyle='#1F9E96'; ctx.beginPath(); ctx.arc(rx,y,8,0,7); ctx.fill();
+    ctx.fillStyle='#A89C8C'; ctx.fillText('Rx'+(j+1), rx+14, y+4); }
+  ctx.fillStyle='#6D3FC0'; ctx.font='11px "Space Mono",monospace';
+  ctx.fillText(mode==='mux'?'綠=獨立資料流路徑':'紫=多重備援路徑', W/2-70, H-8);
+}
+document.getElementById('seg-mode').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b)return; mode=b.getAttribute('data-m');
+  this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);}); redraw();
+});
+window.addEventListener('resize', redraw);
+redraw();
+</script>
+</body>
+</html>
