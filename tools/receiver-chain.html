@@ -53,7 +53,7 @@ canvas { width: 100%; display: block; background: #08080e; border-radius: var(--
   <p class="tool-sub">把 LNA、混波器、IF 放大等各級串起來，算出整台接收機的<strong>總增益、總雜訊指數（NF）、可聽到的最弱訊號（MDS）與動態範圍（SFDR）</strong>，並指出瓶頸在哪一級——比背 Friis 公式有感多了。</p>
 
   <div class="insight">
-    <strong>先抓直覺：</strong>把 <strong>LNA（低雜訊放大器）想成助聽器</strong>——擺在<strong>最前面</strong>、第一時間就把微弱訊號放大，你會聽得最清楚（<strong style="color:var(--teal-ink)">總 NF 變好</strong>，因為前級增益會壓低後級的雜訊貢獻）；但它太靈敏，旁邊一聲大吼就容易<strong>破音失真</strong>（<strong style="color:var(--rose-ink)">IIP3／線性度變差</strong>）。<strong>「聽得清楚」與「不怕大聲」互相拉扯</strong>，就是接收機設計的核心——也是這台工具要你親手感覺的事。
+    <strong>這台工具想讓你「親手感覺」一個張力：</strong>把增益放在最前面（LNA 先行）→ <strong style="color:var(--teal-ink)">總 NF 變好</strong>（雜訊式：前級增益會壓低後級雜訊貢獻）；但增益放太前面 → <strong style="color:var(--rose-ink)">大訊號更早把後級推進非線性</strong>（IIP3 變差）。<strong>NF 與線性度互相拉扯</strong>，這就是接收機設計的核心。
   </div>
 
   <div class="st">接收鏈各級（由天線往內，可改數值／增刪）</div>
